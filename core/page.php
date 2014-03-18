@@ -463,7 +463,8 @@ abstract class PageAbstract {
   /**
    * Returns a single image
    */
-  public function image($filename) {
+  public function image($filename = null) {
+    if(is_null($filename)) return $this->images()->first();
     return $this->images()->find($filename);
   }
   

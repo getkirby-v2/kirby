@@ -112,10 +112,10 @@ class Kirby {
     // which branch? 
     if(isset(c::$data['languages']) and count((array)c::$data['languages']) > 0) {
       // if there are more than two installed languages, use the multilang branch
-      include(__DIR__ . DS . 'branches' . DS . 'multilang.php');      
+      include_once(__DIR__ . DS . 'branches' . DS . 'multilang.php');      
     } else {
       // otherwise load the default branch
-      include(__DIR__ . DS . 'branches' . DS . 'default.php');      
+      include_once(__DIR__ . DS . 'branches' . DS . 'default.php');      
     }
 
   }
@@ -153,7 +153,7 @@ class Kirby {
     c::$data['root.tags']        = c::$data['root.site']  . DS . 'tags';
 
     // load the user config
-    if(file_exists(c::$data['root.config'] . DS . 'config.php')) include(c::$data['root.config'] . DS . 'config.php');
+    if(file_exists(c::$data['root.config'] . DS . 'config.php')) include_once(c::$data['root.config'] . DS . 'config.php');
 
     // pass the config vars from the constructor again to overwrite
     // stuff from the user config
@@ -219,7 +219,7 @@ class Kirby {
       // path for the language file
       $file = c::$data['root.site'] . DS . 'languages' . DS . static::$site->language()->code() . '.php';
       // load the file if it exists
-      if(file_exists($file)) include($file);
+      if(file_exists($file)) include_once($file);
     } 
 
   }
@@ -259,7 +259,7 @@ class Kirby {
 
     $file = c::$data['root.plugins'] . DS . $name . DS . $name . '.php';
     
-    if(file_exists($file)) return static::$plugins[$name] = include($file);
+    if(file_exists($file)) return static::$plugins[$name] = include_once($file);
 
   }
 
@@ -275,7 +275,7 @@ class Kirby {
 
     if(file_exists($file)) {
 
-      $callback = include($file);
+      $callback = include_once($file);
 
       if(is_callable($callback)) return (array)call_user_func_array($callback, array(
         static::$site, 
