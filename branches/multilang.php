@@ -3,12 +3,14 @@
 /**
  * Unmodified classes
  */
-class Children extends ChildrenAbstract {}
-class Field    extends FieldAbstract {}
-class Files    extends FilesAbstract {}
-class Kt       extends KtAbstract {}
-class Ktag     extends KtagAbstract {}
-
+class Children  extends ChildrenAbstract {}
+class Field     extends FieldAbstract {}
+class Files     extends FilesAbstract {}
+class Kt        extends KtAbstract {}
+class Ktag      extends KtagAbstract {}
+class Blueprint extends BlueprintAbstract {}
+class Users extends UsersAbstract {}
+class User extends UserAbstract {}
 
 /**
  * File
@@ -500,3 +502,4 @@ class Site extends SiteAbstract {
   }
 
 }
+

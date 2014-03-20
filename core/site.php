@@ -232,4 +232,22 @@ abstract class SiteAbstract extends Page {
     return false;
   }
 
+  /**
+   * Returns a collection of all users
+   * 
+   * @return Users
+   */
+  public function users() {
+    return new Users();  
+  }
+
+  /**
+   * Returns the current user
+   * 
+   * @return User
+   */
+  public function user() {
+    return User::current();
+  }
+
 }

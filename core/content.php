@@ -121,4 +121,10 @@ abstract class ContentAbstract {
     return $this->get($method, $arguments);
   }
 
+  public function toArray() {
+    return array_map(function($item) {
+      return $item->value;
+    }, $this->data);
+  }
+
 }

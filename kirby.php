@@ -34,6 +34,24 @@ class Kirby {
   }
 
   /**
+   * Custom site setup for the panel 
+   * 
+   * @return Site
+   */
+  static public function panelsetup() {
+
+    // setup the site object
+    $site = static::setup(array(
+      'url' => dirname(static::url())
+    ));
+
+    $site->visit('/');
+
+    return $site;
+
+  }
+
+  /**
    * Starts the Kirby setup and 
    * returns the content
    * 
@@ -121,6 +139,19 @@ class Kirby {
   }
 
   /**
+   * Returns the proper base url for the installation
+   * 
+   * @return string 
+   */
+  static protected function url() {
+    // auto-detect the url
+    if(empty(c::$data['url'])) {
+      c::$data['url'] = url::scheme() . '://' . $_SERVER['HTTP_HOST'] . rtrim($_SERVER['SCRIPT_NAME'], '/index.php');
+    }
+    return c::$data['url'];
+  }
+
+  /**
    * Sets all defaults and loads the user configuration
    * 
    * @param array $config
@@ -151,6 +182,8 @@ class Kirby {
     c::$data['root.controllers'] = c::$data['root.site']  . DS . 'controllers';
     c::$data['root.config']      = c::$data['root.site']  . DS . 'config';
     c::$data['root.tags']        = c::$data['root.site']  . DS . 'tags';
+    c::$data['root.blueprints']  = c::$data['root.site']  . DS . 'blueprints';
+    c::$data['root.accounts']    = c::$data['root.site']  . DS . 'accounts';
 
     // load the user config
     if(file_exists(c::$data['root.config'] . DS . 'config.php')) include_once(c::$data['root.config'] . DS . 'config.php');
@@ -159,10 +192,8 @@ class Kirby {
     // stuff from the user config
     c::$data = array_merge(c::$data, $config);
 
-    // auto-detect the url
-    if(empty(c::$data['url'])) {
-      c::$data['url'] = url::scheme() . '://' . $_SERVER['HTTP_HOST'] . rtrim($_SERVER['SCRIPT_NAME'], '/index.php');
-    }
+    // detect and store the url
+    static::url();
 
     // default url handler        
     if(empty(c::$data['url.to'])) {

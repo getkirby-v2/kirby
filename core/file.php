@@ -56,11 +56,33 @@ abstract class FileAbstract extends Media {
    * @return Files
    */
   public function files() {
-    return $this->site;
+    return $this->files;
   }
 
   public function siblings() {
     return $this->files->not($this->filename);
+  }
+
+  function next() {
+    $siblings = $this->files;
+    $index    = $siblings->indexOf($this);
+    if($index === false) return false;
+    return $this->files->nth($index+1);
+  }
+
+  function hasNext() {
+    return $this->next();     
+  }
+  
+  function prev() {
+    $siblings = $this->files;
+    $index    = $siblings->indexOf($this);
+    if($index === false) return false;
+    return $this->files->nth($index-1);
+  }
+
+  function hasPrev() {
+    return $this->prev();       
   }
 
   /**
@@ -99,6 +121,67 @@ abstract class FileAbstract extends Media {
    */
   public function __call($key, $arguments = null) {
     return $this->meta()->get($key, $arguments);
+  }
+
+  /**
+   * Renames the file and also its meta info txt
+   *  
+   * @param string $filename
+   */
+  public function rename($name) {
+
+    $filename = f::safeName($name) . '.' . $this->extension();
+    $root     = $this->dir() . DS . $filename;
+
+    if($root == $this->root()) return true;
+
+    if(file_exists($root)) {
+      throw new Exception('A file with that name already exists');
+    }
+
+    if(!f::move($this->root(), $root)) {
+      throw new Exception('The file could not be renamed');
+    }
+
+    if($this->meta()->exists()) {
+      f::move($this->meta()->root(), $root . '.' . c::get('content.file.extension'));
+    }
+
+    return true;
+
+  }
+
+  public function update($data = array()) {
+
+    $data  = array_merge((array)$this->meta()->toArray(), $data);    
+    $store = $this->root() . '.' . c::get('content.file.extension');      
+
+    foreach($data as $k => $v) {
+      if(is_null($v)) unset($data[$k]);
+    }
+
+    if(!data::write($store, $data, 'kd')) {
+      throw new Exception('The file data could not be saved');
+    }
+
+    return true;
+
+  }
+
+  public function delete() {
+
+    if($this->meta()->exists()) {
+      if(!f::remove($this->meta()->root())) {
+        throw new Exception('The meta file could not be deleted');
+      }
+    }
+
+    if(!f::remove($this->root())) {
+      throw new Exception('The file could not be deleted');
+    }
+
+    return true;
+
   }
 
   /**

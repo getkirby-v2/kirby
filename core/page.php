@@ -755,6 +755,150 @@ abstract class PageAbstract {
   }
 
   /**
+   * Returns the matching blueprint object
+   * for the page's template
+   * 
+   * @return Blueprint
+   */
+  public function blueprint() {
+    return blueprint::find($this);
+  }
+
+  /**
+   * Creates a new page object
+   * 
+   * @param string $uri
+   * @param string $template
+   * @param array $data
+   */
+  static public function create($uri, $template, $data = array()) {
+
+    $uid       = str::slug(basename($uri));
+    $parentURI = dirname($uri);
+    $parent    = ($parentURI == '.') ? site() : page($parentURI);
+
+    if(!$parent) {
+      throw new Exception('The parent does not exist');
+    }
+
+    if($parent->find($uid)) {
+      throw new Exception('The page UID exists');
+    }
+
+    $root = $parent->root() . DS . $uid;
+    $file = $root . DS . $template . '.' . c::get('content.file.extension', 'txt');
+
+    if(!dir::make($root)) {
+      throw new Exception('The directory could not be created');
+    }
+
+    if(!data::write($file, $data, 'kd')) {
+      throw new Exception('The page file could not be created');      
+    }
+
+    return true;
+
+  }
+
+  /**
+   * Update the page with a new set of data
+   * 
+   * @param array
+   */
+  public function update($data = array()) {
+    
+    $data = array_merge($this->content()->toArray(), $data);
+
+    if(!data::write($this->content()->root(), $data, 'kd')) {
+      throw new Exception('The page could not be updated');
+    }
+
+    return true;
+
+  }
+
+  public function move($uid) {
+
+    $uid = str::slug($uid);
+
+    if($this->uid() === $uid) return true;
+
+    $dir  = $page->visible() ? $this->num() . '-' . $uid : $uid;
+    $root = dirname($this->root()) . DS . $dir;
+
+    if(is_dir($root)) {
+      throw new Exception('A page with this uid already exists');
+    }
+
+    if(!dir::move($this->root(), $root)) {
+      throw new Exception('The directory could not be moved');
+    }
+
+    return true;
+
+  }
+
+  /**
+   * 
+   */
+  public function sort($num) {
+
+    if($num == $this->num()) return true;
+
+    $dir  = $num . '-' . $this->uid();    
+    $root = dirname($this->root()) . DS . $dir;
+
+    if(!dir::move($this->root(), $root)) {
+      throw new Exception('The directory could not be moved');      
+    }
+
+    return true;
+
+  }
+
+  /**
+   * 
+   */
+  public function hide() {
+
+    if($this->isInvisible()) return true;
+
+    $root = dirname($this->root()) . DS . $this->uid();
+
+    if(!dir::move($this->root(), $root)) {
+      throw new Exception('The directory could not be moved');      
+    }
+
+    return true;
+
+  }
+
+  /**
+   * Deletes the page
+   */
+  public function delete() {
+
+    if($this->children()->count()) {
+      throw new Exception('This page has subpages');
+    }
+
+    if($this->isHomePage()) {
+      throw new Exception('The home page cannot be deleted');
+    }
+
+    if($this->isErrorPage()) {
+      throw new Exception('The error page cannot be deleted');
+    }
+
+    if(!dir::remove($this->root())) {
+      throw new Exception('The page could not be deleted');
+    }
+
+    return true;
+
+  }
+
+  /**
    * Makes it possible to echo the entire object
    * 
    * @return string
