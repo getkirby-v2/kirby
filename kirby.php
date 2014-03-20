@@ -146,7 +146,7 @@ class Kirby {
   static protected function url() {
     // auto-detect the url
     if(empty(c::$data['url'])) {
-      c::$data['url'] = url::scheme() . '://' . $_SERVER['HTTP_HOST'] . rtrim($_SERVER['SCRIPT_NAME'], '/index.php');
+      c::$data['url'] = url::scheme() . '://' . $_SERVER['HTTP_HOST'] . preg_replace('!\/index\.php$!i', '', $_SERVER['SCRIPT_NAME']);
     }
     return c::$data['url'];
   }

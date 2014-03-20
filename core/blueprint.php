@@ -35,9 +35,9 @@ abstract class BlueprintAbstract {
     return f::name($this->file);
   }
 
-  public function subpages() {
+  public function pages() {
     
-    if(isset($this->yaml['subpages']) and $this->yaml['subpages'] == false) {
+    if(isset($this->yaml['pages']) and $this->yaml['pages'] == false) {
       return false;
     }
 
@@ -47,12 +47,12 @@ abstract class BlueprintAbstract {
       'limit'    => 20
     );
 
-    if(!isset($this->yaml['subpages']) or $this->yaml['subpages'] === true) {
+    if(!isset($this->yaml['pages']) or $this->yaml['pages'] === true) {
       $defaults['template'] = static::all();      
-    } else if(is_string($this->yaml['subpages'])) {
-      $defaults['template'][] = static::find($this->yaml['subpages']);
-    } else if(isset($this->yaml['subpages']['template'])) {
-      $template = $this->yaml['subpages']['template'];
+    } else if(is_string($this->yaml['pages'])) {
+      $defaults['template'][] = static::find($this->yaml['pages']);
+    } else if(isset($this->yaml['pages']['template'])) {
+      $template = $this->yaml['pages']['template'];
 
       if(is_string($template)) {
         $defaults['template'] = static::find($template);
@@ -64,12 +64,12 @@ abstract class BlueprintAbstract {
       }
     } 
 
-    if(isset($this->yaml['subpages']['sortable']) and $this->yaml['subpages']['sortable'] == false) {
+    if(isset($this->yaml['pages']['sortable']) and $this->yaml['pages']['sortable'] == false) {
       $defaults['sortable'] = false;
     }
 
-    if(isset($this->yaml['subpages']['limit'])) {
-      $defaults['limit'] = $this->yaml['subpages']['limit'];
+    if(isset($this->yaml['pages']['limit'])) {
+      $defaults['limit'] = $this->yaml['pages']['limit'];
     }
 
     return $defaults;
