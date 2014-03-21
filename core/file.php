@@ -142,7 +142,7 @@ abstract class FileAbstract extends Media {
     $filename = f::safeName($name) . '.' . $this->extension();
     $root     = $this->dir() . DS . $filename;
 
-    if($root == $this->root()) return true;
+    if($root == $this->root()) return $filename;
 
     if(file_exists($root)) {
       throw new Exception('A file with that name already exists');
@@ -152,11 +152,13 @@ abstract class FileAbstract extends Media {
       throw new Exception('The file could not be renamed');
     }
 
-    if($this->meta()->exists()) {
-      f::move($this->meta()->root(), $root . '.' . c::get('content.file.extension'));
+    $meta = $this->textfile();
+
+    if(file_exists($meta)) {
+      f::move($meta, $this->page->textfile($filename));
     }
 
-    return true;
+    return $filename;
 
   }
 
