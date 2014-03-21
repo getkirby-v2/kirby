@@ -82,3 +82,16 @@ function page() {
 function excerpt($text, $length = 140) {
   return str::excerpt(kirbytext($text), $length);
 }
+
+/**
+ * Helper to create correct text file names for content files
+ * 
+ * @param string $uri
+ * @param string $template
+ * @param string $lang
+ * @return string
+ */
+function textfile($uri, $template = null, $lang = null) {
+  if(is_null($template)) $template = $this->intendedTemplate();
+  return c::get('root.content') . DS . r(!empty($uri), str_replace('/', DS, $uri) . DS) . $template . r($lang, '.' . $lang) . '.' . c::get('content.file.extension', 'txt');
+}

@@ -47,7 +47,16 @@ abstract class FileAbstract extends Media {
    * @return Page
    */
   public function page() {
-    return $this->site;
+    return $this->page;
+  }
+
+  /**
+   * Returns the full root for the content file
+   * 
+   * @return string
+   */
+  public function textfile() {
+    return $this->page->textfile($this->filename());
   }
 
   /**
@@ -153,14 +162,13 @@ abstract class FileAbstract extends Media {
 
   public function update($data = array()) {
 
-    $data  = array_merge((array)$this->meta()->toArray(), $data);    
-    $store = $this->root() . '.' . c::get('content.file.extension');      
+    $data = array_merge((array)$this->meta()->toArray(), $data);    
 
     foreach($data as $k => $v) {
       if(is_null($v)) unset($data[$k]);
     }
 
-    if(!data::write($store, $data, 'kd')) {
+    if(!data::write($this->textfile(), $data, 'kd')) {
       throw new Exception('The file data could not be saved');
     }
 
@@ -170,11 +178,8 @@ abstract class FileAbstract extends Media {
 
   public function delete() {
 
-    if($this->meta()->exists()) {
-      if(!f::remove($this->meta()->root())) {
-        throw new Exception('The meta file could not be deleted');
-      }
-    }
+    // delete the meta file
+    f::remove($this->textfile());
 
     if(!f::remove($this->root())) {
       throw new Exception('The file could not be deleted');

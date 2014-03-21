@@ -411,7 +411,9 @@ abstract class PageAbstract {
    * @return File | Files
    */
   public function file() {
-    return call_user_func_array(array($this->files(), 'find'), func_get_args()); 
+    $args = func_get_args();
+    if(empty($args)) return $this->files()->first();
+    return call_user_func_array(array($this->files(), 'find'), $args); 
   }
 
   // file stuff
@@ -755,6 +757,16 @@ abstract class PageAbstract {
   }
 
   /**
+   * Returns the root for the content file 
+   * 
+   * @return string
+   */
+  public function textfile($template = null) {
+    if(is_null($template)) $template = $this->intendedTemplate();
+    return textfile($this->diruri(), $template);
+  }
+
+  /**
    * Returns the matching blueprint object
    * for the page's template
    * 
@@ -762,6 +774,31 @@ abstract class PageAbstract {
    */
   public function blueprint() {
     return blueprint::find($this);
+  }
+
+  /**
+   * Private method to create a page directory
+   */
+  static protected function createDirectory($uri) {
+
+    $uid       = str::slug(basename($uri));
+    $parentURI = dirname($uri);
+    $parent    = ($parentURI == '.' or empty($parentURI) or $parentURI == '/') ? site() : page($parentURI);
+
+    if(!$parent) {
+      throw new Exception('The parent does not exist');
+    }
+
+    if($parent->children()->findBy('uid', $uid)) {
+      throw new Exception('The page UID exists');
+    }
+
+    if(!dir::make($parent->root() . DS . $uid)) {
+      throw new Exception('The directory could not be created');
+    }
+
+    return $parent->uri() . '/' . $uid;
+
   }
 
   /**
@@ -773,30 +810,18 @@ abstract class PageAbstract {
    */
   static public function create($uri, $template, $data = array()) {
 
-    $uid       = str::slug(basename($uri));
-    $parentURI = dirname($uri);
-    $parent    = ($parentURI == '.') ? site() : page($parentURI);
+    // try to create the new directory
+    $uri = static::createDirectory($uri);
 
-    if(!$parent) {
-      throw new Exception('The parent does not exist');
-    }
+    // create the path for the textfile
+    $file = textfile($uri, $template);
 
-    if($parent->find($uid)) {
-      throw new Exception('The page UID exists');
-    }
-
-    $root = $parent->root() . DS . $uid;
-    $file = $root . DS . $template . '.' . c::get('content.file.extension', 'txt');
-
-    if(!dir::make($root)) {
-      throw new Exception('The directory could not be created');
-    }
-
+    // try to store the data in the text file
     if(!data::write($file, $data, 'kd')) {
       throw new Exception('The page file could not be created');      
     }
 
-    return true;
+    return $uri;
 
   }
 
@@ -809,7 +834,7 @@ abstract class PageAbstract {
     
     $data = array_merge($this->content()->toArray(), $data);
 
-    if(!data::write($this->content()->root(), $data, 'kd')) {
+    if(!data::write($this->textfile(), $data, 'kd')) {
       throw new Exception('The page could not be updated');
     }
 
@@ -877,6 +902,10 @@ abstract class PageAbstract {
    * Deletes the page
    */
   public function delete() {
+
+    if($this->isSite()) {
+      throw new Exception('The site cannot be deleted');
+    }
 
     if($this->children()->count()) {
       throw new Exception('This page has subpages');

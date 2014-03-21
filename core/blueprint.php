@@ -36,71 +36,63 @@ abstract class BlueprintAbstract {
   }
 
   public function pages() {
+
+    $pages = a::get($this->yaml, 'pages');
     
-    if(isset($this->yaml['pages']) and $this->yaml['pages'] == false) {
-      return false;
-    }
+    if($pages === false) return false;
 
-    $defaults = array(
-      'template' => array(),
-      'sortable' => true,
-      'limit'    => 20
-    );
+    $settings = new Obj();
+    $settings->template = array();
+    $settings->sortable = true;
+    $settings->sort     = false;
+    $settings->limit    = 20;
 
-    if(!isset($this->yaml['pages']) or $this->yaml['pages'] === true) {
-      $defaults['template'] = static::all();      
-    } else if(is_string($this->yaml['pages'])) {
-      $defaults['template'][] = static::find($this->yaml['pages']);
-    } else if(isset($this->yaml['pages']['template'])) {
-      $template = $this->yaml['pages']['template'];
-
+    if($pages === true) {
+      $settings->template = static::all();      
+    } else if(is_string($pages)) {
+      $settings->template[] = static::find($pages);
+    } else if(isset($pages['template'])) {
+      $template = $pages['template'];
       if(is_string($template)) {
-        $defaults['template'] = static::find($template);
+        $settings->template[] = static::find($template);
       } else if(is_array($template)) {
-
         foreach($template as $t) {
-          $defaults['template'][] = static::find($t);
+          $settings->template[] = static::find($t);
         }
       }
     } 
 
-    if(isset($this->yaml['pages']['sortable']) and $this->yaml['pages']['sortable'] == false) {
-      $defaults['sortable'] = false;
+    if(isset($pages['sortable']) and $pages['sortable'] == false) {
+      $settings->sortable = false;
     }
 
-    if(isset($this->yaml['pages']['limit'])) {
-      $defaults['limit'] = $this->yaml['pages']['limit'];
+    if(isset($pages['limit'])) {
+      $settings->limit = $pages['limit'];
     }
 
-    return $defaults;
+    if(isset($pages['sort'])) {
+      $settings->sort = $pages['sort'];
+    }
+
+    return $settings;
 
   }
 
   public function files() {
 
-    if(isset($this->yaml['files']) and $this->yaml['files'] == false) {
-      return false;
+    $files    = a::get($this->yaml, 'files');
+    $settings = new Obj();
+    $settings->fields = array();
+    
+    if($files === false) return false;
+    if($files === true)  return $settings;
+
+    if(isset($files['fields'])) {
+      $settings->fields = (array)$files['fields'];
     }
 
-    $defaults = array(
-      'fields' => array()
-    );
+    return $settings;
 
-    if(!isset($this->yaml['files']) or $this->yaml['files'] === true) {
-      return $defaults;
-    }
-
-    if(isset($this->yaml['files']['fields'])) {
-      $defaults['fields'] = $this->yaml['files']['fields'];
-    }
-
-    return $defaults;
-
-  }
-
-  public function filefields() {
-    $files = $this->files();
-    return (array)$files['fields'];
   }
 
   static public function find($id) {
