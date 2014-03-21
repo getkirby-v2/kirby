@@ -79,6 +79,41 @@ class File extends FileAbstract {
 
   }
 
+  /**
+   * Renames the file and also its meta info txt
+   *  
+   * @param string $filename
+   */
+  public function rename($name) {
+
+    $filename = f::safeName($name) . '.' . $this->extension();
+    $root     = $this->dir() . DS . $filename;
+
+    if($root == $this->root()) return $filename;
+
+    if(file_exists($root)) {
+      throw new Exception('A file with that name already exists');
+    }
+
+    if(!f::move($this->root(), $root)) {
+      throw new Exception('The file could not be renamed');
+    }
+
+    foreach($this->site->languages() as $lang) {
+
+      // rename all meta files
+      $meta = $this->textfile($lang->code());
+
+      if(file_exists($meta)) {
+        f::move($meta, $this->page->textfile($filename, $lang->code()));
+      }
+
+    }
+
+    return $filename;
+
+  }
+
   public function update($data = array(), $lang = null) {
 
     $data = array_merge((array)$this->meta()->toArray(), $data);    
