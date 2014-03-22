@@ -47,7 +47,7 @@ abstract class BlueprintAbstract {
     $settings->sort     = false;
     $settings->limit    = 20;
 
-    if($pages === true) {
+    if($pages === true or empty($pages)) {
       $settings->template = static::all();      
     } else if(is_string($pages)) {
       $settings->template[] = static::find($pages);
@@ -60,7 +60,7 @@ abstract class BlueprintAbstract {
           $settings->template[] = static::find($t);
         }
       }
-    } 
+    }
 
     if(isset($pages['sortable']) and $pages['sortable'] == false) {
       $settings->sortable = false;
