@@ -36,7 +36,7 @@ function js($src, $async = false) {
 
   if(is_array($src)) {
     $js = array();
-    foreach($src as $s) $js[] = css($s);
+    foreach($src as $s) $js[] = js($s);
     return implode(PHP_EOL, $js);
   }
 
