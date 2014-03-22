@@ -5,8 +5,8 @@ class Content extends ContentAbstract {}
 class Field extends FieldAbstract {}
 class File extends FileAbstract {}
 class Files extends FilesAbstract {}
-class Kt extends KtAbstract {}
-class Ktag extends KtagAbstract {}
+class Kirbytext extends KirbytextAbstract {}
+class Kirbytag extends KirbytagAbstract {}
 class Page extends PageAbstract {}
 class Site extends SiteAbstract {}
 class Blueprint extends BlueprintAbstract {}

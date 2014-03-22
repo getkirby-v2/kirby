@@ -1,17 +1,15 @@
 <?php 
 
-
 // date tag
-kt::$tags['date'] = array(
+kirbytext::$tags['date'] = array(
   'attr' => array(),
   'html' => function($tag) {
     return strtolower($tag->attr('date')) == 'year' ? date('Y') : date($tag->attr('date'));
   }
 );
 
-
 // email tag
-kt::$tags['email'] = array(
+kirbytext::$tags['email'] = array(
   'attr' => array(
     'class', 
     'title', 
@@ -26,9 +24,8 @@ kt::$tags['email'] = array(
   }
 );
 
-
 // file tag
-kt::$tags['file'] = array(
+kirbytext::$tags['file'] = array(
   'attr' => array(
     'text', 
     'class', 
@@ -59,9 +56,8 @@ kt::$tags['file'] = array(
   }
 );
 
-
 // image tag
-kt::$tags['image'] = array(
+kirbytext::$tags['image'] = array(
   'attr' => array(
     'width',
     'height',
@@ -126,9 +122,8 @@ kt::$tags['image'] = array(
   }
 );
 
-
 // link tag
-kt::$tags['link'] = array(
+kirbytext::$tags['link'] = array(
   'attr' => array(
     'text', 
     'class', 
@@ -147,9 +142,8 @@ kt::$tags['link'] = array(
   }
 );
 
-
 // twitter tag
-kt::$tags['twitter'] = array(
+kirbytext::$tags['twitter'] = array(
   'attr' => array(
     'class',
     'title',
@@ -177,5 +171,48 @@ kt::$tags['twitter'] = array(
       'target' => $tag->target(),
     ));
 
+  }
+);
+
+kirbytext::$tags['youtube'] = array(
+  'attr' => array(
+    'width',
+    'height',
+    'class'
+  ),
+  'html' => function($tag) {
+
+    return embed::youtube($tag->attr('youtube'), array(
+      'width'  => $tag->attr('width',  c::get('kirbytext.video.width')), 
+      'height' => $tag->attr('height', c::get('kirbytext.video.height')), 
+      'class'  => $tag->attr('class')
+    ));
+
+  }
+);
+
+kirbytext::$tags['vimeo'] = array(
+  'attr' => array(
+    'width',
+    'height',
+    'class'
+  ),
+  'html' => function($tag) {
+
+    return embed::vimeo($tag->attr('vimeo'), array(
+      'width'  => $tag->attr('width',  c::get('kirbytext.video.width')), 
+      'height' => $tag->attr('height', c::get('kirbytext.video.height')), 
+      'class'  => $tag->attr('class')
+    ));
+
+  }
+);
+
+kirbytext::$tags['gist'] = array(
+  'attr' => array(
+    'file'
+  ),
+  'html' => function($tag) {
+    return embed::gist($tag->attr('gist'), $tag->attr('file'));
   }
 );

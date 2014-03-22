@@ -330,7 +330,7 @@ class Kirby {
     include_once(__DIR__ . DS . 'vendors' . DS . 'parsedown.php');
 
     // install additional kirby tags
-    kt::install(c::$data['root.tags']);
+    kirbytext::install(c::$data['root.tags']);
 
   }
 

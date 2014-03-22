@@ -24,11 +24,11 @@ function css($url, $media = null) {
 
   }
 
-  return '<link ' . html::attr(array(
+  return html::tag('link', null, array(
     'rel'   => 'stylesheet',
     'href'  => url($url),
-    'media' => $media
-  )) . '>';
+    'media' => $media    
+  ));
 
 }
 
@@ -52,15 +52,15 @@ function js($src, $async = false) {
 
   }
 
-  return '<script ' . html::attr(array(
+  return html::tag('script', '', array(
     'src'   => url($src),
     'async' => $async
-  )) . '></script>';
+  ));
 
 }
 
 function kirbytext($field) {
-  return (string)new Kt($field);
+  return (string)new Kirbytext($field);
 }
 
 function site() {
@@ -94,4 +94,42 @@ function excerpt($text, $length = 140) {
 function textfile($uri, $template = null, $lang = null) {
   if(is_null($template)) $template = $this->intendedTemplate();
   return c::get('root.content') . DS . r(!empty($uri), str_replace('/', DS, $uri) . DS) . $template . r($lang, '.' . $lang) . '.' . c::get('content.file.extension', 'txt');
+}
+
+function kirbytag($attr) {
+  return new Kirbytag(null, key($attr), $attr);
+}
+
+function youtube($url, $width = null, $height = null, $class = null) {
+  return kirbytag(array(
+    'youtube' => $url,
+    'width'   => $width,
+    'height'  => $height,
+    'class'   => $class
+  ));
+}
+
+function vimeo($url, $width = null, $height = null, $class = null) {
+  return kirbytag(array(
+    'vimeo'   => $url,
+    'width'   => $width,
+    'height'  => $height,
+    'class'   => $class
+  ));
+}
+
+function twitter($username, $text = null, $title = null, $class = null) {
+  return kirbytag(array(
+    'twitter' => $username,
+    'text'    => $text,
+    'title'   => $title,
+    'class'   => $class
+  ));
+}
+
+function gist($url, $file = null) {
+  return kirbytag(array(
+    'gist' => $url,
+    'file' => $file,
+  ));
 }

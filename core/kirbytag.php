@@ -1,7 +1,7 @@
 <?php 
 
 /**
- * Ktag
+ * Kirbytag
  *
  * @package   Kirby CMS
  * @author    Bastian Allgeier <bastian@getkirby.com>
@@ -9,40 +9,50 @@
  * @copyright Bastian Allgeier
  * @license   http://getkirby.com/license
  */
-abstract class KtagAbstract {
+abstract class KirbytagAbstract {
 
   protected $page;
-  protected $kt;
+  protected $kirbytext;
   protected $name;
   protected $html;
   protected $attr = array();
 
-  public function __construct($kt, $name, $tag) {
+  public function __construct($kirbytext, $name, $tag) {
 
-    $this->page = $kt->field->page;
-    $this->kt   = $kt;
-    $this->name = $name;
-    $this->html = kt::$tags[$name]['html'];
+    if(is_null($kirbytext)) $kirbytext = new Kirbytext('');
+
+    $this->page      = $kirbytext->field->page;
+    $this->kirbytext = $kirbytext;
+    $this->name      = $name;
+    $this->html      = kirbytext::$tags[$name]['html'];
 
     // get a list with all attributes
-    $attributes = isset(kt::$tags[$name]['attr']) ? (array)kt::$tags[$name]['attr'] : array();
+    $attributes = isset(kirbytext::$tags[$name]['attr']) ? (array)kirbytext::$tags[$name]['attr'] : array();
 
     // add the name as first attribute
     array_unshift($attributes, $name);
 
-    // extract all attributes
-    $search = preg_split('!(' . implode('|', $attributes) . '):!i', $tag, false, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
-    $num    = 0;
-    
-    foreach($search AS $key) {
-    
-      if(!isset($search[$num+1])) break;
+    if(is_array($tag)) {
+      foreach($attributes as $key) {
+        if(isset($tag[$key])) $this->attr[$key] = $tag[$key];
+      }
+    } else {
+  
+      // extract all attributes
+      $search = preg_split('!(' . implode('|', $attributes) . '):!i', $tag, false, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
+      $num    = 0;
       
-      $key   = trim($search[$num]);
-      $value = trim($search[$num+1]);
+      foreach($search AS $key) {
+      
+        if(!isset($search[$num+1])) break;
+        
+        $key   = trim($search[$num]);
+        $value = trim($search[$num+1]);
 
-      $this->attr[$key] = $value;
-      $num = $num+2;
+        $this->attr[$key] = $value;
+        $num = $num+2;
+
+      }
 
     }
 
@@ -113,6 +123,10 @@ abstract class KtagAbstract {
     } else {
       return call_user_func_array($this->html, array($this));
     }
+  }
+
+  public function __toString() {
+    return (string)$this->html();
   }
 
 }

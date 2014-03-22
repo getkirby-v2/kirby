@@ -1,7 +1,7 @@
 <?php 
 
 /**
- * Kt
+ * Kirbytext
  *
  * @package   Kirby CMS
  * @author    Bastian Allgeier <bastian@getkirby.com>
@@ -9,14 +9,23 @@
  * @copyright Bastian Allgeier
  * @license   http://getkirby.com/license
  */
-abstract class KtAbstract {
+abstract class KirbytextAbstract {
 
   static public $tags = array();
 
   public $field;
 
   public function __construct($field) {
+
+    if(empty($field) or is_string($field)) {
+      $value = $field;
+      $field = new Field();
+      $field->value = $value;
+      $field->page  = page();
+    }
+
     $this->field = $field;
+
   }
 
   public function field() {
@@ -54,7 +63,7 @@ abstract class KtAbstract {
     // if the tag is not installed return the entire string
     if(!isset(static::$tags[$name])) return $input[0];
 
-    $tag = new KTag($this, $name, $tag);
+    $tag = new Kirbytag($this, $name, $tag);
     
     return $tag->html();
 
@@ -68,7 +77,7 @@ abstract class KtAbstract {
       if(pathinfo($file, PATHINFO_EXTENSION) == 'php') {
         $name = pathinfo($file, PATHINFO_FILENAME);
         $tag  = include($root . DS . $file);
-        if(is_array($tag)) kt::$tags[$name] = $tag;
+        if(is_array($tag)) Kirbytext::$tags[$name] = $tag;
       }
     }
 
