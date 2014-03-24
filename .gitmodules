@@ -1,0 +1,3 @@
+[submodule "toolkit"]
+	path = toolkit
+	url = https://github.com/getkirby/toolkit.git
