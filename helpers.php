@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function snippet($file, $data = array(), $return = false) {
   return tpl::load(c::get('root.snippets') . DS . $file . '.php', $data, $return);
@@ -27,7 +27,7 @@ function css($url, $media = null) {
   return html::tag('link', null, array(
     'rel'   => 'stylesheet',
     'href'  => url($url),
-    'media' => $media    
+    'media' => $media
   ));
 
 }
@@ -73,7 +73,7 @@ function page() {
 
 /**
  * Creates an excerpt without html and kirbytext
- * 
+ *
  * @param mixed $text Variable object or string
  * @param int $length The number of characters which should be included in the excerpt
  * @param array $params an array of options for kirbytext: array('markdown' => true, 'smartypants' => true)
@@ -85,7 +85,7 @@ function excerpt($text, $length = 140) {
 
 /**
  * Helper to create correct text file names for content files
- * 
+ *
  * @param string $uri
  * @param string $template
  * @param string $lang
@@ -93,7 +93,26 @@ function excerpt($text, $length = 140) {
  */
 function textfile($uri, $template = null, $lang = null) {
   if(is_null($template)) $template = $this->intendedTemplate();
+
+  $curi   = '';
+  $parts  = str::split($uri, '/');
+  $parent = site();
+
+  foreach($parts as $p) {
+
+    if($parent and $child = $parent->children()->find($p)) {
+      $curi  .= '/' . $child->dirname();
+      $parent = $child;
+    } else {
+      $curi .= '/' . $p;
+      $parent = null;
+    }
+
+  }
+
+  $uri = ltrim($curi, '/');
   return c::get('root.content') . DS . r(!empty($uri), str_replace('/', DS, $uri) . DS) . $template . r($lang, '.' . $lang) . '.' . c::get('content.file.extension', 'txt');
+
 }
 
 function kirbytag($attr) {
