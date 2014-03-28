@@ -8,1048 +8,1333 @@
 # (c) Emanuil Rusev
 # http://erusev.com
 #
-# For the full license information, please view the LICENSE file that was
-# distributed with this source code.
+# For the full license information, view the LICENSE file that was distributed
+# with this source code.
 #
 #
 
 class Parsedown
 {
-	#
-	# Multiton (http://en.wikipedia.org/wiki/Multiton_pattern)
-	#
+    #
+    # Philosophy
+    #
 
-	static function instance($name = 'default')
-	{
-		if (isset(self::$instances[$name]))
-			return self::$instances[$name];
+    # Markdown is intended to be easy-to-read by humans - those of us who read
+    # line by line, left to right, top to bottom. In order to take advantage of
+    # this, Parsedown tries to read in a similar way. It breaks texts into
+    # lines, it iterates through them and it looks at how they start and relate
+    # to each other.
 
-		$instance = new Parsedown();
+    #
+    # Setters
+    #
 
-		self::$instances[$name] = $instance;
+    # Enables GFM line breaks.
 
-		return $instance;
-	}
+    function setBreaksEnabled($breaksEnabled)
+    {
+        $this->breaksEnabled = $breaksEnabled;
 
-	private static $instances = array();
+        return $this;
+    }
 
-	#
-	# Setters
-	#
+    /**
+     * For backwards compatibility before PSR-2 naming.
+     *
+     * @deprecated Use setBreaksEnabled instead.
+     */
+    function set_breaks_enabled($breaks_enabled)
+    {
+        return $this->setBreaksEnabled($breaks_enabled);
+    }
 
-	private $breaks_enabled = false;
+    private $breaksEnabled = false;
 
-	function set_breaks_enabled($breaks_enabled)
-	{
-		$this->breaks_enabled = $breaks_enabled;
+    #
+    # Methods
+    #
 
-		return $this;
-	}
+    function parse($text)
+    {
+        # standardize line breaks
+        $text = str_replace("\r\n", "\n", $text);
+        $text = str_replace("\r", "\n", $text);
 
-	#
-	# Fields
-	#
+        # replace tabs with spaces
+        $text = str_replace("\t", '    ', $text);
 
-	private $reference_map = array();
+        # remove surrounding line breaks
+        $text = trim($text, "\n");
 
-	#
-	# Public Methods
-	#
+        # split text into lines
+        $lines = explode("\n", $text);
 
-	function parse($text)
-	{
-		# removes \r characters
-		$text = str_replace("\r\n", "\n", $text);
-		$text = str_replace("\r", "\n", $text);
+        # iterate through lines to identify blocks
+        $blocks = $this->findBlocks($lines);
 
-		# replaces tabs with spaces
-		$text = str_replace("\t", '    ', $text);
+        # iterate through blocks to build markup
+        $markup = $this->compile($blocks);
 
-		# ~
+        # trim line breaks
+        $markup = trim($markup, "\n");
 
-		$text = trim($text, "\n");
+        return $markup;
+    }
 
-		$lines = explode("\n", $text);
+    #
+    # Private
 
-		$text = $this->parse_block_elements($lines);
+    private function findBlocks(array $lines, $blockContext = null)
+    {
+        $block = null;
 
-		$text = rtrim($text, "\n");
+        $context = null;
+        $contextData = null;
 
-		return $text;
-	}
+        foreach ($lines as $line)
+        {
+            $indentedLine = $line;
 
-	#
-	# Private Methods
-	#
+            $indentation = 0;
 
-	private function parse_block_elements(array $lines, $context = '')
-	{
-		$elements = array();
+            while(isset($line[$indentation]) and $line[$indentation] === ' ')
+            {
+                $indentation++;
+            }
 
-		$element = array(
-			'type' => '',
-		);
+            if ($indentation > 0)
+            {
+                $line = ltrim($line);
+            }
 
-		foreach ($lines as $line)
-		{
-			# fenced elements
+            # ~
 
-			switch ($element['type'])
-			{
-				case 'fenced block':
+            switch ($context)
+            {
+                case null:
 
-					if ( ! isset($element['closed']))
-					{
-						if (preg_match('/^[ ]*'.$element['fence'][0].'{3,}[ ]*$/', $line))
-						{
-							$element['closed'] = true;
-						}
-						else
-						{
-							$element['text'] !== '' and $element['text'] .= "\n";
+                    $contextData = null;
 
-							$element['text'] .= $line;
-						}
+                    if ($line === '')
+                    {
+                        continue 2;
+                    }
 
-						continue 2;
-					}
+                    break;
 
-					break;
+                # ~~~ javascript
+                # var message = 'Hello!';
 
-				case 'block-level markup':
+                case 'fenced code':
 
-					if ( ! isset($element['closed']))
-					{
-						if (strpos($line, $element['start']) !== false) # opening tag
-						{
-							$element['depth']++;
-						}
+                    if ($line === '')
+                    {
+                        $block['content'][0]['content'] .= "\n";
 
-						if (strpos($line, $element['end']) !== false) # closing tag
-						{
-							$element['depth'] > 0
-								? $element['depth']--
-								: $element['closed'] = true;
-						}
+                        continue 2;
+                    }
 
-						$element['text'] .= "\n".$line;
+                    if (preg_match('/^[ ]*'.$contextData['marker'].'{3,}[ ]*$/', $line))
+                    {
+                        $context = null;
+                    }
+                    else
+                    {
+                        if ($block['content'][0]['content'])
+                        {
+                            $block['content'][0]['content'] .= "\n";
+                        }
 
-						continue 2;
-					}
+                        $string = htmlspecialchars($indentedLine, ENT_NOQUOTES, 'UTF-8');
 
-					break;
-			}
+                        $block['content'][0]['content'] .= $string;
+                    }
 
-			# *
+                    continue 2;
 
-			$deindented_line = ltrim($line);
+                case 'markup':
 
-			if ($deindented_line === '')
-			{
-				$element['interrupted'] = true;
+                    if (stripos($line, $contextData['start']) !== false) # opening tag
+                    {
+                        $contextData['depth']++;
+                    }
 
-				continue;
-			}
+                    if (stripos($line, $contextData['end']) !== false) # closing tag
+                    {
+                        if ($contextData['depth'] > 0)
+                        {
+                            $contextData['depth']--;
+                        }
+                        else
+                        {
+                            $context = null;
+                        }
+                    }
 
-			# composite elements
+                    $block['content'] .= "\n".$indentedLine;
 
-			switch ($element['type'])
-			{
-				case 'blockquote':
+                    continue 2;
 
-					if ( ! isset($element['interrupted']))
-					{
-						$line = preg_replace('/^[ ]*>[ ]?/', '', $line);
+                case 'li':
 
-						$element['lines'] []= $line;
+                    if ($line === '')
+                    {
+                        $contextData['interrupted'] = true;
 
-						continue 2;
-					}
+                        continue 2;
+                    }
 
-					break;
+                    if ($contextData['indentation'] === $indentation and preg_match('/^'.$contextData['marker'].'[ ]+(.*)/', $line, $matches))
+                    {
+                        if (isset($contextData['interrupted']))
+                        {
+                            $nestedBlock['content'] []= '';
 
-				case 'li':
+                            unset($contextData['interrupted']);
+                        }
 
-					if (preg_match('/^([ ]{0,3})(\d+[.]|[*+-])[ ](.*)/', $line, $matches))
-					{
-						if ($element['indentation'] !== $matches[1])
-						{
-							$element['lines'] []= $line;
-						}
-						else
-						{
-							unset($element['last']);
+                        unset($nestedBlock);
 
-							$elements []= $element;
+                        $nestedBlock = array(
+                            'name' => 'li',
+                            'content type' => 'lines',
+                            'content' => array(
+                                $matches[1],
+                            ),
+                        );
 
-							unset($element['first']);
+                        $block['content'] []= & $nestedBlock;
 
-							$element['last'] = true;
-							$element['lines'] = array(
-								preg_replace('/^[ ]{0,4}/', '', $matches[3]),
-							);
-						}
+                        continue 2;
+                    }
 
-						continue 2;
-					}
+                    if (empty($contextData['interrupted']))
+                    {
+                        $value = $line;
 
-					if (isset($element['interrupted']))
-					{
-						if ($line[0] === ' ')
-						{
-							$element['lines'] []= '';
+                        if ($indentation > $contextData['baseline'])
+                        {
+                            $value = str_repeat(' ', $indentation - $contextData['baseline']) . $value;
+                        }
 
-							$line = preg_replace('/^[ ]{0,4}/', '', $line);
+                        $nestedBlock['content'] []= $value;
 
-							$element['lines'] []= $line;
+                        continue 2;
+                    }
 
-							unset($element['interrupted']);
+                    if ($indentation > 0)
+                    {
+                        $nestedBlock['content'] []= '';
 
-							continue 2;
-						}
-					}
-					else
-					{
-						$line = preg_replace('/^[ ]{0,4}/', '', $line);
+                        $value = $line;
 
-						$element['lines'] []= $line;
+                        if ($indentation > $contextData['baseline'])
+                        {
+                            $value = str_repeat(' ', $indentation - $contextData['baseline']) . $value;
+                        }
 
-						continue 2;
-					}
+                        $nestedBlock['content'] []= $value;
 
-					break;
-			}
+                        unset($contextData['interrupted']);
 
-			# indentation sensitive types
+                        continue 2;
+                    }
 
-			switch ($line[0])
-			{
-				case ' ':
+                    $context = null;
 
-					# code block
+                    break;
 
-					if (isset($line[3]) and $line[3] === ' ' and $line[2] === ' ' and $line[1] === ' ')
-					{
-						$code_line = substr($line, 4);
+                case 'quote':
 
-						if ($element['type'] === 'code block')
-						{
-							if (isset($element['interrupted']))
-							{
-								$element['text'] .= "\n";
+                    if ($line === '')
+                    {
+                        $contextData['interrupted'] = true;
 
-								unset ($element['interrupted']);
-							}
+                        continue 2;
+                    }
 
-							$element['text'] .= "\n".$code_line;
-						}
-						else
-						{
-							$elements []= $element;
+                    if (preg_match('/^>[ ]?(.*)/', $line, $matches))
+                    {
+                        $block['content'] []= $matches[1];
 
-							$element = array(
-								'type' => 'code block',
-								'text' => $code_line,
-							);
-						}
+                        continue 2;
+                    }
 
-						continue 2;
-					}
+                    if (empty($contextData['interrupted']))
+                    {
+                        $block['content'] []= $line;
 
-					break;
+                        continue 2;
+                    }
 
-				case '#':
+                    $context = null;
 
-					# atx heading (#)
+                    break;
 
-					if (isset($line[1]))
-					{
-						$elements []= $element;
+                case 'code':
 
-						$level = 1;
+                    if ($line === '')
+                    {
+                        $contextData['interrupted'] = true;
 
-						while (isset($line[$level]) and $line[$level] === '#')
-						{
-							$level++;
-						}
+                        continue 2;
+                    }
 
-						$element = array(
-							'type' => 'heading',
-							'text' => trim($line, '# '),
-							'level' => $level,
-						);
+                    if ($indentation >= 4)
+                    {
+                        if (isset($contextData['interrupted']))
+                        {
+                            $block['content'][0]['content'] .= "\n";
 
-						continue 2;
-					}
+                            unset($contextData['interrupted']);
+                        }
 
-					break;
+                        $block['content'][0]['content'] .= "\n";
 
-				case '-':
-				case '=':
+                        $string = htmlspecialchars($line, ENT_NOQUOTES, 'UTF-8');
+                        $string = str_repeat(' ', $indentation - 4) . $string;
 
-					# setext heading
+                        $block['content'][0]['content'] .= $string;
 
-					if ($element['type'] === 'paragraph' and isset($element['interrupted']) === false)
-					{
-						$chopped_line = rtrim($line);
+                        continue 2;
+                    }
 
-						$i = 1;
+                    $context = null;
 
-						while (isset($chopped_line[$i]))
-						{
-							if ($chopped_line[$i] !== $line[0])
-							{
-								break 2;
-							}
+                    break;
 
-							$i++;
-						}
+                case 'table':
 
-						$element['type'] = 'heading';
-						$element['level'] = $line[0] === '-' ? 2 : 1;
+                    if ($line === '')
+                    {
+                        $context = null;
 
-						continue 2;
-					}
+                        continue 2;
+                    }
 
-					break;
-			}
+                    if (strpos($line, '|') !== false)
+                    {
+                        $nestedBlocks = array();
 
-			# indentation insensitive types
+                        $substring = preg_replace('/^[|][ ]*/', '', $line);
+                        $substring = preg_replace('/[|]?[ ]*$/', '', $substring);
 
-			switch ($deindented_line[0])
-			{
-				case '<':
+                        $parts = explode('|', $substring);
 
-					$position = strpos($deindented_line, '>');
+                        foreach ($parts as $index => $part)
+                        {
+                            $substring = trim($part);
 
-					if ($position > 1) # tag
-					{
-						$name = substr($deindented_line, 1, $position - 1);
-						$name = rtrim($name);
+                            $nestedBlock = array(
+                                'name' => 'td',
+                                'content type' => 'line',
+                                'content' => $substring,
+                            );
 
-						if (substr($name, -1) === '/')
-						{
-							$self_closing = true;
+                            if (isset($contextData['alignments'][$index]))
+                            {
+                                $nestedBlock['attributes'] = array(
+                                    'align' => $contextData['alignments'][$index],
+                                );
+                            }
 
-							$name = substr($name, 0, -1);
-						}
+                            $nestedBlocks []= $nestedBlock;
+                        }
 
-						$position = strpos($name, ' ');
+                        $nestedBlock = array(
+                            'name' => 'tr',
+                            'content type' => 'blocks',
+                            'content' => $nestedBlocks,
+                        );
 
-						if ($position)
-						{
-							$name = substr($name, 0, $position);
-						}
+                        $block['content'][1]['content'] []= $nestedBlock;
 
-						if ( ! ctype_alpha($name))
-						{
-							break;
-						}
+                        continue 2;
+                    }
 
-						if (in_array($name, $this->inline_tags))
-						{
-							break;
-						}
+                    $context = null;
 
-						$elements []= $element;
+                    break;
 
-						if (isset($self_closing))
-						{
-							$element = array(
-								'type' => 'self-closing tag',
-								'text' => $deindented_line,
-							);
+                case 'paragraph':
 
-							unset($self_closing);
+                    if ($line === '')
+                    {
+                        $block['name'] = 'p'; # dense li
 
-							continue 2;
-						}
+                        $context = null;
 
-						$element = array(
-							'type' => 'block-level markup',
-							'text' => $deindented_line,
-							'start' => '<'.$name.'>',
-							'end' => '</'.$name.'>',
-							'depth' => 0,
-						);
+                        continue 2;
+                    }
 
-						if (strpos($deindented_line, $element['end']))
-						{
-							$element['closed'] = true;
-						}
+                    if ($line[0] === '=' and chop($line, '=') === '')
+                    {
+                        $block['name'] = 'h1';
 
-						continue 2;
-					}
+                        $context = null;
 
-					break;
+                        continue 2;
+                    }
 
-				case '>':
+                    if ($line[0] === '-' and chop($line, '-') === '')
+                    {
+                        $block['name'] = 'h2';
 
-					# quote
+                        $context = null;
 
-					if (preg_match('/^>[ ]?(.*)/', $deindented_line, $matches))
-					{
-						$elements []= $element;
+                        continue 2;
+                    }
 
-						$element = array(
-							'type' => 'blockquote',
-							'lines' => array(
-								$matches[1],
-							),
-						);
+                    if (strpos($line, '|') !== false and strpos($block['content'], '|') !== false and chop($line, ' -:|') === '')
+                    {
+                        $values = array();
 
-						continue 2;
-					}
+                        $substring = trim($line, ' |');
 
-					break;
+                        $parts = explode('|', $substring);
 
-				case '[':
+                        foreach ($parts as $part)
+                        {
+                            $substring = trim($part);
 
-					# reference
+                            $value = null;
 
-					if (preg_match('/^\[(.+?)\]:[ ]*(.+?)(?:[ ]+[\'"](.+?)[\'"])?[ ]*$/', $deindented_line, $matches))
-					{
-						$label = strtolower($matches[1]);
+                            if ($substring[0] === ':')
+                            {
+                                $value = 'left';
+                            }
 
-						$this->reference_map[$label] = array(
-							'»' => trim($matches[2], '<>'),
-						);
+                            if (substr($substring, -1) === ':')
+                            {
+                                $value = $value === 'left' ? 'center' : 'right';
+                            }
 
-						if (isset($matches[3]))
-						{
-							$this->reference_map[$label]['#'] = $matches[3];
-						}
+                            $values []= $value;
+                        }
 
-						continue 2;
-					}
+                        # ~
 
-					break;
+                        $nestedBlocks = array();
 
-				case '`':
-				case '~':
+                        $substring = preg_replace('/^[|][ ]*/', '', $block['content']);
+                        $substring = preg_replace('/[|]?[ ]*$/', '', $substring);
 
-					# fenced code block
+                        $parts = explode('|', $substring);
 
-					if (preg_match('/^([`]{3,}|[~]{3,})[ ]*(\S+)?[ ]*$/', $deindented_line, $matches))
-					{
-						$elements []= $element;
+                        foreach ($parts as $index => $part)
+                        {
+                            $substring = trim($part);
 
-						$element = array(
-							'type' => 'fenced block',
-							'text' => '',
-							'fence' => $matches[1],
-						);
+                            $nestedBlock = array(
+                                'name' => 'th',
+                                'content type' => 'line',
+                                'content' => $substring,
+                            );
 
-						isset($matches[2]) and $element['language'] = $matches[2];
+                            if (isset($values[$index]))
+                            {
+                                $value = $values[$index];
 
-						continue 2;
-					}
+                                $nestedBlock['attributes'] = array(
+                                    'align' => $value,
+                                );
+                            }
 
-					break;
+                            $nestedBlocks []= $nestedBlock;
+                        }
 
-				case '*':
-				case '+':
-				case '-':
-				case '_':
+                        # ~
 
-					# hr
+                        $block = array(
+                            'name' => 'table',
+                            'content type' => 'blocks',
+                            'content' => array(),
+                        );
 
-					if (preg_match('/^([-*_])([ ]{0,2}\1){2,}[ ]*$/', $deindented_line))
-					{
-						$elements []= $element;
+                        $block['content'] []= array(
+                            'name' => 'thead',
+                            'content type' => 'blocks',
+                            'content' => array(),
+                        );
 
-						$element = array(
-							'type' => 'hr',
-						);
+                        $block['content'] []= array(
+                            'name' => 'tbody',
+                            'content type' => 'blocks',
+                            'content' => array(),
+                        );
 
-						continue 2;
-					}
+                        $block['content'][0]['content'] []= array(
+                            'name' => 'tr',
+                            'content type' => 'blocks',
+                            'content' => array(),
+                        );
 
-					# li
+                        $block['content'][0]['content'][0]['content'] = $nestedBlocks;
 
-					if (preg_match('/^([ ]*)[*+-][ ](.*)/', $line, $matches))
-					{
-						$elements []= $element;
+                        # ~
 
-						$element = array(
-							'type' => 'li',
-							'ordered' => false,
-							'indentation' => $matches[1],
-							'first' => true,
-							'last' => true,
-							'lines' => array(
-								preg_replace('/^[ ]{0,4}/', '', $matches[2]),
-							),
-						);
+                        $context = 'table';
 
-						continue 2;
-					}
-			}
+                        $contextData = array(
+                            'alignments' => $values,
+                        );
 
-			# li
+                        # ~
 
-			if ($deindented_line[0] <= '9' and $deindented_line[0] >= '0' and preg_match('/^([ ]*)\d+[.][ ](.*)/', $line, $matches))
-			{
-				$elements []= $element;
+                        continue 2;
+                    }
 
-				$element = array(
-					'type' => 'li',
-					'ordered' => true,
-					'indentation' => $matches[1],
-					'first' => true,
-					'last' => true,
-					'lines' => array(
-						preg_replace('/^[ ]{0,4}/', '', $matches[2]),
-					),
-				);
+                    break;
 
-				continue;
-			}
+                default:
 
-			# paragraph
+                    throw new Exception('Unrecognized context - '.$context);
+            }
 
-			if ($element['type'] === 'paragraph')
-			{
-				if (isset($element['interrupted']))
-				{
-					$elements []= $element;
+            if ($indentation >= 4)
+            {
+                $blocks []= $block;
 
-					$element['text'] = $line;
+                $string = htmlspecialchars($line, ENT_NOQUOTES, 'UTF-8');
+                $string = str_repeat(' ', $indentation - 4) . $string;
 
-					unset($element['interrupted']);
-				}
-				else
-				{
-					$this->breaks_enabled and $element['text'] .= '  ';
+                $block = array(
+                    'name' => 'pre',
+                    'content type' => 'blocks',
+                    'content' => array(
+                        array(
+                            'name' => 'code',
+                            'content type' => null,
+                            'content' => $string,
+                        ),
+                    ),
+                );
 
-					$element['text'] .= "\n".$line;
-				}
-			}
-			else
-			{
-				$elements []= $element;
+                $context = 'code';
 
-				$element = array(
-					'type' => 'paragraph',
-					'text' => $line,
-				);
-			}
-		}
+                continue;
+            }
 
-		$elements []= $element;
+            switch ($line[0])
+            {
+                case '#':
 
-		unset($elements[0]);
+                    if (isset($line[1]))
+                    {
+                        $blocks []= $block;
 
-		#
-		# ~
-		#
+                        $level = 1;
 
-		$markup = '';
+                        while (isset($line[$level]) and $line[$level] === '#')
+                        {
+                            $level++;
+                        }
 
-		foreach ($elements as $element)
-		{
-			switch ($element['type'])
-			{
-				case 'paragraph':
+                        $string = trim($line, '# ');
+                        $string = $this->parseLine($string);
 
-					$text = $this->parse_span_elements($element['text']);
+                        $block = array(
+                            'name' => 'h'.$level,
+                            'content type' => 'line',
+                            'content' => $string,
+                        );
 
-					if ($context === 'li' and $markup === '')
-					{
-						if (isset($element['interrupted']))
-						{
-							$markup .= "\n".'<p>'.$text.'</p>'."\n";
-						}
-						else
-						{
-							$markup .= $text;
+                        $context = null;
 
-							if (isset($elements[2]))
-							{
-								$markup .= "\n";
-							}
-						}
-					}
-					else
-					{
-						$markup .= '<p>'.$text.'</p>'."\n";
-					}
+                        continue 2;
+                    }
 
-					break;
+                    break;
 
-				case 'blockquote':
+                case '<':
 
-					$text = $this->parse_block_elements($element['lines']);
+                    $position = strpos($line, '>');
 
-					$markup .= '<blockquote>'."\n".$text.'</blockquote>'."\n";
+                    if ($position > 1)
+                    {
+                        $substring = substr($line, 1, $position - 1);
 
-					break;
+                        $substring = chop($substring);
 
-				case 'code block':
+                        if (substr($substring, -1) === '/')
+                        {
+                            $isClosing = true;
 
-					$text = htmlspecialchars($element['text'], ENT_NOQUOTES, 'UTF-8');
+                            $substring = substr($substring, 0, -1);
+                        }
 
-					$markup .= '<pre><code>'.$text.'</code></pre>'."\n";
+                        $position = strpos($substring, ' ');
 
-					break;
+                        if ($position)
+                        {
+                            $name = substr($substring, 0, $position);
+                        }
+                        else
+                        {
+                            $name = $substring;
+                        }
 
-				case 'fenced block':
+                        $name = strtolower($name);
 
-					$text = htmlspecialchars($element['text'], ENT_NOQUOTES, 'UTF-8');
+                        if ($name[0] == 'h' and strpos('r123456', $name[1]) !== false) #  hr, h1, h2, ...
+                        {
+                            if ($name == 'hr')
+                            {
+                                $isClosing = true;
+                            }
+                        }
+                        elseif ( ! ctype_alpha($name))
+                        {
+                            break;
+                        }
 
-					$markup .= '<pre><code';
+                        if (in_array($name, self::$textLevelElements))
+                        {
+                            break;
+                        }
 
-					isset($element['language']) and $markup .= ' class="language-'.$element['language'].'"';
+                        $blocks []= $block;
 
-					$markup .= '>'.$text.'</code></pre>'."\n";
+                        $block = array(
+                            'name' => null,
+                            'content type' => null,
+                            'content' => $indentedLine,
+                        );
 
-					break;
+                        if (isset($isClosing))
+                        {
+                            unset($isClosing);
 
-				case 'heading':
+                            continue 2;
+                        }
 
-					$text = $this->parse_span_elements($element['text']);
+                        $context = 'markup';
+                        $contextData = array(
+                            'start' => '<'.$name.'>',
+                            'end' => '</'.$name.'>',
+                            'depth' => 0,
+                        );
 
-					$markup .= '<h'.$element['level'].'>'.$text.'</h'.$element['level'].'>'."\n";
+                        if (stripos($line, $contextData['end']) !== false)
+                        {
+                            $context = null;
+                        }
 
-					break;
+                        continue 2;
+                    }
 
-				case 'hr':
+                    break;
 
-					$markup .= '<hr />'."\n";
+                case '>':
 
-					break;
+                    if (preg_match('/^>[ ]?(.*)/', $line, $matches))
+                    {
+                        $blocks []= $block;
 
-				case 'li':
+                        $block = array(
+                            'name' => 'blockquote',
+                            'content type' => 'lines',
+                            'content' => array(
+                                $matches[1],
+                            ),
+                        );
 
-					if (isset($element['first']))
-					{
-						$type = $element['ordered'] ? 'ol' : 'ul';
+                        $context = 'quote';
+                        $contextData = array();
 
-						$markup .= '<'.$type.'>'."\n";
-					}
+                        continue 2;
+                    }
 
-					if (isset($element['interrupted']) and ! isset($element['last']))
-					{
-						$element['lines'] []= '';
-					}
+                    break;
 
-					$text = $this->parse_block_elements($element['lines'], 'li');
+                case '[':
 
-					$markup .= '<li>'.$text.'</li>'."\n";
+                    $position = strpos($line, ']:');
 
-					if (isset($element['last']))
-					{
-						$type = $element['ordered'] ? 'ol' : 'ul';
+                    if ($position)
+                    {
+                        $reference = array();
 
-						$markup .= '</'.$type.'>'."\n";
-					}
+                        $label = substr($line, 1, $position - 1);
+                        $label = strtolower($label);
 
-					break;
+                        $substring = substr($line, $position + 2);
+                        $substring = trim($substring);
 
-				case 'block-level markup':
+                        if ($substring === '')
+                        {
+                            break;
+                        }
 
-					$markup .= $element['text']."\n";
+                        if ($substring[0] === '<')
+                        {
+                            $position = strpos($substring, '>');
 
-					break;
+                            if ($position === false)
+                            {
+                                break;
+                            }
 
-				default:
+                            $reference['link'] = substr($substring, 1, $position - 1);
 
-					$markup .= $element['text']."\n";
-			}
-		}
+                            $substring = substr($substring, $position + 1);
+                        }
+                        else
+                        {
+                            $position = strpos($substring, ' ');
 
-		return $markup;
-	}
+                            if ($position === false)
+                            {
+                                $reference['link'] = $substring;
 
-	private function parse_span_elements($text, $markers = array("  \n", '![', '&', '*', '<', '[', '\\', '_', '`', 'http', '~~'))
-	{
-		if (isset($text[1]) === false or $markers === array())
-		{
-			return $text;
-		}
+                                $substring = false;
+                            }
+                            else
+                            {
+                                $reference['link'] = substr($substring, 0, $position);
 
-		# ~
+                                $substring = substr($substring, $position + 1);
+                            }
+                        }
 
-		$markup = '';
+                        if ($substring !== false)
+                        {
+                            if ($substring[0] !== '"' and $substring[0] !== "'" and $substring[0] !== '(')
+                            {
+                                break;
+                            }
 
-		while ($markers)
-		{
-			$closest_marker = null;
-			$closest_marker_index = 0;
-			$closest_marker_position = null;
+                            $lastChar = substr($substring, -1);
 
-			foreach ($markers as $index => $marker)
-			{
-				$marker_position = strpos($text, $marker);
+                            if ($lastChar !== '"' and $lastChar !== "'" and $lastChar !== ')')
+                            {
+                                break;
+                            }
 
-				if ($marker_position === false)
-				{
-					unset($markers[$index]);
+                            $reference['title'] = substr($substring, 1, -1);
+                        }
 
-					continue;
-				}
+                        $this->referenceMap[$label] = $reference;
 
-				if ($closest_marker === null or $marker_position < $closest_marker_position)
-				{
-					$closest_marker = $marker;
-					$closest_marker_index = $index;
-					$closest_marker_position = $marker_position;
-				}
-			}
+                        continue 2;
+                    }
 
-			# ~
+                    break;
 
-			if ($closest_marker === null or isset($text[$closest_marker_position + 1]) === false)
-			{
-				$markup .= $text;
+                case '`':
+                case '~':
 
-				break;
-			}
-			else
-			{
-				$markup .= substr($text, 0, $closest_marker_position);
-			}
+                    if (preg_match('/^([`]{3,}|[~]{3,})[ ]*(\w+)?[ ]*$/', $line, $matches))
+                    {
+                        $blocks []= $block;
 
-			$text = substr($text, $closest_marker_position);
+                        $block = array(
+                            'name' => 'pre',
+                            'content type' => 'blocks',
+                            'content' => array(
+                                array(
+                                    'name' => 'code',
+                                    'content type' => null,
+                                    'content' => '',
+                                ),
+                            ),
+                        );
 
-			# ~
+                        if (isset($matches[2]))
+                        {
+                            $block['content'][0]['attributes'] = array(
+                                'class' => 'language-'.$matches[2],
+                            );
+                        }
 
-			unset($markers[$closest_marker_index]);
+                        $context = 'fenced code';
+                        $contextData = array(
+                            'marker' => $matches[1][0],
+                        );
 
-			# ~
+                        continue 2;
+                    }
 
-			switch ($closest_marker)
-			{
-				case "  \n":
+                    break;
 
-					$markup .= '<br />'."\n";
+                case '-':
+                case '*':
+                case '_':
 
-					$offset = 3;
+                    if (preg_match('/^([-*_])([ ]{0,2}\1){2,}[ ]*$/', $line))
+                    {
+                        $blocks []= $block;
 
-					break;
+                        $block = array(
+                            'name' => 'hr',
+                            'content' => null,
+                        );
 
-				case '![':
-				case '[':
+                        continue 2;
+                    }
+            }
 
-					if (strpos($text, ']') and preg_match('/\[((?:[^][]|(?R))*)\]/', $text, $matches))
-					{
-						$element = array(
-							'!' => $text[0] === '!',
-							'a' => $matches[1],
-						);
+            switch (true)
+            {
+                case $line[0] <= '-' and preg_match('/^([*+-][ ]+)(.*)/', $line, $matches):
+                case $line[0] <= '9' and preg_match('/^([0-9]+[.][ ]+)(.*)/', $line, $matches):
 
-						$offset = strlen($matches[0]);
+                    $blocks []= $block;
 
-						$element['!'] and $offset++;
+                    $name = $line[0] >= '0' ? 'ol' : 'ul';
 
-						$remaining_text = substr($text, $offset);
+                    $block = array(
+                        'name' => $name,
+                        'content type' => 'blocks',
+                        'content' => array(),
+                    );
 
-						if ($remaining_text[0] === '(' and preg_match('/\([ ]*(.*?)(?:[ ]+[\'"](.+?)[\'"])?[ ]*\)/', $remaining_text, $matches))
-						{
-							$element['»'] = $matches[1];
+                    unset($nestedBlock);
 
-							if (isset($matches[2]))
-							{
-								$element['#'] = $matches[2];
-							}
+                    $nestedBlock = array(
+                        'name' => 'li',
+                        'content type' => 'lines',
+                        'content' => array(
+                            $matches[2],
+                        ),
+                    );
 
-							$offset += strlen($matches[0]);
-						}
-						elseif ($this->reference_map)
-						{
-							$reference = $element['a'];
+                    $block['content'] []= & $nestedBlock;
 
-							if (preg_match('/^\s*\[(.*?)\]/', $remaining_text, $matches))
-							{
-								$reference = $matches[1] ? $matches[1] : $element['a'];
+                    $baseline = $indentation + strlen($matches[1]);
 
-								$offset += strlen($matches[0]);
-							}
+                    $marker = $line[0] >= '0' ? '[0-9]+[.]' : '[*+-]';
 
-							$reference = strtolower($reference);
+                    $context = 'li';
+                    $contextData = array(
+                        'indentation' => $indentation,
+                        'baseline' => $baseline,
+                        'marker' => $marker,
+                        'lines' => array(
+                            $matches[2],
+                        ),
+                    );
 
-							if (isset($this->reference_map[$reference]))
-							{
-								$element['»'] = $this->reference_map[$reference]['»'];
+                    continue 2;
+            }
 
-								if (isset($this->reference_map[$reference]['#']))
-								{
-									$element['#'] = $this->reference_map[$reference]['#'];
-								}
-							}
-							else
-							{
-								unset($element);
-							}
-						}
-						else
-						{
-							unset($element);
-						}
-					}
+            if ($context === 'paragraph')
+            {
+                $block['content'] .= "\n".$line;
 
-					if (isset($element))
-					{
-						$element['»'] = str_replace('&', '&amp;', $element['»']);
-						$element['»'] = str_replace('<', '&lt;', $element['»']);
+                continue;
+            }
+            else
+            {
+                $blocks []= $block;
 
-						if ($element['!'])
-						{
-							$markup .= '<img alt="'.$element['a'].'" src="'.$element['»'].'"';
+                $block = array(
+                    'name' => 'p',
+                    'content type' => 'line',
+                    'content' => $line,
+                );
 
-							isset($element['#']) and $markup .= ' title="'.$element['#'].'"';
+                if ($blockContext === 'li' and empty($blocks[1]))
+                {
+                    $block['name'] = null;
+                }
 
-							$markup .= ' />';
-						}
-						else
-						{
-							$element['a'] = $this->parse_span_elements($element['a'], $markers);
+                $context = 'paragraph';
+            }
+        }
 
-							$markup .= '<a href="'.$element['»'].'"';
+        if ($blockContext === 'li' and $block['name'] === null)
+        {
+            return $block['content'];
+        }
 
-							isset($element['#']) and $markup .= ' title="'.$element['#'].'"';
+        $blocks []= $block;
 
-							$markup .= '>'.$element['a'].'</a>';
-						}
+        unset($blocks[0]);
 
-						unset($element);
-					}
-					else
-					{
-						$markup .= $closest_marker;
+        return $blocks;
+    }
 
-						$offset = $closest_marker === '![' ? 2 : 1;
-					}
+    private function compile(array $blocks)
+    {
+        $markup = '';
 
-					break;
+        foreach ($blocks as $block)
+        {
+            $markup .= "\n";
 
-				case '&':
+            if (isset($block['name']))
+            {
+                $markup .= '<'.$block['name'];
 
-					if (preg_match('/^&#?\w+;/', $text, $matches))
-					{
-						$markup .= $matches[0];
+                if (isset($block['attributes']))
+                {
+                    foreach ($block['attributes'] as $name => $value)
+                    {
+                        $markup .= ' '.$name.'="'.$value.'"';
+                    }
+                }
 
-						$offset = strlen($matches[0]);
-					}
-					else
-					{
-						$markup .= '&amp;';
+                if ($block['content'] === null)
+                {
+                    $markup .= ' />';
 
-						$offset = 1;
-					}
+                    continue;
+                }
+                else
+                {
+                    $markup .= '>';
+                }
+            }
 
-					break;
+            switch ($block['content type'])
+            {
+                case null:
 
-				case '*':
-				case '_':
+                    $markup .= $block['content'];
 
-					if ($text[1] === $closest_marker and preg_match($this->strong_regex[$closest_marker], $text, $matches))
-					{
-						$matches[1] = $this->parse_span_elements($matches[1], $markers);
+                    break;
 
-						$markup .= '<strong>'.$matches[1].'</strong>';
-					}
-					elseif (preg_match($this->em_regex[$closest_marker], $text, $matches))
-					{
-						$matches[1] = $this->parse_span_elements($matches[1], $markers);
+                case 'line':
 
-						$markup .= '<em>'.$matches[1].'</em>';
-					}
-					elseif ($text[1] === $closest_marker and preg_match($this->strong_em_regex[$closest_marker], $text, $matches))
-					{
-						$matches[2] = $this->parse_span_elements($matches[2], $markers);
+                    $markup .= $this->parseLine($block['content']);
 
-						$matches[1] and $matches[1] = $this->parse_span_elements($matches[1], $markers);
-						$matches[3] and $matches[3] = $this->parse_span_elements($matches[3], $markers);
+                    break;
 
-						$markup .= '<strong>'.$matches[1].'<em>'.$matches[2].'</em>'.$matches[3].'</strong>';
-					}
-					elseif (preg_match($this->em_strong_regex[$closest_marker], $text, $matches))
-					{
-						$matches[2] = $this->parse_span_elements($matches[2], $markers);
+                case 'lines':
 
-						$matches[1] and $matches[1] = $this->parse_span_elements($matches[1], $markers);
-						$matches[3] and $matches[3] = $this->parse_span_elements($matches[3], $markers);
+                    $result = $this->findBlocks($block['content'], $block['name']);
 
-						$markup .= '<em>'.$matches[1].'<strong>'.$matches[2].'</strong>'.$matches[3].'</em>';
-					}
+                    if (is_string($result)) # dense li
+                    {
+                        $markup .= $this->parseLine($result);
 
-					if (isset($matches) and $matches)
-					{
-						$offset = strlen($matches[0]);
-					}
-					else
-					{
-						$markup .= $closest_marker;
+                        break;
+                    }
 
-						$offset = 1;
-					}
+                    $markup .= $this->compile($result);
 
-					break;
+                    break;
 
-				case '<':
+                case 'blocks':
 
-					if (strpos($text, '>') !== false)
-					{
-						if ($text[1] === 'h' and preg_match('/^<(https?:[\/]{2}[^\s]+?)>/i', $text, $matches))
-						{
-							$element_url = $matches[1];
-							$element_url = str_replace('&', '&amp;', $element_url);
-							$element_url = str_replace('<', '&lt;', $element_url);
+                    $markup .= $this->compile($block['content']);
 
-							$markup .= '<a href="'.$element_url.'">'.$element_url.'</a>';
+                    break;
+            }
 
-							$offset = strlen($matches[0]);
-						}
-						elseif (strpos($text, '@') > 1 and preg_match('/<(\S+?@\S+?)>/', $text, $matches))
-						{
-							$markup .= '<a href="mailto:'.$matches[1].'">'.$matches[1].'</a>';
+            if (isset($block['name']))
+            {
+                $markup .= '</'.$block['name'].'>';
+            }
+        }
 
-							$offset = strlen($matches[0]);
-						}
-						elseif (preg_match('/^<\/?\w.*?>/', $text, $matches))
-						{
-							$markup .= $matches[0];
+        $markup .= "\n";
 
-							$offset = strlen($matches[0]);
-						}
-						else
-						{
-							$markup .= '&lt;';
+        return $markup;
+    }
 
-							$offset = 1;
-						}
-					}
-					else
-					{
-						$markup .= '&lt;';
+    private function parseLine($text, $markers = array("  \n", '![', '&', '*', '<', '[', '\\', '_', '`', 'http', '~~'))
+    {
+        if (isset($text[1]) === false or $markers === array())
+        {
+            return $text;
+        }
 
-						$offset = 1;
-					}
+        # ~
 
-					break;
+        $markup = '';
 
-				case '\\':
+        while ($markers)
+        {
+            $closestMarker = null;
+            $closestMarkerIndex = 0;
+            $closestMarkerPosition = null;
 
-					if (in_array($text[1], $this->special_characters))
-					{
-						$markup .= $text[1];
+            foreach ($markers as $index => $marker)
+            {
+                $markerPosition = strpos($text, $marker);
 
-						$offset = 2;
-					}
-					else
-					{
-						$markup .= '\\';
+                if ($markerPosition === false)
+                {
+                    unset($markers[$index]);
 
-						$offset = 1;
-					}
+                    continue;
+                }
 
-					break;
+                if ($closestMarker === null or $markerPosition < $closestMarkerPosition)
+                {
+                    $closestMarker = $marker;
+                    $closestMarkerIndex = $index;
+                    $closestMarkerPosition = $markerPosition;
+                }
+            }
 
-				case '`':
+            # ~
 
-					if (preg_match('/^(`+)(.+?)\1(?!`)/', $text, $matches))
-					{
-						$element_text = $matches[2];
-						$element_text = htmlspecialchars($element_text, ENT_NOQUOTES, 'UTF-8');
+            if ($closestMarker === null or isset($text[$closestMarkerPosition + 1]) === false)
+            {
+                $markup .= $text;
 
-						$markup .= '<code>'.$element_text.'</code>';
+                break;
+            }
+            else
+            {
+                $markup .= substr($text, 0, $closestMarkerPosition);
+            }
 
-						$offset = strlen($matches[0]);
-					}
-					else
-					{
-						$markup .= '`';
+            $text = substr($text, $closestMarkerPosition);
 
-						$offset = 1;
-					}
+            # ~
 
-					break;
+            unset($markers[$closestMarkerIndex]);
 
-				case 'http':
+            # ~
 
-					if (preg_match('/^https?:[\/]{2}[^\s]+\b/i', $text, $matches))
-					{
-						$element_url = $matches[0];
-						$element_url = str_replace('&', '&amp;', $element_url);
-						$element_url = str_replace('<', '&lt;', $element_url);
+            switch ($closestMarker)
+            {
+                case "  \n":
 
-						$markup .= '<a href="'.$element_url.'">'.$element_url.'</a>';
+                    $markup .= '<br />'."\n";
 
-						$offset = strlen($matches[0]);
-					}
-					else
-					{
-						$markup .= 'http';
+                    $offset = 3;
 
-						$offset = 4;
-					}
+                    break;
 
-					break;
+                case '![':
+                case '[':
 
-				case '~~':
+                    if (strpos($text, ']') and preg_match('/\[((?:[^][]|(?R))*)\]/', $text, $matches))
+                    {
+                        $element = array(
+                            '!' => $text[0] === '!',
+                            'text' => $matches[1],
+                        );
 
-					if (preg_match('/^~~(?=\S)(.+?)(?<=\S)~~/', $text, $matches))
-					{
-						$matches[1] = $this->parse_span_elements($matches[1], $markers);
+                        $offset = strlen($matches[0]);
 
-						$markup .= '<del>'.$matches[1].'</del>';
+                        if ($element['!'])
+                        {
+                            $offset++;
+                        }
 
-						$offset = strlen($matches[0]);
-					}
-					else
-					{
-						$markup .= '~~';
+                        $remainingText = substr($text, $offset);
 
-						$offset = 2;
-					}
+                        if ($remainingText[0] === '(' and preg_match('/\([ ]*(.*?)(?:[ ]+[\'"](.+?)[\'"])?[ ]*\)/', $remainingText, $matches))
+                        {
+                            $element['link'] = $matches[1];
 
-					break;
-			}
+                            if (isset($matches[2]))
+                            {
+                                $element['title'] = $matches[2];
+                            }
 
-			if (isset($offset))
-			{
-				$text = substr($text, $offset);
-			}
+                            $offset += strlen($matches[0]);
+                        }
+                        elseif ($this->referenceMap)
+                        {
+                            $reference = $element['text'];
 
-			$markers[$closest_marker_index] = $closest_marker;
-		}
+                            if (preg_match('/^\s*\[(.*?)\]/', $remainingText, $matches))
+                            {
+                                $reference = $matches[1] === '' ? $element['text'] : $matches[1];
 
-		return $markup;
-	}
+                                $offset += strlen($matches[0]);
+                            }
 
-	#
-	# Read-only
-	#
+                            $reference = strtolower($reference);
 
-	private $inline_tags = array(
-		'a', 'abbr', 'acronym', 'b', 'bdo', 'big', 'br', 'button',
-		'cite', 'code', 'dfn', 'em', 'i', 'img', 'input', 'kbd',
-		'label', 'map', 'object', 'q', 'samp', 'script', 'select', 'small',
-		'span', 'strong', 'sub', 'sup', 'textarea', 'tt', 'var',
-	);
+                            if (isset($this->referenceMap[$reference]))
+                            {
+                                $element['link'] = $this->referenceMap[$reference]['link'];
 
-	private $special_characters = array('\\', '`', '*', '_', '{', '}', '[', ']', '(', ')', '>', '#', '+', '-', '.', '!');
+                                if (isset($this->referenceMap[$reference]['title']))
+                                {
+                                    $element['title'] = $this->referenceMap[$reference]['title'];
+                                }
+                            }
+                            else
+                            {
+                                unset($element);
+                            }
+                        }
+                        else
+                        {
+                            unset($element);
+                        }
+                    }
 
-	# ~
+                    if (isset($element))
+                    {
+                        $element['link'] = str_replace('&', '&amp;', $element['link']);
+                        $element['link'] = str_replace('<', '&lt;', $element['link']);
 
-	private $strong_regex = array(
-		'*' => '/^[*]{2}([^*]+?)[*]{2}(?![*])/s',
-		'_' => '/^__([^_]+?)__(?!_)/s',
-	);
+                        if ($element['!'])
+                        {
+                            $markup .= '<img alt="'.$element['text'].'" src="'.$element['link'].'"';
 
-	private $em_regex = array(
-		'*' => '/^[*]([^*]+?)[*](?![*])/s',
-		'_' => '/^_([^_]+?)[_](?![_])\b/s',
-	);
+                            if (isset($element['title']))
+                            {
+                                $markup .= ' title="'.$element['title'].'"';
+                            }
 
-	private $strong_em_regex = array(
-		'*' => '/^[*]{2}(.*?)[*](.+?)[*](.*?)[*]{2}/s',
-		'_' => '/^__(.*?)_(.+?)_(.*?)__/s',
-	);
+                            $markup .= ' />';
+                        }
+                        else
+                        {
+                            $element['text'] = $this->parseLine($element['text'], $markers);
 
-	private $em_strong_regex = array(
-		'*' => '/^[*](.*?)[*]{2}(.+?)[*]{2}(.*?)[*]/s',
-		'_' => '/^_(.*?)__(.+?)__(.*?)_/s',
-	);
+                            $markup .= '<a href="'.$element['link'].'"';
+
+                            if (isset($element['title']))
+                            {
+                                $markup .= ' title="'.$element['title'].'"';
+                            }
+
+                            $markup .= '>'.$element['text'].'</a>';
+                        }
+
+                        unset($element);
+                    }
+                    else
+                    {
+                        $markup .= $closestMarker;
+
+                        $offset = $closestMarker === '![' ? 2 : 1;
+                    }
+
+                    break;
+
+                case '&':
+
+                    if (preg_match('/^&#?\w+;/', $text, $matches))
+                    {
+                        $markup .= $matches[0];
+
+                        $offset = strlen($matches[0]);
+                    }
+                    else
+                    {
+                        $markup .= '&amp;';
+
+                        $offset = 1;
+                    }
+
+                    break;
+
+                case '*':
+                case '_':
+
+                    if ($text[1] === $closestMarker and preg_match(self::$strongRegex[$closestMarker], $text, $matches))
+                    {
+                        $markers[$closestMarkerIndex] = $closestMarker;
+                        $matches[1] = $this->parseLine($matches[1], $markers);
+
+                        $markup .= '<strong>'.$matches[1].'</strong>';
+                    }
+                    elseif (preg_match(self::$emRegex[$closestMarker], $text, $matches))
+                    {
+                        $markers[$closestMarkerIndex] = $closestMarker;
+                        $matches[1] = $this->parseLine($matches[1], $markers);
+
+                        $markup .= '<em>'.$matches[1].'</em>';
+                    }
+
+                    if (isset($matches) and $matches)
+                    {
+                        $offset = strlen($matches[0]);
+                    }
+                    else
+                    {
+                        $markup .= $closestMarker;
+
+                        $offset = 1;
+                    }
+
+                    break;
+
+                case '<':
+
+                    if (strpos($text, '>') !== false)
+                    {
+                        if ($text[1] === 'h' and preg_match('/^<(https?:[\/]{2}[^\s]+?)>/i', $text, $matches))
+                        {
+                            $elementUrl = $matches[1];
+                            $elementUrl = str_replace('&', '&amp;', $elementUrl);
+                            $elementUrl = str_replace('<', '&lt;', $elementUrl);
+
+                            $markup .= '<a href="'.$elementUrl.'">'.$elementUrl.'</a>';
+
+                            $offset = strlen($matches[0]);
+                        }
+                        elseif (strpos($text, '@') > 1 and preg_match('/<(\S+?@\S+?)>/', $text, $matches))
+                        {
+                            $markup .= '<a href="mailto:'.$matches[1].'">'.$matches[1].'</a>';
+
+                            $offset = strlen($matches[0]);
+                        }
+                        elseif (preg_match('/^<\/?\w.*?>/', $text, $matches))
+                        {
+                            $markup .= $matches[0];
+
+                            $offset = strlen($matches[0]);
+                        }
+                        else
+                        {
+                            $markup .= '&lt;';
+
+                            $offset = 1;
+                        }
+                    }
+                    else
+                    {
+                        $markup .= '&lt;';
+
+                        $offset = 1;
+                    }
+
+                    break;
+
+                case '\\':
+
+                    if (in_array($text[1], self::$specialCharacters))
+                    {
+                        $markup .= $text[1];
+
+                        $offset = 2;
+                    }
+                    else
+                    {
+                        $markup .= '\\';
+
+                        $offset = 1;
+                    }
+
+                    break;
+
+                case '`':
+
+                    if (preg_match('/^(`+)[ ]*(.+?)[ ]*(?<!`)\1(?!`)/', $text, $matches))
+                    {
+                        $elementText = $matches[2];
+                        $elementText = htmlspecialchars($elementText, ENT_NOQUOTES, 'UTF-8');
+
+                        $markup .= '<code>'.$elementText.'</code>';
+
+                        $offset = strlen($matches[0]);
+                    }
+                    else
+                    {
+                        $markup .= '`';
+
+                        $offset = 1;
+                    }
+
+                    break;
+
+                case 'http':
+
+                    if (preg_match('/^https?:[\/]{2}[^\s]+\b\/*/ui', $text, $matches))
+                    {
+                        $elementUrl = $matches[0];
+                        $elementUrl = str_replace('&', '&amp;', $elementUrl);
+                        $elementUrl = str_replace('<', '&lt;', $elementUrl);
+
+                        $markup .= '<a href="'.$elementUrl.'">'.$elementUrl.'</a>';
+
+                        $offset = strlen($matches[0]);
+                    }
+                    else
+                    {
+                        $markup .= 'http';
+
+                        $offset = 4;
+                    }
+
+                    break;
+
+                case '~~':
+
+                    if (preg_match('/^~~(?=\S)(.+?)(?<=\S)~~/', $text, $matches))
+                    {
+                        $matches[1] = $this->parseLine($matches[1], $markers);
+
+                        $markup .= '<del>'.$matches[1].'</del>';
+
+                        $offset = strlen($matches[0]);
+                    }
+                    else
+                    {
+                        $markup .= '~~';
+
+                        $offset = 2;
+                    }
+
+                    break;
+            }
+
+            if (isset($offset))
+            {
+                $text = substr($text, $offset);
+            }
+
+            $markers[$closestMarkerIndex] = $closestMarker;
+        }
+
+        return $markup;
+    }
+
+    #
+    # Static
+
+    static function instance($name = 'default')
+    {
+        if (isset(self::$instances[$name]))
+        {
+            return self::$instances[$name];
+        }
+
+        $instance = new Parsedown();
+
+        self::$instances[$name] = $instance;
+
+        return $instance;
+    }
+
+    private static $instances = array();
+
+    #
+    # Fields
+    #
+
+    private $referenceMap = array();
+
+    #
+    # Read-only
+
+    private static $strongRegex = array(
+        '*' => '/^[*]{2}((?:[^*]|[*][^*]*[*])+?)[*]{2}(?![*])/s',
+        '_' => '/^__((?:[^_]|_[^_]*_)+?)__(?!_)/us',
+    );
+
+    private static $emRegex = array(
+        '*' => '/^[*]((?:[^*]|[*][*][^*]+?[*][*])+?)[*](?![*])/s',
+        '_' => '/^_((?:[^_]|__[^_]*__)+?)_(?!_)\b/us',
+    );
+
+    private static $specialCharacters = array(
+        '\\', '`', '*', '_', '{', '}', '[', ']', '(', ')', '>', '#', '+', '-', '.', '!',
+    );
+
+    private static $textLevelElements = array(
+        'a', 'br', 'bdo', 'abbr', 'blink', 'nextid', 'acronym', 'basefont',
+        'b', 'em', 'big', 'cite', 'small', 'spacer', 'listing',
+        'i', 'rp', 'sub', 'code',          'strike', 'marquee',
+        'q', 'rt', 'sup', 'font',          'strong',
+        's', 'tt', 'var', 'mark',
+        'u', 'xm', 'wbr', 'nobr',
+                          'ruby',
+                          'span',
+                          'time',
+    );
 }
