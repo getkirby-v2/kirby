@@ -17,8 +17,8 @@ function css($url, $media = null) {
 
     $site = kirby::site();
     $file = $site->page()->template() . '.css';
-    $root = $site->options['root.auto.css'] . DS . $file;
-    $url  = $site->options['url.auto.css'] . '/' . $file;
+    $root = $site->options['auto.css.root'] . DS . $file;
+    $url  = $site->options['auto.css.url'] . '/' . $file;
 
     if(!file_exists($root)) return false;
 
@@ -45,8 +45,8 @@ function js($src, $async = false) {
 
     $site = kirby::site();
     $file = $site->page()->template() . '.js';
-    $root = $site->options['root.auto.js'] . DS . $file;
-    $src  = $site->options['url.auto.js'] . '/' . $file;
+    $root = $site->options['auto.js.root'] . DS . $file;
+    $src  = $site->options['auto.js.url'] . '/' . $file;
 
     if(!file_exists($root)) return false;
 
