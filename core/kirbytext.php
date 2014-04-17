@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * Kirbytext
@@ -40,13 +40,13 @@ abstract class KirbytextAbstract {
 
     // tags
     $val = preg_replace_callback('!(?=[^\]])\([a-z0-9]+:.*?\)!i', array($this, 'tag'), $val);
-    
+
     // unwrap single images, which are wrapped with p elements
     $val = preg_replace('!\<p>(<img.*?\/>)<\/p>!', '$1', $val);
 
-    // markdown 
+    // markdown
     $pd = Parsedown::instance();
-    $pd->set_breaks_enabled(true);
+    $pd->setBreaksEnabled(true);
 
     $val = $pd->parse($val);
 
@@ -64,7 +64,7 @@ abstract class KirbytextAbstract {
     if(!isset(static::$tags[$name])) return $input[0];
 
     $tag = new Kirbytag($this, $name, $tag);
-    
+
     return $tag->html();
 
   }
