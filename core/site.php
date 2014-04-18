@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * Site
@@ -11,7 +11,7 @@
  */
 abstract class SiteAbstract extends Page {
 
-  // options for the site and all dependent objects 
+  // options for the site and all dependent objects
   public $options = array(
     'url'                    => '/',
     'error'                  => 'error',
@@ -25,9 +25,9 @@ abstract class SiteAbstract extends Page {
 
   /**
    * Constructor
-   * 
+   *
    */
-  public function __construct($params = array()) {    
+  public function __construct($params = array()) {
     $this->options = array_merge($this->options, $params);
     $this->url     = $this->options['url'];
     $this->diruri  = '';
@@ -35,31 +35,31 @@ abstract class SiteAbstract extends Page {
     $this->uri     = '';
     $this->site    = $this;
 
-    if(!isset($this->options['root.content']) or !is_dir($this->options['root.content'])) {      
+    if(!isset($this->options['root.content']) or !is_dir($this->options['root.content'])) {
       throw new Exception('The content folder cannot be found');
-    } 
+    }
 
-    if(!isset($this->options['root.site']) or !is_dir($this->options['root.site'])) {      
+    if(!isset($this->options['root.site']) or !is_dir($this->options['root.site'])) {
       throw new Exception('The site folder cannot be found');
-    } 
+    }
 
-    if(!isset($this->options['root.templates'])) {      
+    if(!isset($this->options['root.templates'])) {
       $this->options['root.templates'] = $this->options['root.site'] . DS . 'templates';
-    } 
+    }
 
     $this->root    = $this->options['root.content'];
     $this->dirname = basename($this->root);
 
     // default fallback for the content folder url
-    if(!isset($this->options['url.content'])) {
-      $this->options['url.content'] = $this->url . '/content';
+    if(!isset($this->options['content.url'])) {
+      $this->options['content.url'] = url('content');
     }
 
   }
 
   /**
    * Returns the base url for the site
-   * 
+   *
    * @return string
    */
   public function url() {
@@ -68,7 +68,7 @@ abstract class SiteAbstract extends Page {
 
   /**
    * Checks if this object is the main site
-   * 
+   *
    * @return boolean
    */
   public function isSite() {
@@ -81,7 +81,7 @@ abstract class SiteAbstract extends Page {
    * @return string
    */
   public function template() {
-    return 'site';    
+    return 'site';
   }
 
   /**
@@ -90,12 +90,12 @@ abstract class SiteAbstract extends Page {
    * @return boolean
    */
   public function templateFile() {
-    return false;    
+    return false;
   }
 
   /**
    * Returns the intended template
-   * 
+   *
    * @return string
    */
   public function intendedTemplate() {
@@ -108,13 +108,13 @@ abstract class SiteAbstract extends Page {
    * @return boolean
    */
   public function intendedTemplateFile() {
-    return false;    
+    return false;
   }
 
   /**
    * There can't be a template for the site
-   * Didn't you still get it yet? 
-   * 
+   * Didn't you still get it yet?
+   *
    * @return boolean
    */
   public function hasTemplate() {
@@ -124,12 +124,12 @@ abstract class SiteAbstract extends Page {
   /**
    * Sets the currently active page
    * and returns its page object
-   * 
+   *
    * @param string $uri
    * @return Page
    */
-  public function visit($uri = '') {    
-    
+  public function visit($uri = '') {
+
     $uri = trim($uri, '/');
 
     if(empty($uri)) {
@@ -146,7 +146,7 @@ abstract class SiteAbstract extends Page {
 
   /**
    * Returns the currently active page or any other page by uri
-   * 
+   *
    * @param string $uri Optional uri to get any page on the site
    * @return Page
    */
@@ -156,7 +156,7 @@ abstract class SiteAbstract extends Page {
 
   /**
    * Alternative for $this->children()
-   * 
+   *
    * @return Children
    */
   public function pages() {
@@ -165,7 +165,7 @@ abstract class SiteAbstract extends Page {
 
   /**
    * Builds a breadcrumb collection
-   * 
+   *
    * @return Children
    */
   public function breadcrumb() {
@@ -177,7 +177,7 @@ abstract class SiteAbstract extends Page {
 
     // add the home page
     $crumb->prepend($this->homePage()->uri(), $this->homePage());
-  
+
     // add the active page
     $crumb->append($this->page()->uri(), $this->page());
 
@@ -187,7 +187,7 @@ abstract class SiteAbstract extends Page {
 
   /**
    * Alternative for $this->page()
-   * 
+   *
    * @return Page
    */
   public function activePage() {
@@ -196,7 +196,7 @@ abstract class SiteAbstract extends Page {
 
   /**
    * Returns the error page object
-   * 
+   *
    * @return Page
    */
   public function errorPage() {
@@ -206,7 +206,7 @@ abstract class SiteAbstract extends Page {
 
   /**
    * Returns the home page object
-   * 
+   *
    * @return Page
    */
   public function homePage() {
@@ -216,7 +216,7 @@ abstract class SiteAbstract extends Page {
 
   /**
    * Returns the locale for the site
-   * 
+   *
    * @return string
    */
   public function locale() {
@@ -225,7 +225,7 @@ abstract class SiteAbstract extends Page {
 
   /**
    * Checks if the site is a multi language site
-   * 
+   *
    * @return boolean
    */
   public function multilang() {
@@ -234,16 +234,16 @@ abstract class SiteAbstract extends Page {
 
   /**
    * Returns a collection of all users
-   * 
+   *
    * @return Users
    */
   public function users() {
-    return new Users();  
+    return new Users();
   }
 
   /**
    * Returns the current user
-   * 
+   *
    * @return User
    */
   public function user() {

@@ -1,8 +1,8 @@
-<?php 
+<?php
 
 /**
  * Site
- * 
+ *
  * Modified Site object
  */
 class Site extends SiteAbstract {
@@ -34,7 +34,7 @@ class Site extends SiteAbstract {
 
   }
 
-  /** 
+  /**
    * Returns the translated URI
    */
   public function uri($lang = null) {
@@ -47,7 +47,7 @@ class Site extends SiteAbstract {
 
   /**
    * Returns the url of the site
-   * 
+   *
    * @return string
    */
   public function url($lang = false) {
@@ -61,7 +61,7 @@ class Site extends SiteAbstract {
 
   /**
    * Marks the site as a multilanguage site
-   * 
+   *
    * @return boolean
    */
   public function multilang() {
@@ -70,7 +70,7 @@ class Site extends SiteAbstract {
 
   /**
    * Returns the Languages Collection
-   * 
+   *
    * @return Languages
    */
   public function languages() {
@@ -79,7 +79,7 @@ class Site extends SiteAbstract {
 
   /**
    * Returns the current language
-   * 
+   *
    * @return Language
    */
   public function language() {
@@ -87,8 +87,8 @@ class Site extends SiteAbstract {
   }
 
   /**
-   * Returns the default language 
-   * 
+   * Returns the default language
+   *
    * @return Language
    */
   public function defaultLanguage() {
@@ -98,17 +98,17 @@ class Site extends SiteAbstract {
   /**
    * Sets the currently active page
    * and returns its page object
-   * 
+   *
    * @param string $uri
    * @return Page
    */
-  public function visit($uri = '', $lang = null) {    
-    
+  public function visit($uri = '', $lang = null) {
+
     // if the language code is missing or the code is invalid (TODO)
     if(!in_array($lang, $this->languages()->keys())) {
       $lang = $this->defaultLanguage->code;
     }
-    
+
     // set the current language
     $this->language = $this->languages()->data[$lang];
 
@@ -118,7 +118,7 @@ class Site extends SiteAbstract {
     if(empty($uri)) {
       return $this->page = $this->homePage();
     } else {
-      
+
       if($lang == $this->defaultLanguage->code and $page = $this->children()->find($uri)) {
         return $this->page = $page;
       } else if($page = $this->children()->findByURI($uri)) {
@@ -132,7 +132,7 @@ class Site extends SiteAbstract {
 
   /**
    * Returns the locale for the site
-   * 
+   *
    * @return string
    */
   public function locale() {

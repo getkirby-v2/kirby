@@ -29,7 +29,19 @@ class Kirby {
     static::branch();
 
     // create a new site object
-    return static::$site = $GLOBALS['site'] = new Site(c::$data);
+    static::$site = $GLOBALS['site'] = new Site(c::$data);
+
+    // load kirbytext and all tags
+    static::tags();
+
+    // localize
+    static::localize();
+
+    // load the plugins
+    static::plugins();
+
+    // return the configured site object
+    return static::$site;
 
   }
 
@@ -146,9 +158,14 @@ class Kirby {
   static protected function url() {
     // auto-detect the url
     if(empty(c::$data['url'])) {
-      c::$data['url'] = url::scheme() . '://' . server::get('HTTP_HOST') . preg_replace('!\/index\.php$!i', '', server::get('SCRIPT_NAME'));
+      if(r::cli()) {
+        return c::$data['url'] = '/';
+      } else {
+        return c::$data['url'] = url::scheme() . '://' . server::get('HTTP_HOST') . preg_replace('!\/index\.php$!i', '', server::get('SCRIPT_NAME'));
+      }
+    } else {
+      return c::$data['url'];
     }
-    return c::$data['url'];
   }
 
   /**
@@ -157,6 +174,9 @@ class Kirby {
    * @param array $config
    */
   static protected function configure($config = array()) {
+
+    // start with a fresh configuration
+    c::$data = array();
 
     // set some defaults
     c::$data['root.kirby']   = __DIR__;
@@ -169,6 +189,9 @@ class Kirby {
 
     // disable the cache by default
     c::$data['cache'] = false;
+
+    // set the default license code
+    c::$data['license'] = null;
 
     // pass the config vars from the constructor
     // to be able to set all roots
@@ -186,7 +209,7 @@ class Kirby {
     c::$data['root.accounts']    = c::$data['root.site']  . DS . 'accounts';
 
     // load the user config
-    if(file_exists(c::$data['root.config'] . DS . 'config.php')) include_once(c::$data['root.config'] . DS . 'config.php');
+    if(file_exists(c::$data['root.config'] . DS . 'config.php')) include(c::$data['root.config'] . DS . 'config.php');
 
     // pass the config vars from the constructor again to overwrite
     // stuff from the user config
@@ -203,19 +226,19 @@ class Kirby {
       };
     }
 
-    // auto css and js setup
-    if(!isset(c::$data['auto.css.url']))  c::$data['auto.css.url']  = c::$data['url']  . '/assets/css/templates';
-    if(!isset(c::$data['auto.js.url']))   c::$data['auto.js.url']   = c::$data['url']  . '/assets/js/templates';
-    if(!isset(c::$data['auto.css.root'])) c::$data['auto.css.root'] = c::$data['root'] . DS . 'assets' . DS . 'css' . DS . 'templates';
-    if(!isset(c::$data['auto.js.root']))  c::$data['auto.js.root']  = c::$data['root'] . DS . 'assets' . DS . 'js'  . DS . 'templates';
-
     // connect the url class with its handlers
     url::$home = c::$data['url'];
     url::$to   = c::$data['url.to'];
 
+    // auto css and js setup
+    if(!isset(c::$data['auto.css.url']))  c::$data['auto.css.url']  = url('assets/css/templates');
+    if(!isset(c::$data['auto.js.url']))   c::$data['auto.js.url']   = url('assets/js/templates');
+    if(!isset(c::$data['auto.css.root'])) c::$data['auto.css.root'] = c::$data['root'] . DS . 'assets' . DS . 'css' . DS . 'templates';
+    if(!isset(c::$data['auto.js.root']))  c::$data['auto.js.root']  = c::$data['root'] . DS . 'assets' . DS . 'js'  . DS . 'templates';
+
     // setup the thumbnail generator
     thumb::$defaults['root']     = isset(c::$data['thumb.root'])     ? c::$data['thumb.root']     : c::$data['root.index'] . DS . 'thumbs';
-    thumb::$defaults['url']      = isset(c::$data['thumb.url'])      ? c::$data['thumb.url']      : url::$home . '/thumbs';
+    thumb::$defaults['url']      = isset(c::$data['thumb.url'])      ? c::$data['thumb.url']      : url('thumbs');
     thumb::$defaults['driver']   = isset(c::$data['thumb.driver'])   ? c::$data['thumb.driver']   : 'gd';
     thumb::$defaults['filename'] = isset(c::$data['thumb.filename']) ? c::$data['thumb.filename'] : '{safeName}-{hash}.{extension}';
 
@@ -331,15 +354,6 @@ class Kirby {
    * @return string
    */
   static protected function render($page) {
-
-    // load kirbytext and all tags
-    static::tags();
-
-    // localize
-    static::localize();
-
-    // load the plugins
-    static::plugins();
 
     // setup and return the template
     return static::template($page);

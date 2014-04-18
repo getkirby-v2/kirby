@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * File
@@ -17,8 +17,8 @@ abstract class FileAbstract extends Media {
 
   /**
    * Constructor
-   * 
-   * @param Files The parent files collection 
+   *
+   * @param Files The parent files collection
    * @param string The filename
    */
   public function __construct(Files $files, $filename) {
@@ -34,7 +34,7 @@ abstract class FileAbstract extends Media {
 
   /**
    * Returns the parent site object
-   * 
+   *
    * @return Site
    */
   public function site() {
@@ -43,7 +43,7 @@ abstract class FileAbstract extends Media {
 
   /**
    * Returns the parent page object
-   * 
+   *
    * @return Page
    */
   public function page() {
@@ -52,7 +52,7 @@ abstract class FileAbstract extends Media {
 
   /**
    * Returns the full root for the content file
-   * 
+   *
    * @return string
    */
   public function textfile() {
@@ -80,9 +80,9 @@ abstract class FileAbstract extends Media {
   }
 
   function hasNext() {
-    return $this->next();     
+    return $this->next();
   }
-  
+
   function prev() {
     $siblings = $this->files;
     $index    = $siblings->indexOf($this);
@@ -91,21 +91,21 @@ abstract class FileAbstract extends Media {
   }
 
   function hasPrev() {
-    return $this->prev();       
+    return $this->prev();
   }
 
   /**
    * Returns the absolute URL for the file
-   * 
+   *
    * @return string
    */
   public function url() {
-    return $this->site->options['url.content'] . '/' . $this->page->diruri() . '/' . $this->filename;
+    return $this->site->options['content.url'] . '/' . $this->page->diruri() . '/' . $this->filename;
   }
 
   /**
-   * Get the meta information 
-   * 
+   * Get the meta information
+   *
    * @return Content
    */
   public function meta() {
@@ -117,7 +117,7 @@ abstract class FileAbstract extends Media {
       $inventory = $this->page->inventory();
       $file      = isset($inventory['meta'][$this->filename]) ? $this->page->root() . DS . $inventory['meta'][$this->filename] : null;
 
-      return $this->cache['meta'] = new Content($this->page, $file);      
+      return $this->cache['meta'] = new Content($this->page, $file);
 
     }
 
@@ -125,7 +125,7 @@ abstract class FileAbstract extends Media {
 
   /**
    * Magic getter for all meta fields
-   * 
+   *
    * @return Field
    */
   public function __call($key, $arguments = null) {
@@ -134,7 +134,7 @@ abstract class FileAbstract extends Media {
 
   /**
    * Renames the file and also its meta info txt
-   *  
+   *
    * @param string $filename
    */
   public function rename($name) {
@@ -164,7 +164,7 @@ abstract class FileAbstract extends Media {
 
   public function update($data = array()) {
 
-    $data = array_merge((array)$this->meta()->toArray(), $data);    
+    $data = array_merge((array)$this->meta()->toArray(), $data);
 
     foreach($data as $k => $v) {
       if(is_null($v)) unset($data[$k]);
@@ -193,7 +193,7 @@ abstract class FileAbstract extends Media {
 
   /**
    * Makes it possible to echo the entire object
-   * 
+   *
    * @return string
    */
   public function __toString() {

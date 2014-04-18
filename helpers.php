@@ -1,9 +1,24 @@
 <?php
 
+/**
+ * Embeds a snippet from the snippet folder
+ *
+ * @param string $file
+ * @param array $data
+ * @param boolean $return
+ * @return string
+ */
 function snippet($file, $data = array(), $return = false) {
   return tpl::load(c::get('root.snippets') . DS . $file . '.php', $data, $return);
 }
 
+/**
+ * Builds a css link tag for relative or absolute urls
+ *
+ * @param string $url
+ * @param string $media
+ * @return string
+ */
 function css($url, $media = null) {
 
   if(is_array($url)) {
@@ -32,6 +47,13 @@ function css($url, $media = null) {
 
 }
 
+/**
+ * Builds a script tag for relative or absolute links
+ *
+ * @param string $src
+ * @param boolean $async
+ * @return string
+ */
 function js($src, $async = false) {
 
   if(is_array($src)) {
@@ -59,14 +81,30 @@ function js($src, $async = false) {
 
 }
 
+/**
+ * Converts a string to Kirbytext
+ *
+ * @param Field $field
+ * @return string
+ */
 function kirbytext($field) {
   return (string)new Kirbytext($field);
 }
 
+/**
+ * Returns the site object
+ *
+ * @return Site
+ */
 function site() {
   return kirby::site();
 }
 
+/**
+ * Returns either the current page or any page for a given uri
+ *
+ * @return Page
+ */
 function page() {
   return call_user_func_array(array(kirby::site(), 'page'), func_get_args());
 }
@@ -115,10 +153,25 @@ function textfile($uri, $template = null, $lang = null) {
 
 }
 
+/**
+ * Renders a kirbytag
+ *
+ * @param array $attr
+ * @return Kirbytag
+ */
 function kirbytag($attr) {
   return new Kirbytag(null, key($attr), $attr);
 }
 
+/**
+ * Builds a Youtube video iframe
+ *
+ * @param string $url
+ * @param mixed $width
+ * @param mixed $height
+ * @param string $class
+ * @return string
+ */
 function youtube($url, $width = null, $height = null, $class = null) {
   return kirbytag(array(
     'youtube' => $url,
@@ -128,6 +181,15 @@ function youtube($url, $width = null, $height = null, $class = null) {
   ));
 }
 
+/**
+ * Builds a Vimeo video iframe
+ *
+ * @param string $url
+ * @param mixed $width
+ * @param mixed $height
+ * @param string $class
+ * @return string
+ */
 function vimeo($url, $width = null, $height = null, $class = null) {
   return kirbytag(array(
     'vimeo'   => $url,
@@ -137,6 +199,15 @@ function vimeo($url, $width = null, $height = null, $class = null) {
   ));
 }
 
+/**
+ * Builds a Twitter link
+ *
+ * @param string $username
+ * @param string $text
+ * @param string $title
+ * @param string $class
+ * @return string
+ */
 function twitter($username, $text = null, $title = null, $class = null) {
   return kirbytag(array(
     'twitter' => $username,
@@ -146,6 +217,13 @@ function twitter($username, $text = null, $title = null, $class = null) {
   ));
 }
 
+/**
+ * Embeds a Github Gist
+ *
+ * @param string $url
+ * @param string $file
+ * @return string
+ */
 function gist($url, $file = null) {
   return kirbytag(array(
     'gist' => $url,

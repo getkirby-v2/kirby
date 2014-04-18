@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * Field
@@ -11,6 +11,9 @@
  */
 abstract class FieldAbstract extends stdClass {
   public function __toString() {
+    return $this->value;
+  }
+  public function toString() {
     return $this->value;
   }
 }

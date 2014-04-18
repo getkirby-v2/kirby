@@ -134,16 +134,32 @@ abstract class PageAbstract {
    */
   public function url() {
 
+    if(isset($this->cache['url'])) return $this->cache['url'];
+
     // Kirby is trying to remove the home folder name from the url
     if($this->isHomePage()) {
       // return the base url
-      return $this->site->url();
+      return $this->cache['url'] = $this->site->url();
     } else if($this->parent->isHomePage()) {
-      return $this->site->url() . '/' . $this->parent->uid . '/' . $this->uid;
+      return $this->cache['url'] = $this->site->url() . '/' . $this->parent->uid . '/' . $this->uid;
     } else {
-      return $this->parent->url() . '/' . $this->uid;
+      $purl = $this->parent->url();
+      return $this->cache['url'] = $purl == '/' ? '/' . $this->uid : $this->parent->url() . '/' . $this->uid;
     }
 
+  }
+
+  /**
+   * Builds and returns the short url for the current page
+   *
+   * @return string
+   */
+  public function tinyurl() {
+    if(!$this->site->options['tinyurl.enabled']) {
+      return $this->url();
+    } else {
+      return url($this->site->options['tinyurl.folder'] . '/' . $this->hash());
+    }
   }
 
   /**
