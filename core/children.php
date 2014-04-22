@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * Children
@@ -23,10 +23,10 @@ abstract class ChildrenAbstract extends Collection {
 
   /**
    * Returns a new collection of pages without the given pages
-   * 
+   *
    * @param args any number of uris or page elements, passed as individual arguments
    * @return object a new collection without the pages
-   */      
+   */
   public function not() {
     $collection = clone $this;
     foreach(func_get_args() as $uri) {
@@ -47,7 +47,7 @@ abstract class ChildrenAbstract extends Collection {
 
   /**
    * Creates a new subpage
-   * 
+   *
    * @param string $uid
    * @param string $template
    * @param array $data
@@ -58,7 +58,7 @@ abstract class ChildrenAbstract extends Collection {
 
   /**
    * Returns the parent page
-   * 
+   *
    * @return Page
    */
   public function page() {
@@ -67,12 +67,12 @@ abstract class ChildrenAbstract extends Collection {
 
   /**
    * Returns the Children of Children
-   * 
+   *
    * @return Children
    */
   public function children() {
     $grandChildren = new Children($this->page);
-    foreach($this->data as $page) {    
+    foreach($this->data as $page) {
       foreach($page->children() as $subpage) {
         $grandChildren->data[$subpage->id()] = $subpage;
       }
@@ -82,7 +82,7 @@ abstract class ChildrenAbstract extends Collection {
 
   /**
    * Find a specific page by its uri
-   * 
+   *
    * @return Page or false
    */
   public function find() {
@@ -111,9 +111,9 @@ abstract class ChildrenAbstract extends Collection {
 
       $path = explode('/', $id);
       $obj  = $this;
-      $page = false;    
+      $page = false;
 
-      foreach($path as $uid) {    
+      foreach($path as $uid) {
 
         $id = ltrim($obj->page()->id() . '/' . $uid, '/');
 
@@ -132,7 +132,7 @@ abstract class ChildrenAbstract extends Collection {
 
   /**
    * Find a single page by a given value
-   * 
+   *
    * @param string $field
    * @param string $value
    * @return Page
@@ -147,7 +147,7 @@ abstract class ChildrenAbstract extends Collection {
   /**
    * Finds pages by it's unique URI
    *
-   * @param mixed $uri Either a single URI string or an array of URIs 
+   * @param mixed $uri Either a single URI string or an array of URIs
    * @param string $use The field, which should be used (uid or slug)
    * @return mixed Either a Page object, a Pages object for multiple pages or null if nothing could be found
    */
@@ -160,7 +160,7 @@ abstract class ChildrenAbstract extends Collection {
     } else if(count($args) > 1) {
       $collection = new Children($this->page);
       foreach($args as $uri) {
-        $page = $this->findBy('uri', $uri);
+        $page = $this->findByURI($uri);
         if($page) $collection->data[$page->id()] = $page;
       }
       return $collection;
@@ -172,7 +172,7 @@ abstract class ChildrenAbstract extends Collection {
       $obj   = $this;
       $page  = false;
 
-      foreach($array as $p) {    
+      foreach($array as $p) {
 
         $next = $obj->findBy('slug', $p);
 
@@ -184,14 +184,14 @@ abstract class ChildrenAbstract extends Collection {
       }
 
       return ($page and $page->slug() != a::last($array)) ? false : $page;
-    
+
     }
 
   }
 
   /**
    * Find the open page in a set
-   * 
+   *
    * @return Page
    */
   public function findOpen() {
@@ -200,7 +200,7 @@ abstract class ChildrenAbstract extends Collection {
 
   /**
    * Filters the collection by visible pages
-   * 
+   *
    * @return Children
    */
   public function visible() {
@@ -210,7 +210,7 @@ abstract class ChildrenAbstract extends Collection {
 
   /**
    * Filters the collection by invisible pages
-   * 
+   *
    * @return Children
    */
   public function invisible() {
@@ -220,24 +220,24 @@ abstract class ChildrenAbstract extends Collection {
 
   /**
    * Checks if a page is in a set of children
-   * 
+   *
    * @param Page | string $page
    * @return boolean
    */
-  public function has($page) {    
+  public function has($page) {
     $uri = is_string($page) ? $page : $page->uri();
     return isset($this->data[$uri]);
   }
 
   /**
-   * Creates a clean one-level collection with all 
+   * Creates a clean one-level collection with all
    * pages, subpages, subsubpages, etc.
    *
    * @param object Pages object for recursive indexing
    * @return Children
    */
   public function index(Children $obj = null) {
-    
+
     if(is_null($obj)) {
       if(isset($this->cache['index'])) return $this->cache['index'];
       $this->cache['index'] = new Children($this->page);
@@ -248,9 +248,9 @@ abstract class ChildrenAbstract extends Collection {
       $this->cache['index']->data[$page->uri()] = $page;
       $this->index($page->children());
     }
-    
+
     return $this->cache['index'];
-            
+
   }
 
 }
