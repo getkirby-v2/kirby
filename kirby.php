@@ -17,6 +17,12 @@ class Kirby {
   // The currently active page
   static protected $page;
 
+  // The router object
+  static protected $router;
+
+  // The current route object
+  static protected $route;
+
   // An array with all loaded plugins
   static protected $plugins;
 
@@ -31,11 +37,17 @@ class Kirby {
     // create a new site object
     static::$site = $GLOBALS['site'] = new Site(c::$data);
 
+    // start the router
+    static::$router = new Router();
+
+    // register all available
+    static::$router->register(static::routes());
+
+    // only use the fragments of the path without params
+    static::$route = static::$router->run(static::path());
+
     // load kirbytext and all tags
     static::tags();
-
-    // localize
-    static::localize();
 
     // load the plugins
     static::plugins();
@@ -43,6 +55,15 @@ class Kirby {
     // return the configured site object
     return static::$site;
 
+  }
+
+  /**
+   * The path which will be used for the router
+   *
+   * @return string
+   */
+  static public function path() {
+    return implode('/', (array)url::fragments(detect::path()));
   }
 
   /**
@@ -73,17 +94,10 @@ class Kirby {
 
     static::setup($config);
 
-    // start the router
-    $router = new Router();
+    call(static::$route->action(), static::$route->arguments());
 
-    // run the router
-    $router->register(static::routes());
-
-    // only use the fragments of the path without params
-    $path  = implode('/', (array)url::fragments(detect::path()));
-    $route = $router->run($path);
-
-    call($route->action(), $route->arguments());
+    // localize
+    static::localize();
 
     if(static::$page) {
 
@@ -231,14 +245,14 @@ class Kirby {
     url::$to   = c::$data['url.to'];
 
     // auto css and js setup
-    if(!isset(c::$data['auto.css.url']))  c::$data['auto.css.url']  = url('assets/css/templates');
-    if(!isset(c::$data['auto.js.url']))   c::$data['auto.js.url']   = url('assets/js/templates');
+    if(!isset(c::$data['auto.css.url']))  c::$data['auto.css.url']  = url::makeAbsolute('assets/css/templates');
+    if(!isset(c::$data['auto.js.url']))   c::$data['auto.js.url']   = url::makeAbsolute('assets/js/templates');
     if(!isset(c::$data['auto.css.root'])) c::$data['auto.css.root'] = c::$data['root'] . DS . 'assets' . DS . 'css' . DS . 'templates';
     if(!isset(c::$data['auto.js.root']))  c::$data['auto.js.root']  = c::$data['root'] . DS . 'assets' . DS . 'js'  . DS . 'templates';
 
     // setup the thumbnail generator
     thumb::$defaults['root']     = isset(c::$data['thumb.root'])     ? c::$data['thumb.root']     : c::$data['root.index'] . DS . 'thumbs';
-    thumb::$defaults['url']      = isset(c::$data['thumb.url'])      ? c::$data['thumb.url']      : url('thumbs');
+    thumb::$defaults['url']      = isset(c::$data['thumb.url'])      ? c::$data['thumb.url']      : url::makeAbsolute('thumbs');
     thumb::$defaults['driver']   = isset(c::$data['thumb.driver'])   ? c::$data['thumb.driver']   : 'gd';
     thumb::$defaults['filename'] = isset(c::$data['thumb.filename']) ? c::$data['thumb.filename'] : '{safeName}-{hash}.{extension}';
 
