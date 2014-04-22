@@ -22,7 +22,6 @@ abstract class PageAbstract {
   protected $site;
   protected $parent;
   protected $dirname;
-  protected $diruri;
   protected $root;
   protected $depth;
   protected $uid;
@@ -41,7 +40,6 @@ abstract class PageAbstract {
     $this->parent  = $parent;
     $this->site    = $parent->site();
     $this->dirname = $dirname;
-    $this->diruri  = ltrim($parent->diruri() . '/' . $dirname, '/');
     $this->root    = $parent->root() . DS . $dirname;
     $this->depth   = $parent->depth() + 1;
 
@@ -57,6 +55,22 @@ abstract class PageAbstract {
     // assign the uid
     $this->id = $this->uri = ltrim($parent->id() . '/' . $this->uid, '/');
 
+  }
+
+  /**
+   * Cleans the temporary page cache and
+   * the cache of all parent pages
+   */
+  public function reset() {
+    $this->cache = array();
+    $this->parent()->reset();
+  }
+
+  /**
+   * Mark the page as modified
+   */
+  public function touch() {
+    return touch($this->root());
   }
 
   /**
@@ -124,7 +138,8 @@ abstract class PageAbstract {
    * @return string
    */
   public function diruri() {
-    return $this->diruri;
+    if(isset($this->cache['diruri'])) return $this->cache['diruri'];
+    return $this->cache['diruri'] = ltrim($this->parent()->diruri() . '/' . $this->dirname(), '/');
   }
 
   /**
@@ -603,7 +618,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isVisible() {
-    return !empty($this->num);
+    return !is_null($this->num);
   }
 
   /**
@@ -612,7 +627,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isInvisible() {
-    return empty($this->num);
+    return !$this->isVisible();
   }
 
   /**
@@ -840,6 +855,9 @@ abstract class PageAbstract {
       throw new Exception('The directory could not be created');
     }
 
+    // make sure the new directory is available everywhere
+    $parent->reset();
+
     return $parent->uri() . '/' . $uid;
 
   }
@@ -853,6 +871,10 @@ abstract class PageAbstract {
    */
   static public function create($uri, $template, $data = array()) {
 
+    if(!is_string($template) or empty($template)) {
+      throw new Exception('Please pass a valid template name as second argument');
+    }
+
     // try to create the new directory
     $uri = static::createDirectory($uri);
 
@@ -864,7 +886,14 @@ abstract class PageAbstract {
       throw new Exception('The page file could not be created');
     }
 
-    return $uri;
+    // get the new page object
+    $page = page($uri);
+
+    if(!is_a($page, 'Page')) {
+      throw new Exception('The new page object could not be found');
+    }
+
+    return $page;
 
   }
 
@@ -881,17 +910,24 @@ abstract class PageAbstract {
       throw new Exception('The page could not be updated');
     }
 
+    $this->reset();
+    $this->touch();
     return true;
 
   }
 
+  /**
+   * Changes the uid for the page
+   *
+   * @param string $uid
+   */
   public function move($uid) {
 
     $uid = str::slug($uid);
 
     if($this->uid() === $uid) return true;
 
-    $dir  = $page->visible() ? $this->num() . '-' . $uid : $uid;
+    $dir  = $this->isVisible() ? $this->num() . '-' . $uid : $uid;
     $root = dirname($this->root()) . DS . $dir;
 
     if(is_dir($root)) {
@@ -902,16 +938,25 @@ abstract class PageAbstract {
       throw new Exception('The directory could not be moved');
     }
 
+    $this->dirname = $dir;
+    $this->root    = $root;
+    $this->uid     = $uid;
+
+    // assign a new id and uri
+    $this->id = $this->uri = ltrim($this->parent->id() . '/' . $this->uid, '/');
+
+    // clean the cache
+    $this->reset();
     return true;
 
   }
 
   /**
-   *
+   * Changes the prepended number for the page
    */
   public function sort($num) {
 
-    if($num == $this->num()) return true;
+    if($num === $this->num()) return true;
 
     $dir  = $num . '-' . $this->uid();
     $root = dirname($this->root()) . DS . $dir;
@@ -920,12 +965,16 @@ abstract class PageAbstract {
       throw new Exception('The directory could not be moved');
     }
 
+    $this->dirname = $dir;
+    $this->num     = $num;
+    $this->root    = $root;
+    $this->reset();
     return true;
 
   }
 
   /**
-   *
+   * Make the page invisible by removing the prepended number
    */
   public function hide() {
 
@@ -937,20 +986,26 @@ abstract class PageAbstract {
       throw new Exception('The directory could not be moved');
     }
 
+    $this->dirname = $this->uid();
+    $this->num     = null;
+    $this->root    = $root;
+    $this->reset();
     return true;
 
   }
 
   /**
    * Deletes the page
+   *
+   * @param boolean $force Forces the page to be deleted even if there are subpages
    */
-  public function delete() {
+  public function delete($force = false) {
 
     if($this->isSite()) {
       throw new Exception('The site cannot be deleted');
     }
 
-    if($this->children()->count()) {
+    if($force === false and $this->children()->count()) {
       throw new Exception('This page has subpages');
     }
 
@@ -962,10 +1017,13 @@ abstract class PageAbstract {
       throw new Exception('The error page cannot be deleted');
     }
 
+    $parent = $this->parent();
+
     if(!dir::remove($this->root())) {
       throw new Exception('The page could not be deleted');
     }
 
+    $parent->reset();
     return true;
 
   }

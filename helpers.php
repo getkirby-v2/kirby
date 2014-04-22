@@ -130,6 +130,7 @@ function excerpt($text, $length = 140) {
  * @return string
  */
 function textfile($uri, $template = null, $lang = null) {
+
   if(is_null($template)) $template = $this->intendedTemplate();
 
   $curi   = '';

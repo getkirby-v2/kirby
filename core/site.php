@@ -30,7 +30,6 @@ abstract class SiteAbstract extends Page {
   public function __construct($params = array()) {
     $this->options = array_merge($this->options, $params);
     $this->url     = $this->options['url'];
-    $this->diruri  = '';
     $this->depth   = 0;
     $this->uri     = '';
     $this->site    = $this;
@@ -55,6 +54,22 @@ abstract class SiteAbstract extends Page {
       $this->options['content.url'] = url('content');
     }
 
+  }
+
+  /**
+   * Cleans the temporary internal cache
+   */
+  public function reset() {
+    $this->cache = array();
+  }
+
+  /**
+   * The base diruri is bascially just an empty string
+   *
+   * @return string
+   */
+  public function diruri() {
+    return '';
   }
 
   /**

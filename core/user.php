@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class UserAbstract {
 
@@ -7,7 +7,7 @@ class UserAbstract {
 
   public function __construct($username) {
 
-    $this->data['username'] = $username;    
+    $this->data['username'] = $username;
 
     // check if the account file exists
     if(!file_exists($this->file())) {
@@ -36,7 +36,7 @@ class UserAbstract {
 
     // try to find the avatar
     $root = c::get('root') . DS . 'assets' . DS . 'avatars' . DS . $this->username() . '.{jpg,png}';
-    
+
     if($avatar = a::first(glob($root, GLOB_BRACE))) {
       return $this->cache['avatar'] = new Media($avatar, url('assets/avatars/' . f::filename($avatar)));
     } else {
@@ -58,7 +58,7 @@ class UserAbstract {
 
     $token = $this->generateToken();
     $key   = $this->generateKey($token);
-    
+
     $this->update(array(
       'token' => $token
     ));
@@ -79,7 +79,7 @@ class UserAbstract {
   }
 
   public function generateToken() {
-    return sha1($this->username() . str::random(32) . time());    
+    return sha1($this->username() . str::random(32) . time());
   }
 
   public function generateKey($token) {
@@ -97,6 +97,9 @@ class UserAbstract {
 
   public function update($data = array()) {
 
+    // don't update the username
+    unset($data['username']);
+
     if(!empty($data['email']) and !v::email($data['email'])) {
       throw new Exception('Invalid email');
     }
@@ -106,17 +109,17 @@ class UserAbstract {
     }
 
     // merge with existing fields
-    $data = array_merge($this->data, $data);
+    $this->data = array_merge($this->data, $data);
 
-    foreach($data as $key => $value) {
-      if(is_null($value)) unset($data[$key]);
+    foreach($this->data as $key => $value) {
+      if(is_null($value)) unset($this->data[$key]);
     }
 
     // save the new user data
-    static::save($this->file(), $data);
+    static::save($this->file(), $this->data);
 
     // return the updated user project
-    return new static($this->username());
+    return $this;
 
   }
 
@@ -132,7 +135,7 @@ class UserAbstract {
 
   /**
    * Creates a new user
-   * 
+   *
    * @param array $user
    * @return User
    */
@@ -157,7 +160,7 @@ class UserAbstract {
     }
 
     // encrypt the password
-    $data['password'] = password::hash($data['password']);    
+    $data['password'] = password::hash($data['password']);
 
     static::save($file, $data);
 
