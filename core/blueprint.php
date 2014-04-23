@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 abstract class BlueprintAbstract {
 
@@ -38,17 +38,18 @@ abstract class BlueprintAbstract {
   public function pages() {
 
     $pages = a::get($this->yaml, 'pages');
-    
+
     if($pages === false) return false;
 
     $settings = new Obj();
-    $settings->template = array();
-    $settings->sortable = true;
-    $settings->sort     = false;
-    $settings->limit    = 20;
+    $settings->template     = array();
+    $settings->sortable     = true;
+    $settings->sort         = false;
+    $settings->limit        = 20;
+    $settings->num          = $this->num($pages);
 
     if($pages === true or empty($pages)) {
-      $settings->template = static::all();      
+      $settings->template = static::all();
     } else if(is_string($pages)) {
       $settings->template[] = static::find($pages);
     } else if(isset($pages['template'])) {
@@ -78,12 +79,33 @@ abstract class BlueprintAbstract {
 
   }
 
+  public function num() {
+
+    $pages = a::get($this->yaml, 'pages', array());
+    $obj   = new Obj();
+
+    $obj->mode   = 'default';
+    $obj->field  = null;
+    $obj->format = null;
+
+    $num = a::get($pages, 'num');
+
+    if(is_array($num)) {
+      foreach($num as $k => $v) $obj->$k = $v;
+    } else if(!empty($num)) {
+      $obj->mode = $num;
+    }
+
+    return $obj;
+
+  }
+
   public function files() {
 
     $files    = a::get($this->yaml, 'files');
     $settings = new Obj();
     $settings->fields = array();
-    
+
     if($files === false) return false;
     if($files === true)  return $settings;
 
@@ -103,7 +125,7 @@ abstract class BlueprintAbstract {
 
       if(!file_exists($file)) {
         $file = c::get('root.blueprints') . DS . $id->template() . '.php';
-      } 
+      }
 
     } else if(file_exists($id)) {
       $file = $id;
@@ -120,7 +142,7 @@ abstract class BlueprintAbstract {
   }
 
   static public function all() {
-    
+
     $root       = c::get('root.blueprints');
     $files      = dir::read($root);
     $blueprints = array();
