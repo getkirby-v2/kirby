@@ -45,6 +45,10 @@ class UserAbstract {
 
   }
 
+  public function avatarRoot($extension = 'jpg') {
+    return c::get('root') . DS . 'assets' . DS . 'avatars' . DS . $this->username() . '.' . $extension;
+  }
+
   public function gravatar($size = 256) {
     return gravatar($this->email(), $size);
   }
