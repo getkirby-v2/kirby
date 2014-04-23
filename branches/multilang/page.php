@@ -224,7 +224,7 @@ class Page extends PageAbstract {
    * @param array $data
    */
   static public function create($uri, $template, $data = array()) {
-    return parent::create($uri, $template . '.' . site()->$defaultLanguage->code, $data);
+    return parent::create($uri, $template . '.' . site()->defaultLanguage->code, $data);
   }
 
   /**

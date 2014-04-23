@@ -129,6 +129,10 @@ class UserAbstract {
 
   public function delete() {
 
+    if($avatar = $this->avatar()) {
+      $avatar->delete();
+    }
+
     if(!f::remove($this->file())) {
       throw new Exception('The account could not be deleted');
     } else {
