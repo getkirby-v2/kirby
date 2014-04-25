@@ -831,7 +831,11 @@ abstract class PageAbstract {
    * @return Blueprint
    */
   public function blueprint() {
-    return blueprint::find($this);
+    try {
+      return blueprint::find($this);
+    } catch(Exception $e) {
+      return null;
+    }
   }
 
   /**
