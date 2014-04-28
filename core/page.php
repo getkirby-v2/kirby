@@ -555,6 +555,19 @@ abstract class PageAbstract {
   }
 
   /**
+   * Get formatted date fields
+   *
+   * @param string $format
+   * @param string $field
+   * @return string
+   */
+  public function date($format = null, $field = 'date') {
+    $value = strtotime($this->$field());
+    if(!$value) return false;
+    return date($format, $value);
+  }
+
+  /**
    * Returns a unique hashed version of the uri,
    * which is used for the tinyurl for example
    *
