@@ -158,6 +158,7 @@ abstract class FileAbstract extends Media {
       f::move($meta, $this->page->textfile($filename));
     }
 
+    cache::flush();
     return $filename;
 
   }
@@ -174,6 +175,7 @@ abstract class FileAbstract extends Media {
       throw new Exception('The file data could not be saved');
     }
 
+    cache::flush();
     return true;
 
   }
@@ -187,6 +189,7 @@ abstract class FileAbstract extends Media {
       throw new Exception('The file could not be deleted');
     }
 
+    cache::flush();
     return true;
 
   }

@@ -897,6 +897,8 @@ abstract class PageAbstract {
       throw new Exception('The new page object could not be found');
     }
 
+    cache::flush();
+
     return $page;
 
   }
@@ -914,6 +916,7 @@ abstract class PageAbstract {
       throw new Exception('The page could not be updated');
     }
 
+    cache::flush();
     $this->reset();
     $this->touch();
     return true;
@@ -950,6 +953,7 @@ abstract class PageAbstract {
     $this->id = $this->uri = ltrim($this->parent->id() . '/' . $this->uid, '/');
 
     // clean the cache
+    cache::flush();
     $this->reset();
     return true;
 
@@ -972,6 +976,7 @@ abstract class PageAbstract {
     $this->dirname = $dir;
     $this->num     = $num;
     $this->root    = $root;
+    cache::flush();
     $this->reset();
     return true;
 
@@ -993,6 +998,7 @@ abstract class PageAbstract {
     $this->dirname = $this->uid();
     $this->num     = null;
     $this->root    = $root;
+    cache::flush();
     $this->reset();
     return true;
 
@@ -1027,6 +1033,7 @@ abstract class PageAbstract {
       throw new Exception('The page could not be deleted');
     }
 
+    cache::flush();
     $parent->reset();
     return true;
 
