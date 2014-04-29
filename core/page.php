@@ -564,7 +564,7 @@ abstract class PageAbstract {
   public function date($format = null, $field = 'date') {
     $value = strtotime($this->content()->$field());
     if(!$value) return false;
-    return date($format, $value);
+    return $format ? date($format, $value) : $value;
   }
 
   /**
