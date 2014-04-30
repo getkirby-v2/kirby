@@ -309,7 +309,9 @@ abstract class PageAbstract {
 
     $this->cache['children'] = new Children($this);
 
-    foreach($this->inventory()['children'] as $child) {
+    $inventory = $this->inventory();
+
+    foreach($inventory['children'] as $child) {
       $this->cache['children']->add($child);
     }
 
@@ -487,7 +489,9 @@ abstract class PageAbstract {
 
     $this->cache['files'] = new Files($this);
 
-    foreach($this->inventory()['files'] as $filename) {
+    $inventory = $this->inventory();
+
+    foreach($inventory['files'] as $filename) {
       $this->cache['files']->add($filename);
     }
 

@@ -12,19 +12,19 @@
 class Kirby {
 
   // The site singleton
-  static protected $site;
+  static public $site;
 
   // The currently active page
-  static protected $page;
+  static public $page;
 
   // The router object
-  static protected $router;
+  static public $router;
 
   // The current route object
-  static protected $route;
+  static public $route;
 
   // An array with all loaded plugins
-  static protected $plugins;
+  static public $plugins;
 
   static public function setup($config = array()) {
 
@@ -140,7 +140,7 @@ class Kirby {
       'method'  => 'GET|POST',
       'action'  => function($path = null) {
         // visit the currently active page
-        static::$page = static::$site->visit($path);
+        kirby::$page = kirby::$site->visit($path);
       }
     );
 
