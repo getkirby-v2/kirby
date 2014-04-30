@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 // date tag
 kirbytext::$tags['date'] = array(
@@ -11,15 +11,15 @@ kirbytext::$tags['date'] = array(
 // email tag
 kirbytext::$tags['email'] = array(
   'attr' => array(
-    'class', 
-    'title', 
+    'class',
+    'title',
     'rel'
   ),
   'html' => function($tag) {
     return html::email($tag->attr('email'), html($tag->attr('text')), array(
       'class' => $tag->attr('class'),
-      'title' => $tag->attr('title'),      
-      'rel'   => $tag->attr('rel'),      
+      'title' => $tag->attr('title'),
+      'rel'   => $tag->attr('rel'),
     ));
   }
 );
@@ -27,8 +27,8 @@ kirbytext::$tags['email'] = array(
 // file tag
 kirbytext::$tags['file'] = array(
   'attr' => array(
-    'text', 
-    'class', 
+    'text',
+    'class',
     'title',
     'rel',
     'target',
@@ -42,14 +42,14 @@ kirbytext::$tags['file'] = array(
 
     if(!$file) return false;
 
-    // use filename if the text is empty and make sure to 
+    // use filename if the text is empty and make sure to
     // ignore markdown italic underscores in filenames
-    if(empty($text)) $text = str_replace('_', '\_', $file->name()); 
+    if(empty($text)) $text = str_replace('_', '\_', $file->name());
 
     return html::a($file->url(), html($text), array(
-      'class'  => $tag->attr('class'), 
+      'class'  => $tag->attr('class'),
       'title'  => html($tag->attr('title')),
-      'rel'    => $tag->attr('rel'), 
+      'rel'    => $tag->attr('rel'),
       'target' => $tag->target(),
     ));
 
@@ -76,17 +76,17 @@ kirbytext::$tags['image'] = array(
     $alt   = $tag->attr('alt');
     $title = $tag->attr('title');
     $link  = $tag->attr('link');
-    $file  = $tag->file($url); 
+    $file  = $tag->file($url);
 
     // use the file url if available and otherwise the given url
     $url = $file ? $file->url() : url($url);
 
     // alt is just an alternative for text
     if($text = $tag->attr('text')) $alt = $text;
-    
+
     // try to get the title from the image object and use it as alt text
     if($file) {
-      
+
       if(empty($alt) and $file->alt() != '') {
         $alt = $file->alt();
       }
@@ -98,12 +98,12 @@ kirbytext::$tags['image'] = array(
     }
 
     if(empty($alt)) $alt = pathinfo($url, PATHINFO_FILENAME);
-            
+
     $image = html::img($url, array(
-      'width'  => $tag->attr('width'), 
-      'height' => $tag->attr('height'), 
-      'class'  => $tag->attr('class'), 
-      'title'  => html($title), 
+      'width'  => $tag->attr('width'),
+      'height' => $tag->attr('height'),
+      'class'  => $tag->attr('class'),
+      'title'  => html($title),
       'alt'    => html($alt)
     ));
 
@@ -111,11 +111,11 @@ kirbytext::$tags['image'] = array(
 
     // build the href for the link
     $href = ($link == 'self') ? $url : $link;
-    
+
     return html::a(url($href), $image, array(
-      'rel'    => $tag->attr('rel'), 
-      'class'  => $tag->attr('linkclass'), 
-      'title'  => html($tag->attr('title')), 
+      'rel'    => $tag->attr('rel'),
+      'class'  => $tag->attr('linkclass'),
+      'title'  => html($tag->attr('title')),
       'target' => $tag->target()
     ));
 
@@ -125,20 +125,20 @@ kirbytext::$tags['image'] = array(
 // link tag
 kirbytext::$tags['link'] = array(
   'attr' => array(
-    'text', 
-    'class', 
-    'title', 
-    'rel', 
-    'target', 
+    'text',
+    'class',
+    'title',
+    'rel',
+    'target',
     'popup'
   ),
   'html' => function($tag) {
     return html::a(url($tag->attr('link')), html($tag->attr('text')), array(
-      'rel'    => $tag->attr('rel'), 
-      'class'  => $tag->attr('class'), 
+      'rel'    => $tag->attr('rel'),
+      'class'  => $tag->attr('class'),
       'title'  => html($tag->attr('title')),
       'target' => $tag->target(),
-    )); 
+    ));
   }
 );
 
@@ -149,14 +149,14 @@ kirbytext::$tags['twitter'] = array(
     'title',
     'text',
     'rel',
-    'target', 
+    'target',
     'popup',
   ),
   'html' => function($tag) {
 
     // get and sanitize the username
     $username = str_replace('@', '', $tag->attr('twitter'));
-    
+
     // build the profile url
     $url = 'https://twitter.com/' . $username;
 
@@ -165,9 +165,9 @@ kirbytext::$tags['twitter'] = array(
 
     // build the final link
     return html::a($url, $text, array(
-      'class'  => $tag->attr('class'), 
+      'class'  => $tag->attr('class'),
       'title'  => $tag->attr('title'),
-      'rel'    => $tag->attr('rel'), 
+      'rel'    => $tag->attr('rel'),
       'target' => $tag->target(),
     ));
 
@@ -183,8 +183,8 @@ kirbytext::$tags['youtube'] = array(
   'html' => function($tag) {
 
     return embed::youtube($tag->attr('youtube'), array(
-      'width'  => $tag->attr('width',  c::get('kirbytext.video.width')), 
-      'height' => $tag->attr('height', c::get('kirbytext.video.height')), 
+      'width'  => $tag->attr('width',  c::get('kirbytext.video.width')),
+      'height' => $tag->attr('height', c::get('kirbytext.video.height')),
       'class'  => $tag->attr('class')
     ));
 
@@ -200,8 +200,8 @@ kirbytext::$tags['vimeo'] = array(
   'html' => function($tag) {
 
     return embed::vimeo($tag->attr('vimeo'), array(
-      'width'  => $tag->attr('width',  c::get('kirbytext.video.width')), 
-      'height' => $tag->attr('height', c::get('kirbytext.video.height')), 
+      'width'  => $tag->attr('width',  c::get('kirbytext.video.width')),
+      'height' => $tag->attr('height', c::get('kirbytext.video.height')),
       'class'  => $tag->attr('class')
     ));
 
