@@ -24,7 +24,7 @@ function css($url, $media = null) {
   if(is_array($url)) {
     $css = array();
     foreach($url as $u) $css[] = css($u);
-    return implode(PHP_EOL, $css);
+    return implode(PHP_EOL, $css) . PHP_EOL;
   }
 
   // auto template css files
@@ -59,7 +59,7 @@ function js($src, $async = false) {
   if(is_array($src)) {
     $js = array();
     foreach($src as $s) $js[] = js($s);
-    return implode(PHP_EOL, $js);
+    return implode(PHP_EOL, $js) . PHP_EOL;
   }
 
   // auto template css files
