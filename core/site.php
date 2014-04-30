@@ -51,7 +51,7 @@ abstract class SiteAbstract extends Page {
 
     // default fallback for the content folder url
     if(!isset($this->options['content.url'])) {
-      $this->options['content.url'] = url('content');
+      $this->options['content.url'] = url::makeAbsolute('content', $this->url);
     }
 
   }

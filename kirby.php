@@ -256,6 +256,13 @@ class Kirby {
     thumb::$defaults['driver']   = isset(c::$data['thumb.driver'])   ? c::$data['thumb.driver']   : 'gd';
     thumb::$defaults['filename'] = isset(c::$data['thumb.filename']) ? c::$data['thumb.filename'] : '{safeName}-{hash}.{extension}';
 
+    if(c::$data['cache']) {
+      // TODO: make this switchable
+      cache::setup('file', c::get('root.cache'));
+    } else {
+      cache::setup('mock');
+    }
+
     // return the entire config array
     return c::$data;
 
@@ -396,9 +403,6 @@ class Kirby {
    * @return string
    */
   static protected function cache($page) {
-
-    // set the cache location
-    cache::$root = c::$data['root.cache'];
 
     // try to read the cache
     $cache = true ? cache::get($page->id()) : null;

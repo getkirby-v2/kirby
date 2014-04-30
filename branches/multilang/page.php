@@ -240,6 +240,7 @@ class Page extends PageAbstract {
       throw new Exception('The page could not be updated');
     }
 
+    cache::flush();
     $this->reset();
     $this->touch();
     return true;

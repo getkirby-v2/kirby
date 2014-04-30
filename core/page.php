@@ -555,6 +555,19 @@ abstract class PageAbstract {
   }
 
   /**
+   * Get formatted date fields
+   *
+   * @param string $format
+   * @param string $field
+   * @return string
+   */
+  public function date($format = null, $field = 'date') {
+    $value = strtotime($this->content()->$field());
+    if(!$value) return false;
+    return $format ? date($format, $value) : $value;
+  }
+
+  /**
    * Returns a unique hashed version of the uri,
    * which is used for the tinyurl for example
    *
@@ -639,7 +652,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isHomePage() {
-    return $this->uri === 'home';
+    return $this->uri === $this->site->options['home'];
   }
 
   /**
@@ -651,7 +664,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isErrorPage() {
-    return $this->uri === 'error';
+    return $this->uri === $this->site->options['error'];
   }
 
   /**
@@ -897,6 +910,8 @@ abstract class PageAbstract {
       throw new Exception('The new page object could not be found');
     }
 
+    cache::flush();
+
     return $page;
 
   }
@@ -914,6 +929,7 @@ abstract class PageAbstract {
       throw new Exception('The page could not be updated');
     }
 
+    cache::flush();
     $this->reset();
     $this->touch();
     return true;
@@ -950,6 +966,7 @@ abstract class PageAbstract {
     $this->id = $this->uri = ltrim($this->parent->id() . '/' . $this->uid, '/');
 
     // clean the cache
+    cache::flush();
     $this->reset();
     return true;
 
@@ -972,6 +989,7 @@ abstract class PageAbstract {
     $this->dirname = $dir;
     $this->num     = $num;
     $this->root    = $root;
+    cache::flush();
     $this->reset();
     return true;
 
@@ -993,6 +1011,7 @@ abstract class PageAbstract {
     $this->dirname = $this->uid();
     $this->num     = null;
     $this->root    = $root;
+    cache::flush();
     $this->reset();
     return true;
 
@@ -1027,6 +1046,7 @@ abstract class PageAbstract {
       throw new Exception('The page could not be deleted');
     }
 
+    cache::flush();
     $parent->reset();
     return true;
 
