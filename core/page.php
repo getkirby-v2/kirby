@@ -652,7 +652,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isHomePage() {
-    return $this->uri === 'home';
+    return $this->uri === $this->site->options['home'];
   }
 
   /**
@@ -664,7 +664,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isErrorPage() {
-    return $this->uri === 'error';
+    return $this->uri === $this->site->options['error'];
   }
 
   /**
