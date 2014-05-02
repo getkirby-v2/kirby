@@ -92,9 +92,13 @@ class Kirby {
    */
   static public function start($config = array()) {
 
-    static::setup($config);
+    if(is_null(static::$site) or !empty($config)) static::setup($config);
 
     call(static::$route->action(), static::$route->arguments());
+
+    if(!static::$page) {
+      throw new Exception('No page could be found. Make sure you have an error page for your site');
+    }
 
     // localize
     static::localize();

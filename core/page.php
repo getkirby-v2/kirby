@@ -262,7 +262,7 @@ abstract class PageAbstract {
 
       if(is_dir($root)) {
         $this->cache['inventory']['children'][] = $item;
-      } else if(pathinfo($item, PATHINFO_EXTENSION) == 'txt') {
+      } else if(pathinfo($item, PATHINFO_EXTENSION) == $this->site->options['content.file.extension']) {
         $this->cache['inventory']['content'][] = $item;
       } else if(strpos($item, '.thumb.') !== false and preg_match('!\.thumb\.(jpg|jpeg|png|gif)$!i', $item)) {
         // get the filename of the original image and use it as the array key
