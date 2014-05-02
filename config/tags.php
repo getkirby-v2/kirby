@@ -183,11 +183,10 @@ kirbytext::$tags['youtube'] = array(
   ),
   'html' => function($tag) {
 
-    return embed::youtube($tag->attr('youtube'), array(
+    return '<figure class="' . $tag->attr('class', c::get('kirbytext.video.class', 'video')) . '">' . embed::youtube($tag->attr('youtube'), array(
       'width'  => $tag->attr('width',  c::get('kirbytext.video.width')),
       'height' => $tag->attr('height', c::get('kirbytext.video.height')),
-      'class'  => $tag->attr('class')
-    ));
+    )) . '</figure>';
 
   }
 );
@@ -200,11 +199,10 @@ kirbytext::$tags['vimeo'] = array(
   ),
   'html' => function($tag) {
 
-    return embed::vimeo($tag->attr('vimeo'), array(
+    return '<figure class="' . $tag->attr('class', c::get('kirbytext.video.class', 'video')) . '">' . embed::vimeo($tag->attr('vimeo'), array(
       'width'  => $tag->attr('width',  c::get('kirbytext.video.width')),
       'height' => $tag->attr('height', c::get('kirbytext.video.height')),
-      'class'  => $tag->attr('class')
-    ));
+    )) . '</figure>';
 
   }
 );
