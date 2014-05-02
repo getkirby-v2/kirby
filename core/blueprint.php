@@ -52,27 +52,32 @@ abstract class BlueprintAbstract {
       $settings->template = static::all();
     } else if(is_string($pages)) {
       $settings->template[] = static::find($pages);
-    } else if(isset($pages['template'])) {
-      $template = $pages['template'];
-      if(is_string($template)) {
-        $settings->template[] = static::find($template);
-      } else if(is_array($template)) {
-        foreach($template as $t) {
-          $settings->template[] = static::find($t);
+    } else if(is_array($pages)) {
+
+      if(isset($pages['template'])) {
+        $template = $pages['template'];
+        if(is_string($template)) {
+          $settings->template[] = static::find($template);
+        } else if(is_array($template)) {
+          foreach($template as $t) {
+            $settings->template[] = static::find($t);
+          }
         }
       }
-    }
 
-    if(isset($pages['sortable']) and $pages['sortable'] == false) {
-      $settings->sortable = false;
-    }
+      if(isset($pages['sortable']) and $pages['sortable'] == false) {
+        $settings->sortable = false;
+      }
 
-    if(isset($pages['limit'])) {
-      $settings->limit = $pages['limit'];
-    }
+      if(isset($pages['limit'])) {
+        $settings->limit = $pages['limit'];
+      }
 
-    if(isset($pages['sort'])) {
-      $settings->sort = $pages['sort'];
+      if(isset($pages['sort'])) {
+        dump($pages);
+        $settings->sort = $pages['sort'];
+      }
+
     }
 
     return $settings;
@@ -88,7 +93,7 @@ abstract class BlueprintAbstract {
     $obj->field  = null;
     $obj->format = null;
 
-    $num = a::get($pages, 'num');
+    $num = is_array($pages) ? a::get($pages, 'num') : 'default';
 
     if(is_array($num)) {
       foreach($num as $k => $v) $obj->$k = $v;
