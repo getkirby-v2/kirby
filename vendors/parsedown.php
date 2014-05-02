@@ -418,7 +418,7 @@ class Parsedown
 
     protected function identifyFencedCode($Line)
     {
-        if (preg_match('/^(['.$Line['text'][0].']{3,})[ ]*(\w+)?[ ]*$/', $Line['text'], $matches))
+        if (preg_match('/^(['.$Line['text'][0].']{3,})[ ]*([\w-]+)?[ ]*$/', $Line['text'], $matches))
         {
             $Element = array(
                 'name' => 'code',
@@ -470,9 +470,18 @@ class Parsedown
             return $Block;
         }
 
-        $string = htmlspecialchars($Line['body'], ENT_NOQUOTES, 'UTF-8');
+        $Block['element']['text']['text'] .= "\n".$Line['body'];;
 
-        $Block['element']['text']['text'] .= "\n".$string;;
+        return $Block;
+    }
+
+    protected function completeFencedCode($Block)
+    {
+        $text = $Block['element']['text']['text'];
+
+        $text = htmlspecialchars($text, ENT_NOQUOTES, 'UTF-8');
+
+        $Block['element']['text']['text'] = $text;
 
         return $Block;
     }
@@ -548,7 +557,7 @@ class Parsedown
         {
             $Block['li']['text'] []= '';
 
-            $text = preg_replace('/^[ ]{0,2}/', '', $Line['body']);
+            $text = preg_replace('/^[ ]{0,4}/', '', $Line['body']);
 
             $Block['li']['text'] []= $text;
 
@@ -584,6 +593,8 @@ class Parsedown
             if (isset($Block['interrupted']))
             {
                 $Block['element']['text'] []= '';
+
+                unset($Block['interrupted']);
             }
 
             $Block['element']['text'] []= $matches[1];
@@ -762,7 +773,6 @@ class Parsedown
         if ($Line['indent'] >= 4)
         {
             $text = substr($Line['body'], 4);
-            $text = htmlspecialchars($text, ENT_NOQUOTES, 'UTF-8');
 
             $Block = array(
                 'element' => array(
@@ -793,12 +803,22 @@ class Parsedown
             $Block['element']['text']['text'] .= "\n";
 
             $text = substr($Line['body'], 4);
-            $text = htmlspecialchars($text, ENT_NOQUOTES, 'UTF-8');
 
             $Block['element']['text']['text'] .= $text;
 
             return $Block;
         }
+    }
+
+    protected function completeCodeBlock($Block)
+    {
+        $text = $Block['element']['text']['text'];
+
+        $text = htmlspecialchars($text, ENT_NOQUOTES, 'UTF-8');
+
+        $Block['element']['text']['text'] = $text;
+
+        return $Block;
     }
 
     #
@@ -1051,7 +1071,7 @@ class Parsedown
 
     protected function identifyEmailTag($excerpt)
     {
-        if (strpos($excerpt, '>') !== false and preg_match('/<(\S+?@\S+?)>/', $excerpt, $matches))
+        if (strpos($excerpt, '>') !== false and preg_match('/^<(\S+?@\S+?)>/', $excerpt, $matches))
         {
             return array(
                 'extent' => strlen($matches[0]),
@@ -1315,12 +1335,12 @@ class Parsedown
     protected $textLevelElements = array(
         'a', 'br', 'bdo', 'abbr', 'blink', 'nextid', 'acronym', 'basefont',
         'b', 'em', 'big', 'cite', 'small', 'spacer', 'listing',
-        'i', 'rp', 'sub', 'code',          'strike', 'marquee',
-        'q', 'rt', 'sup', 'font',          'strong',
-        's', 'tt', 'var', 'mark',
-        'u', 'xm', 'wbr', 'nobr',
-                          'ruby',
-                          'span',
+        'i', 'rp', 'del', 'code',          'strike', 'marquee',
+        'q', 'rt', 'ins', 'font',          'strong',
+        's', 'tt', 'sub', 'mark',
+        'u', 'xm', 'sup', 'nobr',
+                   'var', 'ruby',
+                   'wbr', 'span',
                           'time',
     );
 }
