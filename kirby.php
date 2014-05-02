@@ -96,22 +96,7 @@ class Kirby {
 
     call(static::$route->action(), static::$route->arguments());
 
-    if(!static::$page) {
-      throw new Exception('No page could be found. Make sure you have an error page for your site');
-    }
-
-    // localize
-    static::localize();
-
-    if(static::$page) {
-
-      // send all headers for the page
-      static::$page->headers();
-
-      // load the template, apply everything and cache it if wanted
-      return c::$data['cache'] ? static::cache(static::$page) : static::render(static::$page);
-
-    }
+    return static::render(static::$page);
 
   }
 
@@ -267,6 +252,9 @@ class Kirby {
       cache::setup('mock');
     }
 
+    // set the timezone for all date functions
+    date_default_timezone_set(c::$data['timezone']);
+
     // return the entire config array
     return c::$data;
 
@@ -277,9 +265,6 @@ class Kirby {
    * load language data
    */
   static protected function localize() {
-
-    // set the timezone for all date functions
-    date_default_timezone_set(c::$data['timezone']);
 
     // set the local for the specific language
     setlocale(LC_ALL, static::$site->locale());
@@ -359,9 +344,6 @@ class Kirby {
 
   }
 
-  /**
-   *
-   */
   static protected function tags() {
 
     // load all kirby tags
@@ -374,21 +356,35 @@ class Kirby {
   }
 
   /**
-   * Returns the HTML for a page without caching
+   * Renders the HTML for the page or fetches it from the cache
    *
+   * @param Page $page
+   * @param boolean $headers
    * @return string
    */
-  static protected function render($page) {
+  static public function render(Page $page, $headers = true) {
 
-    // setup and return the template
-    return static::template($page);
+    // send all headers for the page
+    if($headers) $page->headers();
+
+    // load all language variables
+    static::localize();
+
+    // if the cache is activated…
+    if(c::$data['cache']) {
+      // return the page from cache
+      return static::cache($page);
+    } else {
+      // render the template
+      return static::template($page);
+    }
 
   }
 
   /**
    * Template configuration
    */
-  static protected function template($page) {
+  static protected function template(Page $page) {
 
     // apply the basic template vars
     tpl::$data = array_merge(array(
@@ -406,14 +402,14 @@ class Kirby {
    *
    * @return string
    */
-  static protected function cache($page) {
+  static protected function cache(Page $page) {
 
     // try to read the cache
     $cache = true ? cache::get($page->id()) : null;
 
     // fetch fresh content if the cache is empty
     if(empty($cache)) {
-      $cache = static::render($page);
+      $cache = static::template($page);
       cache::set($page->id(), $cache);
     }
 
