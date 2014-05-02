@@ -197,10 +197,10 @@ class Kirby {
     c::$data = array();
 
     // set some defaults
+    c::$data['root']         = dirname(__DIR__);
     c::$data['root.kirby']   = __DIR__;
-    c::$data['root.index']   = c::$data['root'] = dirname(__DIR__);
-    c::$data['root.content'] = c::$data['root.index'] . DS . 'content';
-    c::$data['root.site']    = c::$data['root.index'] . DS . 'site';
+    c::$data['root.content'] = c::$data['root'] . DS . 'content';
+    c::$data['root.site']    = c::$data['root'] . DS . 'site';
 
     // the default timezone
     c::$data['timezone'] = 'UTC';
@@ -255,7 +255,7 @@ class Kirby {
     if(!isset(c::$data['auto.js.root']))  c::$data['auto.js.root']  = c::$data['root'] . DS . 'assets' . DS . 'js'  . DS . 'templates';
 
     // setup the thumbnail generator
-    thumb::$defaults['root']     = isset(c::$data['thumb.root'])     ? c::$data['thumb.root']     : c::$data['root.index'] . DS . 'thumbs';
+    thumb::$defaults['root']     = isset(c::$data['thumb.root'])     ? c::$data['thumb.root']     : c::$data['root'] . DS . 'thumbs';
     thumb::$defaults['url']      = isset(c::$data['thumb.url'])      ? c::$data['thumb.url']      : url::makeAbsolute('thumbs');
     thumb::$defaults['driver']   = isset(c::$data['thumb.driver'])   ? c::$data['thumb.driver']   : 'gd';
     thumb::$defaults['filename'] = isset(c::$data['thumb.filename']) ? c::$data['thumb.filename'] : '{safeName}-{hash}.{extension}';
