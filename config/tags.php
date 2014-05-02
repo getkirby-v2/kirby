@@ -13,6 +13,7 @@ kirbytext::$tags['email'] = array(
   'attr' => array(
     'class',
     'title',
+    'text',
     'rel'
   ),
   'html' => function($tag) {
