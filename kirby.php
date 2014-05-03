@@ -211,6 +211,12 @@ class Kirby {
     c::$data['root.blueprints']  = c::$data['root.site']  . DS . 'blueprints';
     c::$data['root.accounts']    = c::$data['root.site']  . DS . 'accounts';
 
+    // auto css and js setup
+    c::$data['auto.css.url']  = 'assets/css/templates';
+    c::$data['auto.css.root'] = c::$data['root'] . DS . 'assets' . DS . 'css' . DS . 'templates';
+    c::$data['auto.js.url']   = 'assets/js/templates';
+    c::$data['auto.js.root']  = c::$data['root'] . DS . 'assets' . DS . 'js'  . DS . 'templates';
+
     // load the user config
     if(file_exists(c::$data['root.config'] . DS . 'config.php')) include(c::$data['root.config'] . DS . 'config.php');
 
@@ -233,17 +239,17 @@ class Kirby {
     url::$home = c::$data['url'];
     url::$to   = c::$data['url.to'];
 
-    // auto css and js setup
-    if(!isset(c::$data['auto.css.url']))  c::$data['auto.css.url']  = url::makeAbsolute('assets/css/templates');
-    if(!isset(c::$data['auto.js.url']))   c::$data['auto.js.url']   = url::makeAbsolute('assets/js/templates');
-    if(!isset(c::$data['auto.css.root'])) c::$data['auto.css.root'] = c::$data['root'] . DS . 'assets' . DS . 'css' . DS . 'templates';
-    if(!isset(c::$data['auto.js.root']))  c::$data['auto.js.root']  = c::$data['root'] . DS . 'assets' . DS . 'js'  . DS . 'templates';
-
     // setup the thumbnail generator
     thumb::$defaults['root']     = isset(c::$data['thumb.root'])     ? c::$data['thumb.root']     : c::$data['root'] . DS . 'thumbs';
-    thumb::$defaults['url']      = isset(c::$data['thumb.url'])      ? c::$data['thumb.url']      : url::makeAbsolute('thumbs');
+    thumb::$defaults['url']      = isset(c::$data['thumb.url'])      ? c::$data['thumb.url']      : 'thumbs';
     thumb::$defaults['driver']   = isset(c::$data['thumb.driver'])   ? c::$data['thumb.driver']   : 'gd';
     thumb::$defaults['filename'] = isset(c::$data['thumb.filename']) ? c::$data['thumb.filename'] : '{safeName}-{hash}.{extension}';
+
+    // build absolute urls
+    c::$data['auto.css.url'] = url::makeAbsolute(c::$data['auto.css.url'], url::$home);
+    c::$data['auto.js.url']  = url::makeAbsolute(c::$data['auto.js.url'], url::$home);
+
+    thumb::$defaults['url']  = url::makeAbsolute(thumb::$defaults['url'], url::$home);
 
     if(c::$data['cache']) {
       // TODO: make this switchable
@@ -403,6 +409,8 @@ class Kirby {
    * @return string
    */
   static protected function cache(Page $page) {
+
+    // TODO: check for site modification date and flush the cache
 
     // try to read the cache
     $cache = true ? cache::get($page->id()) : null;
