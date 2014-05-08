@@ -41,7 +41,7 @@ kirbytext::$tags['file'] = array(
     $file = $tag->file($tag->attr('file'));
     $text = $tag->attr('text');
 
-    if(!$file) return false;
+    if(!$file) return $text;
 
     // use filename if the text is empty and make sure to
     // ignore markdown italic underscores in filenames
