@@ -74,7 +74,6 @@ abstract class BlueprintAbstract {
       }
 
       if(isset($pages['sort'])) {
-        dump($pages);
         $settings->sort = $pages['sort'];
       }
 
