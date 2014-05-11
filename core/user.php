@@ -63,9 +63,13 @@ class UserAbstract {
     $token = $this->generateToken();
     $key   = $this->generateKey($token);
 
-    $this->update(array(
-      'token' => $token
-    ));
+    try {
+      $this->update(array(
+        'token' => $token
+      ));
+    } catch(Exception $e) {
+      throw new Exception('The authentication token could not be stored.');
+    }
 
     cookie::set('key', $key);
     return true;
