@@ -33,14 +33,7 @@ abstract class SiteAbstract extends Page {
     $this->depth   = 0;
     $this->uri     = '';
     $this->site    = $this;
-
-    if(!isset($this->options['root.content']) or !is_dir($this->options['root.content'])) {
-      throw new Exception('The content folder cannot be found');
-    }
-
-    if(!isset($this->options['root.site']) or !is_dir($this->options['root.site'])) {
-      throw new Exception('The site folder cannot be found');
-    }
+    $this->page    = null;
 
     if(!isset($this->options['root.templates'])) {
       $this->options['root.templates'] = $this->options['root.site'] . DS . 'templates';
