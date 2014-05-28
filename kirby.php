@@ -299,7 +299,7 @@ class Kirby {
     if(!is_dir(c::$data['root.plugins'])) return static::$plugins = array();
 
     foreach(array_diff(scandir(c::$data['root.plugins']), array('.', '..')) as $file) {
-      if(is_dir(c::$data['root.plugins'] . DS . $file)) static::plugin($file);
+      if(is_file(c::$data['root.plugins'] . DS . $file)) static::plugin($file);
     }
 
     return static::$plugins;
@@ -318,7 +318,7 @@ class Kirby {
 
     if(isset(static::$plugins[$name])) return true;
 
-    $file = c::$data['root.plugins'] . DS . $name . DS . $name . '.php';
+    $file = c::$data['root.plugins'] . DS . $name;
 
     if(file_exists($file)) return static::$plugins[$name] = include_once($file);
 
