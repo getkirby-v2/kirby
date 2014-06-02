@@ -299,7 +299,11 @@ class Kirby {
     if(!is_dir(c::$data['root.plugins'])) return static::$plugins = array();
 
     foreach(array_diff(scandir(c::$data['root.plugins']), array('.', '..')) as $file) {
-      if(is_dir(c::$data['root.plugins'] . DS . $file)) static::plugin($file);
+      if(is_dir(c::$data['root.plugins'] . DS . $file)) {
+        static::plugin($file, 'dir');
+      } else if(f::extension($file) == 'php') {
+        static::plugin(f::name($file), 'file');
+      }
     }
 
     return static::$plugins;
@@ -312,13 +316,18 @@ class Kirby {
    * a plugin, which is not yet loaded
    *
    * @param string $name
+   * @param string $mode
    * @return mixed
    */
-  static protected function plugin($name) {
+  static protected function plugin($name, $mode = 'dir') {
 
     if(isset(static::$plugins[$name])) return true;
 
-    $file = c::$data['root.plugins'] . DS . $name . DS . $name . '.php';
+    if($mode == 'dir') {
+      $file = c::$data['root.plugins'] . DS . $name . DS . $name . '.php';
+    } else {
+      $file = c::$data['root.plugins'] . DS . $name . '.php';
+    }
 
     if(file_exists($file)) return static::$plugins[$name] = include_once($file);
 
