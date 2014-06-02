@@ -45,10 +45,10 @@ abstract class KirbytextAbstract {
     $val = preg_replace('!\<p>(<img.*?\/>)<\/p>!', '$1', $val);
 
     // markdown
-    $pd = Parsedown::instance();
+    $pd = c::get('markdown.extra') ? new ParsedownExtra() : new Parsedown();
     $pd->setBreaksEnabled(true);
 
-    $val = $pd->parse($val);
+    $val = $pd->text($val);
 
     return $val;
 
