@@ -17,6 +17,9 @@ class Kirby {
   // The currently active page
   static public $page;
 
+  // An array of globally available data
+  static public $data = array();
+
   // The router object
   static public $router;
 
@@ -58,6 +61,28 @@ class Kirby {
   }
 
   /**
+   * Starts the Kirby setup and
+   * returns the content
+   *
+   * @return string
+   */
+  static public function start($config = array()) {
+
+    if(is_null(static::$site) or !empty($config)) static::setup($config);
+
+    $response = call(static::$route->action(), static::$route->arguments());
+
+    if(is_string($response)) {
+      return static::render(page($response));
+    } else if(is_array($response)) {
+      return static::render(page($response[0]), $response[1]);
+    } else {
+      return static::render($response);
+    }
+
+  }
+
+  /**
    * The path which will be used for the router
    *
    * @return string
@@ -85,29 +110,13 @@ class Kirby {
   }
 
   /**
-   * Starts the Kirby setup and
-   * returns the content
-   *
-   * @return string
-   */
-  static public function start($config = array()) {
-
-    if(is_null(static::$site) or !empty($config)) static::setup($config);
-
-    call(static::$route->action(), static::$route->arguments());
-
-    return static::render(static::$page);
-
-  }
-
-  /**
    * Registers all routes
    *
    * @return array
    */
   static protected function routes() {
 
-    $routes = array();
+    $routes = c::get('routes', array());
 
     if(static::$site->multilang()) {
 
@@ -117,7 +126,7 @@ class Kirby {
         'method'  => 'GET|POST',
         'action'  => function($lang, $path = null) {
           // visit the currently active page for a specific language
-          static::$page = static::$site->visit($path, $lang);
+          return kirby::$site->visit($path, $lang);
         }
       );
 
@@ -129,7 +138,7 @@ class Kirby {
       'method'  => 'GET|POST',
       'action'  => function($path = null) {
         // visit the currently active page
-        kirby::$page = kirby::$site->visit($path);
+        return kirby::$site->visit($path);
       }
     );
 
@@ -339,7 +348,7 @@ class Kirby {
    *
    * @return array
    */
-  static protected function controller($page) {
+  static protected function controller($page, $arguments = array()) {
 
     $file = c::$data['root.controllers'] . DS . $page->template() . '.php';
 
@@ -349,8 +358,8 @@ class Kirby {
 
       if(is_callable($callback)) return (array)call_user_func_array($callback, array(
         static::$site,
-        static::$site->children(),
-        $page
+        $page,
+        $arguments
       ));
 
     }
@@ -377,7 +386,10 @@ class Kirby {
    * @param boolean $headers
    * @return string
    */
-  static public function render(Page $page, $headers = true) {
+  static public function render(Page $page, $data = array(), $headers = true) {
+
+    // register the currently rendered page
+    static::$page = $page;
 
     // send all headers for the page
     if($headers) $page->headers();
@@ -388,10 +400,10 @@ class Kirby {
     // if the cache is activated…
     if(c::$data['cache']) {
       // return the page from cache
-      return static::cache($page);
+      return static::cache($page, $data);
     } else {
       // render the template
-      return static::template($page);
+      return static::template($page, $data);
     }
 
   }
@@ -399,14 +411,14 @@ class Kirby {
   /**
    * Template configuration
    */
-  static protected function template(Page $page) {
+  static protected function template(Page $page, $data = array()) {
 
     // apply the basic template vars
     tpl::$data = array_merge(array(
       'site'  => static::$site,
       'pages' => static::$site->children(),
       'page'  => $page
-    ), static::controller($page));
+    ), $data, static::controller($page, $data));
 
     return tpl::load($page->templateFile());
 
@@ -417,7 +429,7 @@ class Kirby {
    *
    * @return string
    */
-  static protected function cache(Page $page) {
+  static protected function cache(Page $page, $data = array()) {
 
     // TODO: check for site modification date and flush the cache
 
@@ -426,7 +438,7 @@ class Kirby {
 
     // fetch fresh content if the cache is empty
     if(empty($cache)) {
-      $cache = static::template($page);
+      $cache = static::template($page, $data);
       cache::set($page->id(), $cache);
     }
 
