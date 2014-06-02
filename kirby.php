@@ -205,6 +205,11 @@ class Kirby {
     // set the default license code
     c::$data['license'] = null;
 
+    // markdown defaults
+    c::$data['markdown']        = true;
+    c::$data['markdown.extra']  = false;
+    c::$data['markdown.breaks'] = true;
+
     // pass the config vars from the constructor
     // to be able to set all roots
     c::$data = array_merge(c::$data, $config);

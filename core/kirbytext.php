@@ -44,11 +44,8 @@ abstract class KirbytextAbstract {
     // unwrap single images, which are wrapped with p elements
     $val = preg_replace('!\<p>(<img.*?\/>)<\/p>!', '$1', $val);
 
-    // markdown
-    $pd = c::get('markdown.extra') ? new ParsedownExtra() : new Parsedown();
-    $pd->setBreaksEnabled(true);
-
-    $val = $pd->text($val);
+    // markdownify
+    $val = markdown($val);
 
     return $val;
 

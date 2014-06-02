@@ -82,6 +82,29 @@ function js($src, $async = false) {
 }
 
 /**
+ * Global markdown parser shortcut
+ *
+ * @param string $text
+ * @return string
+ */
+function markdown($text) {
+
+  if(!c::get('markdown')) return $text;
+
+  // markdown
+  $parsedown = c::get('markdown.extra') ? new ParsedownExtra() : new Parsedown();
+
+  // markdown auto-breaks
+  if(c::get('markdown.breaks')) {
+    $parsedown->setBreaksEnabled(true);
+  }
+
+  // parse it, baby!
+  return $parsedown->text($text);
+
+}
+
+/**
  * Converts a string to Kirbytext
  *
  * @param Field $field
