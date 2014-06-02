@@ -372,11 +372,17 @@ abstract class PageAbstract {
    * @param string $direction An optional sort direction
    * @return mixed Page or null
    */
-  protected function _next(Children $siblings, $sort = false, $direction = 'asc') {
+  protected function _next(Children $siblings, $sort = false, $direction = 'asc', $visibility = false) {
     if($sort) $siblings = $siblings->sortBy($sort, $direction);
     $index = $siblings->indexOf($this);
-    if($index === false) return false;
-    return $siblings->nth($index + 1);
+    if($index === false) return null;
+    if($visibility) {
+      $siblings = $siblings->offset($index+1);
+      $siblings = $siblings->{$visibility}();
+      return $siblings->first();
+    } else {
+      return $siblings->nth($index + 1);
+    }
   }
 
   /**
@@ -387,11 +393,17 @@ abstract class PageAbstract {
    * @param string $direction An optional sort direction
    * @return mixed Page or null
    */
-  protected function _prev(Children $siblings, $sort = false, $direction = 'asc') {
+  protected function _prev(Children $siblings, $sort = false, $direction = 'asc', $visibility = false) {
     if($sort) $siblings = $siblings->sortBy($sort, $direction);
     $index = $siblings->indexOf($this);
-    if($index === false) return false;
-    return $siblings->nth($index - 1);
+    if($index === false or $index === 0) return null;
+    if($visibility) {
+      $siblings = $siblings->limit($index);
+      $siblings = $siblings->{$visibility}();
+      return $siblings->last();
+    } else {
+      return $siblings->nth($index - 1);
+    }
   }
 
   /**
@@ -404,6 +416,17 @@ abstract class PageAbstract {
   }
 
   /**
+   * Checks if there's a next page
+   *
+   * @param string $sort An optional sort field for the siblings
+   * @param string $direction An optional sort direction
+   * @return boolean
+   */
+  public function hasNext($sort = false, $direction = 'asc') {
+    return $this->next($sort, $direction) != null;
+  }
+
+  /**
    * Returns the next visible page in the current collection if available
    *
    * @param string $sort An optional sort field for the siblings
@@ -411,7 +434,18 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function nextVisible($sort = false, $direction = 'asc') {
-    return $this->_next($this->parent->children()->visible(), $sort, $direction);
+    return $this->_next($this->parent->children(), $sort, $direction, 'visible');
+  }
+
+  /**
+   * Checks if there's a next visible page
+   *
+   * @param string $sort An optional sort field for the siblings
+   * @param string $direction An optional sort direction
+   * @return boolean
+   */
+  public function hasNextVisible($sort = false, $direction = 'asc') {
+    return $this->nextVisible($sort, $direction) != null;
   }
 
   /**
@@ -422,7 +456,18 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function nextInvisible($sort = false, $direction = 'asc') {
-    return $this->_next($this->parent->children()->invisible(), $sort, $direction);
+    return $this->_next($this->parent->children(), $sort, $direction, 'invisible');
+  }
+
+  /**
+   * Checks if there's a next invisible page
+   *
+   * @param string $sort An optional sort field for the siblings
+   * @param string $direction An optional sort direction
+   * @return boolean
+   */
+  public function hasNextInvisible($sort = false, $direction = 'asc') {
+    return $this->nextInvisible($sort, $direction) != null;
   }
 
   /**
@@ -435,6 +480,17 @@ abstract class PageAbstract {
   }
 
   /**
+   * Checks if there's a previous page
+   *
+   * @param string $sort An optional sort field for the siblings
+   * @param string $direction An optional sort direction
+   * @return boolean
+   */
+  public function hasPrev($sort = false, $direction = 'asc') {
+    return $this->prev($sort, $direction) != null;
+  }
+
+  /**
    * Returns the previous visible page in the current collection if available
    *
    * @param string $sort An optional sort field for the siblings
@@ -442,7 +498,18 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function prevVisible($sort = false, $direction = 'asc') {
-    return $this->_prev($this->parent->children()->visible(), $sort, $direction);
+    return $this->_prev($this->parent->children(), $sort, $direction, 'visible');
+  }
+
+  /**
+   * Checks if there's a previous visible page
+   *
+   * @param string $sort An optional sort field for the siblings
+   * @param string $direction An optional sort direction
+   * @return boolean
+   */
+  public function hasPrevVisible($sort = false, $direction = 'asc') {
+    return $this->prevVisible($sort, $direction) != null;
   }
 
   /**
@@ -453,7 +520,18 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function prevInvisible($sort = false, $direction = 'asc') {
-    return $this->_prev($this->parent->children()->invisible(), $sort, $direction);
+    return $this->_prev($this->parent->children(), $sort, $direction, 'invisible');
+  }
+
+  /**
+   * Checks if there's a previous invisible page
+   *
+   * @param string $sort An optional sort field for the siblings
+   * @param string $direction An optional sort direction
+   * @return boolean
+   */
+  public function hasPrevInvisible($sort = false, $direction = 'asc') {
+    return $this->prevInvisible($sort, $direction) != null;
   }
 
   /**
