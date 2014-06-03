@@ -200,7 +200,9 @@ class Kirby {
     c::$data['timezone'] = 'UTC';
 
     // disable the cache by default
-    c::$data['cache'] = false;
+    c::$data['cache']         = false;
+    c::$data['cache.driver']  = 'file';
+    c::$data['cache.options'] = array();
 
     // set the default license code
     c::$data['license'] = null;
@@ -265,9 +267,14 @@ class Kirby {
 
     thumb::$defaults['url']  = url::makeAbsolute(thumb::$defaults['url'], url::$home);
 
+    // cache setup
     if(c::$data['cache']) {
-      // TODO: make this switchable
-      cache::setup('file', c::get('root.cache'));
+      if(c::$data['cache.driver'] == 'file' and empty(c::$data['cache.options'])) {
+        c::$data['cache.options'] = array(
+          'root' => c::get('root.cache')
+        );
+      }
+      cache::setup(c::$data['cache.driver'], c::$data['cache.options']);
     } else {
       cache::setup('mock');
     }
