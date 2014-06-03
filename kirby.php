@@ -231,6 +231,9 @@ class Kirby {
     // set the default license code
     c::$data['license'] = null;
 
+    // url rewriting
+    c::$data['rewrite'] = true;
+
     // markdown defaults
     c::$data['markdown']        = true;
     c::$data['markdown.extra']  = false;

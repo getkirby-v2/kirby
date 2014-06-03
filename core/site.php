@@ -17,6 +17,7 @@ abstract class SiteAbstract extends Page {
   // options for the site and all dependent objects
   public $options = array(
     'url'                    => '/',
+    'rewrite'                => true,
     'error'                  => 'error',
     'home'                   => 'home',
     'content.file.extension' => 'txt',
@@ -38,6 +39,11 @@ abstract class SiteAbstract extends Page {
     $this->site    = $this;
     $this->page    = null;
 
+    // build ugly urls if rewriting is disabled
+    if($this->options['rewrite'] === false) {
+      $this->url .= '/index.php';
+    }
+
     if(!isset($this->options['root.templates'])) {
       $this->options['root.templates'] = $this->options['root.site'] . DS . 'templates';
     }
@@ -47,7 +53,7 @@ abstract class SiteAbstract extends Page {
 
     // default fallback for the content folder url
     if(!isset($this->options['content.url'])) {
-      $this->options['content.url'] = url::makeAbsolute('content', $this->url);
+      $this->options['content.url'] = url::makeAbsolute('content', $this->options['url']);
     }
 
   }
