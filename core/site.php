@@ -11,6 +11,9 @@
  */
 abstract class SiteAbstract extends Page {
 
+  // the current page
+  public $page = null;
+
   // options for the site and all dependent objects
   public $options = array(
     'url'                    => '/',
@@ -159,7 +162,11 @@ abstract class SiteAbstract extends Page {
    * @return Page
    */
   public function page($uri = null) {
-    return is_null($uri) ? $this->page : $this->children()->find($uri);
+    if(is_null($uri)) {
+      return is_null($this->page) ? $this->page = $this->homePage() : $this->page;
+    } else {
+      return $this->children()->find($uri);
+    }
   }
 
   /**

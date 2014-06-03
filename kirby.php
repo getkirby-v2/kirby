@@ -138,7 +138,31 @@ class Kirby {
       'method'  => 'GET|POST',
       'action'  => function($path = null) {
         // visit the currently active page
-        return kirby::$site->visit($path);
+        $page = kirby::$site->visit($path);
+
+        // react on errors for invalid URLs
+        if($page->isErrorPage() and $page->uri() != $path) {
+
+          // get the filename
+          $filename = basename($path);
+          $pagepath = dirname($path);
+
+          // check if there's a page for the parent path
+          if($page = kirby::$site->find($pagepath)) {
+            // check if there's a file for the last element of the path
+            if($file = $page->file($filename)) {
+              // TODO: put asset pipe here
+              // redirect to the real file url to make this snappy
+              go($file->url());
+            }
+          }
+
+          // return the error page if there's no such page
+          return kirby::$site->errorPage();
+
+        }
+
+        return $page;
       }
     );
 
