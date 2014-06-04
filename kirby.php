@@ -397,6 +397,7 @@ class Kirby {
 
       if(is_callable($callback)) return (array)call_user_func_array($callback, array(
         static::$site,
+        static::$site->children(),
         $page,
         $arguments
       ));
