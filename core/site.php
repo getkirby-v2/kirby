@@ -265,10 +265,16 @@ abstract class SiteAbstract extends Page {
   /**
    * Returns the current user
    *
+   * @param string $username Optional way to search for a single user
    * @return User
    */
-  public function user() {
-    return User::current();
+  public function user($username = null) {
+    if(is_null($username)) return User::current();
+    try {
+      return new User($username);
+    } catch(Exception $e) {
+      return null;
+    }
   }
 
 }
