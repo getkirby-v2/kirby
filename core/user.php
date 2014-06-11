@@ -2,32 +2,57 @@
 
 class UserAbstract {
 
-  protected $data  = array();
+  protected $username = null;
   protected $cache = array();
+  protected $data = null;
 
   public function __construct($username) {
 
-    $this->data['username'] = $username;
+    $this->username = str::lower($username);
 
     // check if the account file exists
     if(!file_exists($this->file())) {
       throw new Exception('The user account could not be found');
     }
 
-    // get all data for the user
+  }
+
+  /**
+   * Returns the username
+   *
+   * @return string
+   */
+  public function username() {
+    return $this->username;
+  }
+
+  /**
+   * get all data for the user
+   */
+  public function data() {
+
+    if(!is_null($this->data)) return $this->data;
+
+    // get all data from the account file
     $this->data = data::read($this->file(), 'yaml');
 
     // remove garbage
     unset($this->data[0]);
 
+    // add the username
+    $this->data['username'] = $this->username;
+
+    // return the data array
+    return $this->data;
+
   }
 
   public function __get($key) {
-    return a::get($this->data, $key);
+    return a::get($this->data(), $key);
   }
 
   public function __call($key, $arguments = null) {
-    return $this->$key;
+    return $this->__get($key);
   }
 
   public function avatar() {
@@ -54,7 +79,11 @@ class UserAbstract {
   }
 
   protected function file() {
-    return c::get('root.accounts') . DS . $this->data['username'] . '.php';
+    return c::get('root.accounts') . DS . $this->username() . '.php';
+  }
+
+  public function exists() {
+    return file_exists($this->file());
   }
 
   public function login($password) {
@@ -91,7 +120,7 @@ class UserAbstract {
   }
 
   public function generateKey($token) {
-    return sha1($this->username()) . '|' . time() . '|' . $token;
+    return sha1($this->username()) . '|' . time() . '|' . $token . '|' . base64_encode($this->username());
   }
 
   public function is($user) {
@@ -103,21 +132,40 @@ class UserAbstract {
     return $this->is(static::current());
   }
 
-  public function update($data = array()) {
+  public function validate($data = array(), $mode = 'insert') {
 
-    // don't update the username
-    unset($data['username']);
+    if($mode == 'insert') {
+
+      if(empty($data['username'])) {
+        throw new Exception('Invalid username');
+      }
+
+      if(empty($data['password'])) {
+        throw new Exception('Invalid password');
+      }
+
+    }
 
     if(!empty($data['email']) and !v::email($data['email'])) {
       throw new Exception('Invalid email');
     }
 
+  }
+
+  public function update($data = array()) {
+
+    $this->validate($data, 'update');
+
+    // don't update the username
+    unset($data['username']);
+
+    // create a new hash for the password
     if(!empty($data['password'])) {
       $data['password'] = password::hash($data['password']);
     }
 
     // merge with existing fields
-    $this->data = array_merge($this->data, $data);
+    $this->data = array_merge($this->data(), $data);
 
     foreach($this->data as $key => $value) {
       if(is_null($value)) unset($this->data[$key]);
@@ -153,26 +201,23 @@ class UserAbstract {
    */
   static public function create($data = array()) {
 
-    if(empty($data['username'])) {
-      throw new Exception('Invalid username');
-    }
+    $this->validate($data, 'insert');
 
-    if(empty($data['password'])) {
-      throw new Exception('Invalid password');
-    }
+    // all usernames must be lowercase
+    $data['username'] = str::lower($data['username']);
 
-    if(empty($data['email']) or !v::email($data['email'])) {
-      throw new Exception('Invalid email address');
-    }
-
+    // create the file root
     $file = c::get('root.accounts') . DS . $data['username'] . '.php';
 
+    // check for an existing username
     if(file_exists($file)) {
       throw new Exception('The username is taken');
     }
 
-    // encrypt the password
-    $data['password'] = password::hash($data['password']);
+    // create a new hash for the password
+    if(!empty($data['password'])) {
+      $data['password'] = password::hash($data['password']);
+    }
 
     static::save($file, $data);
 
@@ -203,28 +248,30 @@ class UserAbstract {
     $parts = str::split($key, '|');
 
     // make sure all three parts are there
-    if(count($parts) != 3) return false;
+    if(count($parts) != 4) return false;
 
-    $hash  = $parts[0];
-    $time  = $parts[1];
-    $token = $parts[2];
+    $hash     = $parts[0];
+    $time     = $parts[1];
+    $token    = $parts[2];
+    $username = base64_decode($parts[3]);
 
     // keep logged in for one week
     if($time < time() - (60 * 60 * 24 * 7)) return false;
 
     // find the logged in user by token
-    $user = site()->users()->findBy('token', $token);
+    $user = site()->user($username);
 
     if(!$user) return false;
 
-    // compare the hash as a last check
-    if(sha1($user->username()) != $hash) {
-      $user->logout();
-      return false;
-    }
+    // compare the token and the hash as a last check
+    if($user->token() != $token or sha1($user->username()) != $hash) return false;
 
     return $user;
 
+  }
+
+  public function __toString() {
+    return $this->username;
   }
 
 }
