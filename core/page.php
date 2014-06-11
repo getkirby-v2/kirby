@@ -358,10 +358,11 @@ abstract class PageAbstract {
   /**
    * Returns the siblings for this page, not including this page
    *
+   * @param boolean $self
    * @return Children
    */
-  public function siblings() {
-    return $this->parent->children()->not($this->uri);
+  public function siblings($self = true) {
+    return $self ? $this->parent->children() : $this->parent->children()->not($this);
   }
 
   /**

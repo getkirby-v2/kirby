@@ -253,4 +253,34 @@ abstract class ChildrenAbstract extends Collection {
 
   }
 
+  /**
+   * Extracts all values for a single field into
+   * a new array
+   *
+   * @param string $field
+   * @return array
+   */
+  public function pluck($field, $split = null, $unique = false) {
+
+    $result = array();
+
+    foreach($this->data as $item) {
+      $row = $this->extractValue($item, $field);
+
+      if(!is_null($split)) {
+        $result = array_merge($result, str::split($row, $split));
+      } else {
+        $result[] = $row;
+      }
+
+    }
+
+    if($unique) {
+      $result = array_unique($result);
+    }
+
+    return array_values($result);
+
+  }
+
 }
