@@ -111,7 +111,13 @@ kirbytext::$tags['image'] = array(
     if(!$tag->attr('link')) return $image;
 
     // build the href for the link
-    $href = ($link == 'self') ? $url : $link;
+    if($link == 'self') {
+      $href = $url;
+    } else if($file and $link == $file->filename()) {
+      $href = $file->url();
+    } else {
+      $href = $link;
+    }
 
     return html::a(url($href), $image, array(
       'rel'    => $tag->attr('rel'),

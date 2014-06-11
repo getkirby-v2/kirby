@@ -30,8 +30,16 @@ abstract class ChildrenAbstract extends Collection {
   public function not() {
     $collection = clone $this;
     foreach(func_get_args() as $uri) {
-      $uri = is_a($uri, 'Page') ? $uri->id() : $uri;
-      unset($collection->data[$uri]);
+      if(is_a($uri, 'Page')) {
+        // unset by Page object
+        unset($collection->data[$uri->id()]);
+      } else if(isset($collection->data[$uri])) {
+        // unset by URI
+        unset($collection->data[$uri]);
+      } else if($page = $collection->findBy('uid', $uri)) {
+        // unset by UID
+        unset($collection->data[$page->id()]);
+      }
     }
     return $collection;
   }

@@ -11,9 +11,13 @@
  */
 abstract class SiteAbstract extends Page {
 
+  // the current page
+  public $page = null;
+
   // options for the site and all dependent objects
   public $options = array(
     'url'                    => '/',
+    'rewrite'                => true,
     'error'                  => 'error',
     'home'                   => 'home',
     'content.file.extension' => 'txt',
@@ -33,13 +37,11 @@ abstract class SiteAbstract extends Page {
     $this->depth   = 0;
     $this->uri     = '';
     $this->site    = $this;
+    $this->page    = null;
 
-    if(!isset($this->options['root.content']) or !is_dir($this->options['root.content'])) {
-      throw new Exception('The content folder cannot be found');
-    }
-
-    if(!isset($this->options['root.site']) or !is_dir($this->options['root.site'])) {
-      throw new Exception('The site folder cannot be found');
+    // build ugly urls if rewriting is disabled
+    if($this->options['rewrite'] === false) {
+      $this->url .= '/index.php';
     }
 
     if(!isset($this->options['root.templates'])) {
@@ -51,7 +53,7 @@ abstract class SiteAbstract extends Page {
 
     // default fallback for the content folder url
     if(!isset($this->options['content.url'])) {
-      $this->options['content.url'] = url::makeAbsolute('content', $this->url);
+      $this->options['content.url'] = url::makeAbsolute('content', $this->options['url']);
     }
 
   }
@@ -166,7 +168,11 @@ abstract class SiteAbstract extends Page {
    * @return Page
    */
   public function page($uri = null) {
-    return is_null($uri) ? $this->page : $this->children()->find($uri);
+    if(is_null($uri)) {
+      return is_null($this->page) ? $this->page = $this->homePage() : $this->page;
+    } else {
+      return $this->children()->find($uri);
+    }
   }
 
   /**
@@ -259,10 +265,16 @@ abstract class SiteAbstract extends Page {
   /**
    * Returns the current user
    *
+   * @param string $username Optional way to search for a single user
    * @return User
    */
-  public function user() {
-    return User::current();
+  public function user($username = null) {
+    if(is_null($username)) return User::current();
+    try {
+      return new User($username);
+    } catch(Exception $e) {
+      return null;
+    }
   }
 
 }
