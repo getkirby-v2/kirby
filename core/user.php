@@ -132,7 +132,7 @@ class UserAbstract {
     return $this->is(static::current());
   }
 
-  public function validate($data = array(), $mode = 'insert') {
+  static public function validate($data = array(), $mode = 'insert') {
 
     if($mode == 'insert') {
 
@@ -201,7 +201,7 @@ class UserAbstract {
    */
   static public function create($data = array()) {
 
-    $this->validate($data, 'insert');
+    static::validate($data, 'insert');
 
     // all usernames must be lowercase
     $data['username'] = str::lower($data['username']);
