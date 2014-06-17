@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * Content
@@ -31,7 +31,7 @@ abstract class ContentAbstract {
     $this->raw = str_replace("\xEF\xBB\xBF", '', @file_get_contents($this->root));
 
     // explode all fields by the line separator
-    $fields = explode(PHP_EOL . '----', $this->raw);
+    $fields = explode("\n----", $this->raw);
 
     // loop through all fields and add them to the content
     foreach($fields as $field) {
@@ -61,9 +61,9 @@ abstract class ContentAbstract {
 
   /**
    * Returns the name of the content file
-   * without the extension. This is 
+   * without the extension. This is
    * being used to determine the template for the page
-   * 
+   *
    * @return string
    */
   public function name() {
@@ -71,9 +71,9 @@ abstract class ContentAbstract {
   }
 
   /**
-   * Returns an array with all 
+   * Returns an array with all
    * field names
-   * 
+   *
    * @return array3
    */
   public function fields() {
@@ -82,7 +82,7 @@ abstract class ContentAbstract {
 
   /**
    * Returns the raw content from the file
-   * 
+   *
    * @return string
    */
   public function raw() {
@@ -92,7 +92,7 @@ abstract class ContentAbstract {
   /**
    * Returns the entire data array
    * with all field objects
-   * 
+   *
    * @return array
    */
   public function data() {
@@ -101,7 +101,7 @@ abstract class ContentAbstract {
 
   /**
    * Checks if the content file exists
-   * 
+   *
    * @return boolean
    */
   public function exists() {
@@ -110,7 +110,7 @@ abstract class ContentAbstract {
 
   /**
    * Gets a field from the content
-   * 
+   *
    * @return Field
    */
   public function get($key, $arguments = null) {
