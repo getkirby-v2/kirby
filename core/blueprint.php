@@ -63,6 +63,8 @@ abstract class BlueprintAbstract {
             $settings->template[] = static::find($t);
           }
         }
+      } else {
+        $settings->template = static::all();
       }
 
       if(isset($pages['sortable']) and $pages['sortable'] == false) {
