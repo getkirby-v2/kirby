@@ -260,8 +260,16 @@ class Kirby {
     c::$data['auto.js.url']   = 'assets/js/templates';
     c::$data['auto.js.root']  = c::$data['root'] . DS . 'assets' . DS . 'js'  . DS . 'templates';
 
-    // load the user config
-    if(file_exists(c::$data['root.config'] . DS . 'config.php')) include(c::$data['root.config'] . DS . 'config.php');
+    // load all available config files
+    $configs = array(
+      'main' => c::$data['root.config'] . DS . 'config.php',
+      'host' => c::$data['root.config'] . DS . 'config.' . server::get('HTTP_HOST') . '.php',
+      'addr' => c::$data['root.config'] . DS . 'config.' . server::get('SERVER_ADDR') . '.php',
+    );
+
+    foreach($configs as $confile) {
+      if(file_exists($confile)) include_once($confile);
+    }
 
     // pass the config vars from the constructor again to overwrite
     // stuff from the user config
