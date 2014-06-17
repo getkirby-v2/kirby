@@ -4,11 +4,12 @@
  * Embeds a snippet from the snippet folder
  *
  * @param string $file
- * @param array $data
+ * @param mixed $data array or object
  * @param boolean $return
  * @return string
  */
 function snippet($file, $data = array(), $return = false) {
+  if(is_object($data)) $data = array('item' => $data);
   return tpl::load(c::get('root.snippets') . DS . $file . '.php', $data, $return);
 }
 
