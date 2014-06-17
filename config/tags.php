@@ -149,6 +149,29 @@ kirbytext::$tags['link'] = array(
   }
 );
 
+// tel tag
+kirbytext::$tags['tel'] = array(
+  'attr' => array(
+    'text',
+    'class',
+    'title'
+  ),
+  'html' => function($tag) {
+
+    $text = $tag->attr('text');
+    $tel  = str_replace(array('/', ' ', '-'), '', $tag->attr('tel'));
+
+    if(empty($text)) $text = $tag->attr('tel');
+
+    return html::a('tel:' . $tel, html($text), array(
+      'rel'    => $tag->attr('rel'),
+      'class'  => $tag->attr('class'),
+      'title'  => html($tag->attr('title'))
+    ));
+  }
+);
+
+
 // twitter tag
 kirbytext::$tags['twitter'] = array(
   'attr' => array(
