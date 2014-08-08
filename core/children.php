@@ -61,7 +61,7 @@ abstract class ChildrenAbstract extends Collection {
    * @param array $data
    */
   public function create($uid, $template, $data = array()) {
-    return page::create($this->page->uri() . '/' . $uid, $template, $data);
+    return page::create($this->page->id() . '/' . $uid, $template, $data);
   }
 
   /**

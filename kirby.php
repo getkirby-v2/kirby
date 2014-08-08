@@ -251,7 +251,6 @@ class Kirby {
     c::$data['root.controllers'] = c::$data['root.site']  . DS . 'controllers';
     c::$data['root.config']      = c::$data['root.site']  . DS . 'config';
     c::$data['root.tags']        = c::$data['root.site']  . DS . 'tags';
-    c::$data['root.blueprints']  = c::$data['root.site']  . DS . 'blueprints';
     c::$data['root.accounts']    = c::$data['root.site']  . DS . 'accounts';
 
     // auto css and js setup

@@ -62,7 +62,7 @@ class UserAbstract {
     // try to find the avatar
     $root = c::get('root') . DS . 'assets' . DS . 'avatars' . DS . $this->username() . '.{jpg,png}';
 
-    if($avatar = a::first(glob($root, GLOB_BRACE))) {
+    if($avatar = a::first((array)glob($root, GLOB_BRACE))) {
       return $this->cache['avatar'] = new Media($avatar, url('assets/avatars/' . f::filename($avatar)));
     } else {
       return $this->cache['avatar'] = false;

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * Unmodified classes
@@ -8,7 +8,6 @@ class Field     extends FieldAbstract {}
 class Files     extends FilesAbstract {}
 class Kirbytext extends KirbytextAbstract {}
 class Kirbytag  extends KirbytagAbstract {}
-class Blueprint extends BlueprintAbstract {}
 class Users     extends UsersAbstract {}
 class User      extends UserAbstract {}
 

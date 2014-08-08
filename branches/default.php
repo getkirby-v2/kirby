@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class Children extends ChildrenAbstract {}
 class Content extends ContentAbstract {}
@@ -9,6 +9,5 @@ class Kirbytext extends KirbytextAbstract {}
 class Kirbytag extends KirbytagAbstract {}
 class Page extends PageAbstract {}
 class Site extends SiteAbstract {}
-class Blueprint extends BlueprintAbstract {}
 class Users extends UsersAbstract {}
 class User extends UserAbstract {}

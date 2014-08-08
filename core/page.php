@@ -104,7 +104,7 @@ abstract class PageAbstract {
     $parents  = array();
     $next     = $this->parent();
 
-    while($next->depth() > 0) {
+    while($next and $next->depth() > 0) {
       $children->data[$next->id()] = $next;
       $next = $next->parent();
     }
@@ -800,6 +800,25 @@ abstract class PageAbstract {
   }
 
   /**
+   * Checks if the page or any of its files are writable
+   *
+   * @return boolean
+   */
+  public function isWritable() {
+
+    $folder = new Folder($this->root());
+
+    if(!$folder->isWritable()) return false;
+
+    foreach($folder->files() as $f) {
+      if(!$f->isWritable()) return false;
+    }
+
+    return true;
+
+  }
+
+  /**
    * Returns the timestamp when the page
    * has been modified
    *
@@ -921,20 +940,6 @@ abstract class PageAbstract {
   }
 
   /**
-   * Returns the matching blueprint object
-   * for the page's template
-   *
-   * @return Blueprint
-   */
-  public function blueprint() {
-    try {
-      return blueprint::find($this);
-    } catch(Exception $e) {
-      return null;
-    }
-  }
-
-  /**
    * Private method to create a page directory
    */
   static protected function createDirectory($uri) {
@@ -947,18 +952,28 @@ abstract class PageAbstract {
       throw new Exception('The parent does not exist');
     }
 
+    // check for an entered sorting number
+    if(preg_match('!^(\d+)\-(.*)!', $uid, $matches)) {
+      $num = $matches[1];
+      $uid = $matches[2];
+      $dir = $num . '-' . $uid;
+    } else {
+      $num = false;
+      $dir = $uid;
+    }
+
     if($parent->children()->findBy('uid', $uid)) {
       throw new Exception('The page UID exists');
     }
 
-    if(!dir::make($parent->root() . DS . $uid)) {
+    if(!dir::make($parent->root() . DS . $dir)) {
       throw new Exception('The directory could not be created');
     }
 
     // make sure the new directory is available everywhere
     $parent->reset();
 
-    return $parent->uri() . '/' . $uid;
+    return $parent->id() . '/' . $uid;
 
   }
 
@@ -1027,6 +1042,10 @@ abstract class PageAbstract {
   public function move($uid) {
 
     $uid = str::slug($uid);
+
+    if(empty($uid)) {
+      throw new Exception('The uid is missing');
+    }
 
     if($this->uid() === $uid) return true;
 
@@ -1100,6 +1119,16 @@ abstract class PageAbstract {
 
   }
 
+  public function isDeletable() {
+
+    if($this->isSite())      return false;
+    if($this->isHomePage())  return false;
+    if($this->isErrorPage()) return false;
+
+    return true;
+
+  }
+
   /**
    * Deletes the page
    *
@@ -1107,20 +1136,12 @@ abstract class PageAbstract {
    */
   public function delete($force = false) {
 
-    if($this->isSite()) {
-      throw new Exception('The site cannot be deleted');
+    if(!$this->isDeletable()) {
+      throw new Exception('The page cannot be deleted');
     }
 
     if($force === false and $this->children()->count()) {
       throw new Exception('This page has subpages');
-    }
-
-    if($this->isHomePage()) {
-      throw new Exception('The home page cannot be deleted');
-    }
-
-    if($this->isErrorPage()) {
-      throw new Exception('The error page cannot be deleted');
     }
 
     $parent = $this->parent();

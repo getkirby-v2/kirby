@@ -20,7 +20,6 @@ load(array(
   'kirbytagabstract'  => __DIR__ . DS . 'core' . DS . 'kirbytag.php',
   'pageabstract'      => __DIR__ . DS . 'core' . DS . 'page.php',
   'siteabstract'      => __DIR__ . DS . 'core' . DS . 'site.php',
-  'blueprintabstract' => __DIR__ . DS . 'core' . DS . 'blueprint.php',
   'usersabstract'     => __DIR__ . DS . 'core' . DS . 'users.php',
   'userabstract'      => __DIR__ . DS . 'core' . DS . 'user.php',
 
