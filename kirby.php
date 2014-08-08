@@ -132,6 +132,18 @@ class Kirby {
 
     }
 
+    // tinyurl handling
+    if(c::$data['tinyurl.enabled']) {
+      $routes['tinyurl'] = array(
+        'pattern' => c::$data['tinyurl.folder'] . '/(:any)/(:any?)',
+        'action'  => function($hash, $lang = null) {
+          $page = kirby::$site->index()->findBy('hash', $hash);
+          if(!$page) return kirby::$site->errorPage();
+          go($page->url($lang));
+        }
+      );
+    }
+
     // all other urls
     $routes['others'] = array(
       'pattern' => '(:all)',
@@ -222,6 +234,10 @@ class Kirby {
 
     // the default timezone
     c::$data['timezone'] = 'UTC';
+
+    // tinyurl handling
+    c::$data['tinyurl.enabled'] = true;
+    c::$data['tinyurl.folder']  = 'x';
 
     // disable the cache by default
     c::$data['cache']         = false;
