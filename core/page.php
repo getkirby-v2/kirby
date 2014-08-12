@@ -1047,14 +1047,16 @@ abstract class PageAbstract {
       throw new Exception('The uid is missing');
     }
 
+    // don't do anything if the uid exists
     if($this->uid() === $uid) return true;
+
+    // check for an existing page with the same UID
+    if($this->siblings()->not($this)->find($uid)) {
+      throw new Exception('A page with this uid already exists');
+    }
 
     $dir  = $this->isVisible() ? $this->num() . '-' . $uid : $uid;
     $root = dirname($this->root()) . DS . $dir;
-
-    if(is_dir($root)) {
-      throw new Exception('A page with this uid already exists');
-    }
 
     if(!dir::move($this->root(), $root)) {
       throw new Exception('The directory could not be moved');
