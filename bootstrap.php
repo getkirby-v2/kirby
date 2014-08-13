@@ -3,8 +3,9 @@
 if(!defined('KIRBY')) define('KIRBY', true);
 if(!defined('DS'))    define('DS', DIRECTORY_SEPARATOR);
 
-// load the kirby toolkit
-include(__DIR__ . DS . 'toolkit' . DS . 'bootstrap.php');
+// load the kirby toolkit (path depends on installation method: Composer vs. submodule)
+$path = (is_dir(dirname(__DIR__) . DS . 'toolkit'))? dirname(__DIR__) . DS . 'toolkit' : __DIR__ . DS . 'toolkit';
+include($path . DS . 'bootstrap.php');
 
 // start a session
 s::start();
