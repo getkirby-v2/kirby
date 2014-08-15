@@ -496,7 +496,8 @@ class Kirby {
     // TODO: check for site modification date and flush the cache
 
     // try to read the cache
-    $cache = true ? cache::get($page->id()) : null;
+    $id    = static::$site->multilang() ? static::$site->language()->code() . '.' . md5($page->id()) : md5($page->id());
+    $cache = true ? cache::get($id) : null;
 
     // fetch fresh content if the cache is empty
     if(empty($cache)) {
