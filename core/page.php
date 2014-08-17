@@ -44,8 +44,8 @@ abstract class PageAbstract {
     $this->depth   = $parent->depth() + 1;
 
     // extract the uid and num of the directory
-    if(preg_match('/^([0-9]+[\-]+)/', $this->dirname, $match)) {
-      $this->uid = str_replace($match[1], '', $this->dirname);
+    if(preg_match('/^([0-9]+[\-]+)(.*)/', $this->dirname, $match)) {
+      $this->uid = $match[2];
       $this->num = trim(rtrim($match[1], '-'));
     } else {
       $this->num = null;
@@ -634,7 +634,8 @@ abstract class PageAbstract {
    * @return Field | string
    */
   public function title() {
-    return $this->content()->get('title') ?: $this->uid;
+    $title = $this->content()->get('title');
+    return $title != '' ? $title : $this->uid();
   }
 
   /**
