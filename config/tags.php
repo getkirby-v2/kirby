@@ -67,17 +67,19 @@ kirbytext::$tags['image'] = array(
     'title',
     'class',
     'linkclass',
+    'caption',
     'link',
     'target',
     'rel'
   ),
   'html' => function($tag) {
 
-    $url   = $tag->attr('image');
-    $alt   = $tag->attr('alt');
-    $title = $tag->attr('title');
-    $link  = $tag->attr('link');
-    $file  = $tag->file($url);
+    $url     = $tag->attr('image');
+    $alt     = $tag->attr('alt');
+    $title   = $tag->attr('title');
+    $link    = $tag->attr('link');
+    $caption = $tag->attr('caption');
+    $file    = $tag->file($url);
 
     // use the file url if available and otherwise the given url
     $url = $file ? $file->url() : url($url);
@@ -108,23 +110,40 @@ kirbytext::$tags['image'] = array(
       'alt'    => html($alt)
     ));
 
-    if(!$tag->attr('link')) return $image;
+    if($tag->attr('link')) {
 
-    // build the href for the link
-    if($link == 'self') {
-      $href = $url;
-    } else if($file and $link == $file->filename()) {
-      $href = $file->url();
-    } else {
-      $href = $link;
+      // build the href for the link
+      if($link == 'self') {
+        $href = $url;
+      } else if($file and $link == $file->filename()) {
+        $href = $file->url();
+      } else {
+        $href = $link;
+      }
+
+      $image = html::a(url($href), $image, array(
+        'rel'    => $tag->attr('rel'),
+        'class'  => $tag->attr('linkclass'),
+        'title'  => html($tag->attr('title')),
+        'target' => $tag->target()
+      ));
+
     }
 
-    return html::a(url($href), $image, array(
-      'rel'    => $tag->attr('rel'),
-      'class'  => $tag->attr('linkclass'),
-      'title'  => html($tag->attr('title')),
-      'target' => $tag->target()
-    ));
+    if(!empty($caption)) {
+
+      $html  = array();
+
+      $html[] = '<figure>';
+      $html[] = $image;
+      $html[] = '<figcaption>' . html($caption) . '</figcaption>';
+      $html[] = '</figure>';
+
+      return implode(PHP_EOL, $html);
+
+    } else {
+      return '<figure>' . $image . '</figure>';
+    }
 
   }
 );
