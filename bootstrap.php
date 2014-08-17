@@ -11,6 +11,8 @@ s::start();
 
 // load all core classes
 load(array(
+
+  // all core abstracts
   'childrenabstract'  => __DIR__ . DS . 'core' . DS . 'children.php',
   'contentabstract'   => __DIR__ . DS . 'core' . DS . 'content.php',
   'fieldabstract'     => __DIR__ . DS . 'core' . DS . 'field.php',
@@ -22,6 +24,9 @@ load(array(
   'siteabstract'      => __DIR__ . DS . 'core' . DS . 'site.php',
   'usersabstract'     => __DIR__ . DS . 'core' . DS . 'users.php',
   'userabstract'      => __DIR__ . DS . 'core' . DS . 'user.php',
+
+  // lib
+  'pageextension'     => __DIR__ . DS . 'lib' . DS . 'pageextension.php',
 
   // vendors
   'parsedown'         => __DIR__ . DS . 'vendors' . DS . 'parsedown.php',
