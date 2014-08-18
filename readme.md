@@ -11,5 +11,5 @@ This is the core system folder for Kirby 2
 We recommend to install the starterkit: https://github.com/getkirby/starterkit or boilerplate https://github.com/getkirby/boilerplate to get started. Both include the Kirby core. If you just want the core go for
 
 ````
-git pull https://github.com/getkirby/panel.git
+git pull https://github.com/getkirby/kirby.git
 ````
