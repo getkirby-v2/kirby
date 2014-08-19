@@ -66,6 +66,7 @@ kirbytext::$tags['image'] = array(
     'text',
     'title',
     'class',
+    'imgclass',
     'linkclass',
     'caption',
     'link',
@@ -105,7 +106,7 @@ kirbytext::$tags['image'] = array(
     $image = html::img($url, array(
       'width'  => $tag->attr('width'),
       'height' => $tag->attr('height'),
-      'class'  => $tag->attr('class'),
+      'class'  => $tag->attr('imgclass'),
       'title'  => html($title),
       'alt'    => html($alt)
     ));
@@ -130,20 +131,15 @@ kirbytext::$tags['image'] = array(
 
     }
 
+    $figure = new Brick('figure');
+    $figure->addClass($tag->attr('class'));
+    $figure->append($image);
+
     if(!empty($caption)) {
-
-      $html  = array();
-
-      $html[] = '<figure>';
-      $html[] = $image;
-      $html[] = '<figcaption>' . html($caption) . '</figcaption>';
-      $html[] = '</figure>';
-
-      return implode(PHP_EOL, $html);
-
-    } else {
-      return '<figure>' . $image . '</figure>';
+      $figure->append('<figcaption>' . html($caption) . '</figcaption>');
     }
+
+    return $figure;
 
   }
 );
