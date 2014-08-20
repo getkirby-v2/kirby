@@ -12,6 +12,8 @@
 abstract class KirbytextAbstract {
 
   static public $tags = array();
+  static public $pre  = array();
+  static public $post = array();
 
   public $field;
 
@@ -38,14 +40,21 @@ abstract class KirbytextAbstract {
 
     $val = $this->field->value;
 
+    // pre filters
+    foreach(static::$pre as $filter) {
+      $val = call_func_array($filter, array($this, $val));
+    }
+
     // tags
     $val = preg_replace_callback('!(?=[^\]])\([a-z0-9]+:.*?\)!i', array($this, 'tag'), $val);
 
-    // unwrap single images, which are wrapped with p elements
-    $val = preg_replace('!\<p>(<img.*?\/>)<\/p>!', '$1', $val);
-
     // markdownify
     $val = markdown($val);
+
+    // post filters
+    foreach(static::$post as $filter) {
+      $val = call_user_func_array($filter, array($this, $val));
+    }
 
     return $val;
 

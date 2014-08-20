@@ -434,7 +434,7 @@ class Kirby {
   static protected function tags() {
 
     // load all kirby tags
-    include_once(__DIR__ . DS . 'config'  . DS . 'tags.php');
+    include_once(__DIR__ . DS . 'config'  . DS . 'kirbytext.php');
 
     // install additional kirby tags
     kirbytext::install(c::$data['root.tags']);
