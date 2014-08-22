@@ -36,6 +36,9 @@ class UserAbstract {
     // get all data from the account file
     $this->data = data::read($this->file(), 'yaml');
 
+    // make sure all keys are lowercase
+    $this->data = array_change_key_case($this->data, CASE_LOWER);
+
     // remove garbage
     unset($this->data[0]);
 
