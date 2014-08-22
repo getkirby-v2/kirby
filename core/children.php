@@ -238,6 +238,79 @@ abstract class ChildrenAbstract extends Collection {
   }
 
   /**
+   * Native search method to search for anything within the collection
+   */
+  public function search($query, $params = array()) {
+
+    if(is_string($params)) {
+      $params = array('fields' => str::split($params, '|'));
+    }
+
+    $defaults = array(
+      'minlength' => 2,
+      'fields'    => array(),
+      'words'     => false,
+      'score'     => array()
+    );
+
+    $options     = array_merge($defaults, $params);
+    $collection  = clone $this;
+    $searchwords = preg_replace('/(\s)/u',',', $query);
+    $searchwords = str::split($searchwords, ',', $options['minlength']);
+
+    if(!empty($options['stopwords'])) {
+      $searchwords = array_diff($searchwords, $options['stopwords']);
+    }
+
+    if(empty($searchwords)) return $collection->limit(0);
+
+    $searchwords = array_map(function($value) use($options) {
+      return $options['words'] ? '\b' . preg_quote($value) . '\b' : preg_quote($value);
+    }, $searchwords);
+
+    $preg    = '!(' . implode('|', $searchwords) . ')!i';
+    $results = $collection->filter(function($page) use($query, $searchwords, $preg, $options) {
+
+      $data = $page->content()->toArray();
+      $keys = array_keys($data);
+
+      if(!empty($options['fields'])) {
+        $keys = array_intersect($keys, $options['fields']);
+      }
+
+      $page->searchHits  = 0;
+      $page->searchScore = 0;
+
+      foreach($keys as $key) {
+
+        $score = a::get($options['score'], $key, 1);
+
+        // check for a match
+        if($matches = preg_match_all($preg, $data[$key])) {
+
+          $page->searchHits  += $matches;
+          $page->searchScore += $matches * $score;
+
+          // check for full matches
+          if($matches = preg_match_all('!' . preg_quote($query) . '!i', $data[$key])) {
+            $page->searchScore += $matches * $score;
+          }
+
+        }
+
+      }
+
+      return $page->searchHits > 0 ? true : false;
+
+    });
+
+    $results = $results->sortBy('searchScore', SORT_DESC);
+
+    return $results;
+
+  }
+
+  /**
    * Creates a clean one-level collection with all
    * pages, subpages, subsubpages, etc.
    *

@@ -671,7 +671,7 @@ abstract class PageAbstract {
    * @return Field
    */
   public function __call($key, $arguments = null) {
-    return $this->content()->get($key, $arguments);
+    return isset($this->$key) ? $this->$key : $this->content()->get($key, $arguments);
   }
 
   /**
@@ -836,6 +836,17 @@ abstract class PageAbstract {
    */
   public function index() {
     return $this->children()->index();
+  }
+
+  /**
+   * Search in subpages and all descendants of this page
+   *
+   * @param string $query
+   * @param array $params
+   * @return Children
+   */
+  public function search($query, $params = array()) {
+    return $this->children()->index()->search($query, $params);
   }
 
   // template stuff
