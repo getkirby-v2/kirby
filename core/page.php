@@ -958,7 +958,7 @@ abstract class PageAbstract {
 
     $uid       = str::slug(basename($uri));
     $parentURI = dirname($uri);
-    $parent    = ($parentURI == '.' or empty($parentURI) or $parentURI == '/') ? site() : page($parentURI);
+    $parent    = ($parentURI == '.' or empty($parentURI) or $parentURI == DS) ? site() : page($parentURI);
 
     if(!$parent) {
       throw new Exception('The parent does not exist');
