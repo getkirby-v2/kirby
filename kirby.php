@@ -76,8 +76,12 @@ class Kirby {
       return static::render(page($response));
     } else if(is_array($response)) {
       return static::render(page($response[0]), $response[1]);
-    } else {
+    } else if(is_a($response, 'Response')) {
+      return $response;
+    } else if(is_a($response, 'Page')) {
       return static::render($response);
+    } else {
+      return null;
     }
 
   }
