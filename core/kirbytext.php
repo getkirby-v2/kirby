@@ -42,7 +42,7 @@ abstract class KirbytextAbstract {
 
     // pre filters
     foreach(static::$pre as $filter) {
-      $val = call_func_array($filter, array($this, $val));
+      $val = call_user_func_array($filter, array($this, $val));
     }
 
     // tags

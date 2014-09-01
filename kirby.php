@@ -76,8 +76,12 @@ class Kirby {
       return static::render(page($response));
     } else if(is_array($response)) {
       return static::render(page($response[0]), $response[1]);
-    } else {
+    } else if(is_a($response, 'Response')) {
+      return $response;
+    } else if(is_a($response, 'Page')) {
       return static::render($response);
+    } else {
+      return null;
     }
 
   }
@@ -296,8 +300,24 @@ class Kirby {
     // default url handler
     if(empty(c::$data['url.to'])) {
       c::$data['url.to'] = function($url = '') {
-        // don't convert absolute urls
-        return url::isAbsolute($url) ? $url : url::makeAbsolute($url);
+
+        if(url::isAbsolute($url)) return $url;
+
+        $start = substr($url, 0, 1);
+
+        switch($start) {
+          case '#':
+            return $url;
+            break;
+          case '.':
+            return page()->url() . '/' . $url;
+            break;
+          default:
+            // don't convert absolute urls
+            return url::makeAbsolute($url);
+            break;
+        }
+
       };
     }
 
