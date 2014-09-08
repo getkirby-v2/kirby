@@ -517,12 +517,12 @@ class Kirby {
 
     // try to read the cache
     $id    = static::$site->multilang() ? static::$site->language()->code() . '.' . md5($page->id()) : md5($page->id());
-    $cache = true ? cache::get($id) : null;
+    $cache = cache::created($id) ? cache::get($id) : null;
 
     // fetch fresh content if the cache is empty
     if(empty($cache)) {
       $cache = static::template($page, $data);
-      cache::set($page->id(), $cache);
+      cache::set($id, $cache);
     }
 
     return $cache;
