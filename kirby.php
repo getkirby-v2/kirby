@@ -70,6 +70,16 @@ class Kirby {
 
     if(is_null(static::$site) or !empty($config)) static::setup($config);
 
+    // check for a valid route
+    if(is_null(static::$route)) {
+      header::status('500');
+      header::type('json');
+      die(json_encode(array(
+        'status'  => 'error',
+        'message' => 'Invalid route or request method'
+      )));
+    }
+
     $response = call(static::$route->action(), static::$route->arguments());
 
     if(is_string($response)) {
@@ -127,7 +137,7 @@ class Kirby {
       // language resolver
       $routes['languages'] = array(
         'pattern' => '(' . implode('|', static::$site->languages->codes()) . ')/(:all?)',
-        'method'  => 'GET|POST',
+        'method'  => 'ALL',
         'action'  => function($lang, $path = null) {
           // visit the currently active page for a specific language
           return kirby::$site->visit($path, $lang);
@@ -151,7 +161,7 @@ class Kirby {
     // all other urls
     $routes['others'] = array(
       'pattern' => '(:all)',
-      'method'  => 'GET|POST',
+      'method'  => 'ALL',
       'action'  => function($path = null) {
         // visit the currently active page
         $page = kirby::$site->visit($path);
