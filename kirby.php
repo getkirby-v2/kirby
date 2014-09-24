@@ -393,6 +393,9 @@ class Kirby {
    */
   static protected function plugins() {
 
+    // load all field methods
+    include(__DIR__ . DS . 'config' . DS . 'methods.php');
+
     // check for a cached plugins array
     if(!is_null(static::$plugins)) return static::$plugins;
 
