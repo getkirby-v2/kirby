@@ -825,8 +825,8 @@ abstract class PageAbstract {
    *
    * @return int
    */
-  public function modified() {
-    return filemtime($this->root);
+  public function modified($format = null) {
+    return f::modified($this->root, $format);
   }
 
   /**
