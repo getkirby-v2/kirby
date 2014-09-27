@@ -257,12 +257,13 @@ abstract class PageAbstract {
     );
 
     foreach($items as $item) {
-
-      $root = $this->root . DS . $item;
-
-      if(is_dir($root)) {
+	  //assume that files without dots are folders
+      if(!strpos($item, '.')) {
         $this->cache['inventory']['children'][] = $item;
-      } else if(pathinfo($item, PATHINFO_EXTENSION) == $this->site->options['content.file.extension']) {
+        continue;
+      }
+      
+      if(pathinfo($item, PATHINFO_EXTENSION) == $this->site->options['content.file.extension']) {
         $this->cache['inventory']['content'][] = $item;
       } else if(strpos($item, '.thumb.') !== false and preg_match('!\.thumb\.(jpg|jpeg|png|gif)$!i', $item)) {
         // get the filename of the original image and use it as the array key
@@ -311,8 +312,15 @@ abstract class PageAbstract {
 
     $inventory = $this->inventory();
 
-    foreach($inventory['children'] as $child) {
-      $this->cache['children']->add($child);
+    foreach($inventory['children'] as $i => $child) {
+	// check that found children are indeed folders, otherwise move to files
+      if (is_dir($this->root . DS . $child)) {
+	      $this->cache['children']->add($child);
+      } else {
+	      unset($inventory['children'][$i]);
+	      $this->cache['inventory']['files'][] = $child;
+      }
+      
     }
 
     return $this->cache['children'];
