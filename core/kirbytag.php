@@ -68,6 +68,24 @@ abstract class KirbytagAbstract {
   }
 
   /**
+   * Returns the parent kirbytext object
+   *
+   * @return object Kirbytext
+   */
+  public function kirbytext() {
+    return $this->kirbytext;
+  }
+
+  /**
+   * Returns the field object
+   *
+   * @return object Field
+   */
+  public function field() {
+    return $this->kirbytext->field();
+  }
+
+  /**
    * Tries to find all related files for the current page
    *
    * @return object Files
