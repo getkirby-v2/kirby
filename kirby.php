@@ -366,7 +366,7 @@ class Kirby extends Obj {
     if($headers) $page->headers();
 
     // if the cache is activated…
-    if($this->options['cache']) {
+    if($this->options['cache'] and !in_array($page, c::$data['cache.ignore'])) {
 
       // TODO: check for site modification date and flush the cache
 
