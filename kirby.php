@@ -447,4 +447,8 @@ class Kirby extends Obj {
 
   }
 
+  static public function start() {
+    return kirby()->launch();
+  }
+
 }
