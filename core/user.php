@@ -63,7 +63,7 @@ class UserAbstract {
     if(isset($this->cache['avatar'])) return $this->cache['avatar'];
 
     // try to find the avatar
-    $root = kirby::instance()->roots()->avatars() . DS . $this->username() . '.{jpg,png}';
+    $root = kirby::instance()->roots()->avatars() . DS . $this->username() . '.{jpg,jpeg,png}';
 
     if($avatar = a::first((array)glob($root, GLOB_BRACE))) {
       return $this->cache['avatar'] = new Media($avatar, kirby::instance()->urls()->avatars() . '/' . f::filename($avatar));

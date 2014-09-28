@@ -13,7 +13,6 @@ class Kirby extends Obj {
   public $license;
   public $routes;
   public $router;
-  public $branch;
   public $site;
   public $page;
   public $plugins;
@@ -289,6 +288,21 @@ class Kirby extends Obj {
   }
 
   /**
+   * Returns the branch file
+   *
+   * @return string
+   */
+  public function branch() {
+
+    // which branch?
+    $branch = count($this->options['languages']) > 0 ? 'multilang' : 'default';
+
+    // build the path for the branch file
+    return $this->roots()->kirby() . DS . 'branches' . DS . $branch . '.php';
+
+  }
+
+  /**
    * Initializes and returns the site object
    * depending on the appropriate branch
    *
@@ -305,11 +319,8 @@ class Kirby extends Obj {
     // setup the cache
     $this->cache();
 
-    // which branch?
-    $this->branch = count($this->options['languages']) > 0 ? 'multilang' : 'default';
-
     // load the main branch file
-    include_once($this->roots()->kirby() . DS . 'branches' . DS . $this->branch . '.php');
+    require($this->branch());
 
     // create the site object
     return $this->site = new Site($this);
