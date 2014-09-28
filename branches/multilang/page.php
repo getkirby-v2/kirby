@@ -25,6 +25,16 @@ class Page extends PageAbstract {
   }
 
   /**
+   * Returns the cache id
+   *
+   * @return string
+   */
+  public function cid($lang = null) {
+    if(is_null($lang)) $lang = $this->site->language->code;
+    return $lang . '.' . parent::cid();
+  }
+
+  /**
    * Returns the slug for the page
    * The slug is the last part of the URL path
    * For multilang sites this can be translated with a URL-Key field
@@ -124,7 +134,7 @@ class Page extends PageAbstract {
 
     $inventory   = parent::inventory();
     $defaultLang = $this->site->defaultLanguage->code;
-    $expression  = '!(.*?)(\.(' . implode('|', $this->site->languages->codes()) . ')|)\.' . $this->site->options['content.file.extension'] . '$!i';
+    $expression  = '!(.*?)(\.(' . implode('|', $this->site->languages->codes()) . ')|)\.' . $this->kirby->options['content.file.extension'] . '$!i';
 
     foreach($inventory['meta'] as $key => $meta) {
       $inventory['meta'][$key] = array($defaultLang => $meta);

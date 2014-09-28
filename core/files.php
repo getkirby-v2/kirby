@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * Files
@@ -11,12 +11,18 @@
  */
 abstract class FilesAbstract extends Collection {
 
-  protected $site = null;
-  protected $page = null;
+  public $kirby = null;
+  public $site  = null;
+  public $page  = null;
 
   public function __construct($page) {
-    $this->site = $page->site();
-    $this->page = $page;
+    $this->kirby = $page->kirby;
+    $this->site  = $page->site;
+    $this->page  = $page;
+  }
+
+  public function kirby() {
+    return $this->kirby;
   }
 
   public function site() {

@@ -1,10 +1,10 @@
-<?php 
+<?php
 
 class UsersAbstract extends Collection {
 
   public function __construct() {
 
-    $root = c::get('root.accounts');
+    $root = kirby::instance()->roots()->accounts();
 
     foreach(dir::read($root) as $file) {
 
@@ -15,7 +15,7 @@ class UsersAbstract extends Collection {
       $this->append($user->username(), $user);
 
     }
-      
+
   }
 
   public function create($data) {

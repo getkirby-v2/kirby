@@ -227,9 +227,9 @@ kirbytext::$tags['youtube'] = array(
   ),
   'html' => function($tag) {
 
-    return '<figure class="' . $tag->attr('class', c::get('kirbytext.video.class', 'video')) . '">' . embed::youtube($tag->attr('youtube'), array(
-      'width'  => $tag->attr('width',  c::get('kirbytext.video.width')),
-      'height' => $tag->attr('height', c::get('kirbytext.video.height')),
+    return '<figure class="' . $tag->attr('class', kirby()->option('kirbytext.video.class', 'video')) . '">' . embed::youtube($tag->attr('youtube'), array(
+      'width'  => $tag->attr('width',  kirby()->option('kirbytext.video.width')),
+      'height' => $tag->attr('height', kirby()->option('kirbytext.video.height')),
     )) . '</figure>';
 
   }
@@ -243,9 +243,9 @@ kirbytext::$tags['vimeo'] = array(
   ),
   'html' => function($tag) {
 
-    return '<figure class="' . $tag->attr('class', c::get('kirbytext.video.class', 'video')) . '">' . embed::vimeo($tag->attr('vimeo'), array(
-      'width'  => $tag->attr('width',  c::get('kirbytext.video.width')),
-      'height' => $tag->attr('height', c::get('kirbytext.video.height')),
+    return '<figure class="' . $tag->attr('class', kirby()->option('kirbytext.video.class', 'video')) . '">' . embed::vimeo($tag->attr('vimeo'), array(
+      'width'  => $tag->attr('width',  kirby()->option('kirbytext.video.width')),
+      'height' => $tag->attr('height', kirby()->option('kirbytext.video.height')),
     )) . '</figure>';
 
   }

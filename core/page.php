@@ -18,9 +18,11 @@
  */
 abstract class PageAbstract {
 
+  public $kirby;
+  public $site;
+  public $parent;
+
   protected $id;
-  protected $site;
-  protected $parent;
   protected $dirname;
   protected $root;
   protected $depth;
@@ -37,8 +39,9 @@ abstract class PageAbstract {
    */
   public function __construct($parent, $dirname) {
 
+    $this->kirby   = $parent->kirby;
+    $this->site    = $parent->site;
     $this->parent  = $parent;
-    $this->site    = $parent->site();
     $this->dirname = $dirname;
     $this->root    = $parent->root() . DS . $dirname;
     $this->depth   = $parent->depth() + 1;
@@ -71,6 +74,15 @@ abstract class PageAbstract {
    */
   public function touch() {
     return touch($this->root());
+  }
+
+  /**
+   * Returns the kirby object
+   *
+   * @return Kirby
+   */
+  public function kirby() {
+    return $this->kirby;
   }
 
   /**
@@ -170,10 +182,10 @@ abstract class PageAbstract {
    * @return string
    */
   public function tinyurl() {
-    if(!$this->site->options['tinyurl.enabled']) {
+    if(!$this->kirby->options['tinyurl.enabled']) {
       return $this->url();
     } else {
-      return url($this->site->options['tinyurl.folder'] . '/' . $this->hash());
+      return url($this->kirby->options['tinyurl.folder'] . '/' . $this->hash());
     }
   }
 
@@ -205,6 +217,15 @@ abstract class PageAbstract {
    */
   public function id() {
     return $this->id;
+  }
+
+  /**
+   * Returns the cache id
+   *
+   * @return string
+   */
+  public function cid() {
+    return sha1($this->id());
   }
 
   /**
@@ -262,7 +283,7 @@ abstract class PageAbstract {
 
       if(is_dir($root)) {
         $this->cache['inventory']['children'][] = $item;
-      } else if(pathinfo($item, PATHINFO_EXTENSION) == $this->site->options['content.file.extension']) {
+      } else if(pathinfo($item, PATHINFO_EXTENSION) == $this->kirby->options['content.file.extension']) {
         $this->cache['inventory']['content'][] = $item;
       } else if(strpos($item, '.thumb.') !== false and preg_match('!\.thumb\.(jpg|jpeg|png|gif)$!i', $item)) {
         // get the filename of the original image and use it as the array key
@@ -736,7 +757,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isHomePage() {
-    return $this->uri === $this->site->options['home'];
+    return $this->uri === $this->kirby->options['home'];
   }
 
   /**
@@ -748,7 +769,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isErrorPage() {
-    return $this->uri === $this->site->options['error'];
+    return $this->uri === $this->kirby->options['error'];
   }
 
   /**
@@ -873,7 +894,7 @@ abstract class PageAbstract {
 
     // check if the file exists and return the appropriate template name
     return $this->cache['template'] =
-      file_exists($this->site->options['root.templates'] . DS . $templateName . '.php') ?
+      file_exists(kirby::instance()->roots()->templates() . DS . $templateName . '.php') ?
         $templateName : 'default';
 
   }
@@ -884,7 +905,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function templateFile() {
-    return $this->site->options['root.templates'] . DS . $this->template() . '.php';
+    return kirby::instance()->roots()->templates() . DS . $this->template() . '.php';
   }
 
   /**
@@ -905,7 +926,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function intendedTemplateFile() {
-    return $this->site->options['root.templates'] . DS . $this->intendedTemplate() . '.php';
+    return kirby::instance()->roots()->templates() . DS . $this->intendedTemplate() . '.php';
   }
 
   /**
@@ -926,8 +947,8 @@ abstract class PageAbstract {
   public function headers() {
 
     $template = $this->template();
-    if(isset($this->site->options['headers'][$template])) {
-      $headers = $this->site->options['headers'][$template];
+    if(isset($this->kirby->options['headers'][$template])) {
+      $headers = $this->kirby->options['headers'][$template];
 
       if(is_numeric($headers)) {
         header::status($headers);

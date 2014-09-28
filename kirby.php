@@ -1,77 +1,428 @@
 <?php
 
-/**
- * Kirby
- *
- * @package   Kirby CMS
- * @author    Bastian Allgeier <bastian@getkirby.com>
- * @link      http://getkirby.com
- * @copyright Bastian Allgeier
- * @license   http://getkirby.com/license
- */
-class Kirby {
+use Kirby\Roots;
+use Kirby\Urls;
 
-  // The site singleton
-  static public $site;
+class Kirby extends Obj {
 
-  // The currently active page
-  static public $page;
+  public $roots;
+  public $urls;
+  public $cache;
+  public $path;
+  public $options = array();
+  public $license;
+  public $routes;
+  public $router;
+  public $branch;
+  public $site;
+  public $page;
+  public $plugins;
 
-  // An array of globally available data
-  static public $data = array();
+  static public $instance;
 
-  // The router object
-  static public $router;
+  static public function instance($class = null) {
+    if(!is_null(static::$instance)) return static::$instance;
+    return static::$instance = $class ? new $class : new static;
+  }
 
-  // The current route object
-  static public $route;
+  public function __construct() {
+    $this->roots   = new Roots(dirname(__DIR__));
+    $this->urls    = new Urls();
+    $this->options = $this->defaults();
+    $this->rewrite = false;
+    $this->path    = implode('/', (array)url::fragments(detect::path()));
 
-  // An array with all loaded plugins
-  static public $plugins;
+  }
 
-  static public function setup($config = array()) {
+  public function defaults() {
+    return array(
+      'timezone'               => 'UTC',
+      'license'                => null,
+      'rewrite'                => true,
+      'error'                  => 'error',
+      'home'                   => 'home',
+      'locale'                 => 'en_US.UTF8',
+      'routes'                 => array(),
+      'headers'                => array(),
+      'languages'              => array(),
+      'cache'                  => false,
+      'cache.driver'           => 'file',
+      'cache.options'          => array(),
+      'tinyurl.enabled'        => true,
+      'tinyurl.folder'         => 'x',
+      'markdown.extra'         => false,
+      'markdown.breaks'        => true,
+      'kirbytext.video.class'  => 'video',
+      'kirbytext.video.width'  => false,
+      'kirbytext.video.height' => false,
+      'content.file.extension' => 'txt',
+    );
+  }
 
-    // load all config settings
-    static::configure($config);
+  public function option($key, $default = null) {
+    return a::get($this->options, $key, $default);
+  }
 
-    // load the cms branch
-    static::branch();
+  public function path() {
+    return $this->path;
+  }
 
-    // create a new site object
-    static::$site = $GLOBALS['site'] = new Site(c::$data);
+  public function url() {
+    return $this->urls->index();
+  }
 
-    // start the router
-    static::$router = new Router();
+  public function configure() {
 
-    // register all available
-    static::$router->register(static::routes());
+    // load all available config files
+    $root    = $this->roots()->config();
+    $configs = array(
+      'main' => $root . DS . 'config.php',
+      'host' => $root . DS . 'config.' . server::get('HTTP_HOST') . '.php',
+      'addr' => $root . DS . 'config.' . server::get('SERVER_ADDR') . '.php',
+    );
 
-    // only use the fragments of the path without params
-    static::$route = static::$router->run(static::path());
+    foreach($configs as $config) {
+      if(file_exists($config)) include_once($config);
+    }
 
-    // load kirbytext and all tags
-    static::tags();
+    // apply the options
+    $this->options = array_merge($this->options, c::$data);
 
-    // load the plugins
-    static::plugins();
+    // connect the url class with its handlers
+    url::$home = $this->urls()->index();
+    url::$to   = $this->option('url.to', function($url = '') {
+      // don't convert absolute urls
+      return url::isAbsolute($url) ? $url : url::makeAbsolute($url);
+    });
 
-    // return the configured site object
-    return static::$site;
+    // setup the thumbnail generator
+    thumb::$defaults['root']     = $this->roots->thumbs();
+    thumb::$defaults['url']      = $this->urls->thumbs();
+    thumb::$defaults['driver']   = $this->option('thumb.driver', 'gd');
+    thumb::$defaults['filename'] = $this->option('thumb.driver', '{safeName}-{hash}.{extension}');
 
   }
 
   /**
-   * Starts the Kirby setup and
-   * returns the content
+   * Registers all routes
    *
+   * @return array
+   */
+  public function routes() {
+
+    $routes = $this->options['routes'];
+    $kirby  = $this;
+    $site   = $this->site();
+
+    if($site->multilang()) {
+
+      // language resolver
+      $routes['languages'] = array(
+        'pattern' => '(' . implode('|', $site->languages()->codes()) . ')/(:all?)',
+        'method'  => 'ALL',
+        'action'  => function($lang, $path = null) use($site) {
+          // visit the currently active page for a specific language
+          return $site->visit($path, $lang);
+        }
+      );
+
+    }
+
+    // tinyurl handling
+    if($this->options['tinyurl.enabled']) {
+      $routes['tinyurl'] = array(
+        'pattern' => $this->options['tinyurl.folder'] . '/(:any)/(:any?)',
+        'action'  => function($hash, $lang = null) use($site) {
+          $page = $site->index()->findBy('hash', $hash);
+          if(!$page) return $site->errorPage();
+          go($page->url($lang));
+        }
+      );
+    }
+
+    // all other urls
+    $routes['others'] = array(
+      'pattern' => '(:all)',
+      'method'  => 'ALL',
+      'action'  => function($path = null) use($site) {
+        // visit the currently active page
+        $page = $site->visit($path);
+
+        // react on errors for invalid URLs
+        if($page->isErrorPage() and $page->uri() != $path) {
+
+          // get the filename
+          $filename = basename($path);
+          $pagepath = dirname($path);
+
+          // check if there's a page for the parent path
+          if($page = $site->find($pagepath)) {
+            // check if there's a file for the last element of the path
+            if($file = $page->file($filename)) {
+              // TODO: put asset pipe here
+              // redirect to the real file url to make this snappy
+              go($file->url());
+            }
+          }
+
+          // return the error page if there's no such page
+          return $site->errorPage();
+
+        }
+
+        return $page;
+
+      }
+
+    );
+
+    return $routes;
+
+  }
+
+  /**
+   * Loads all available plugins for the site
+   *
+   * @return array
+   */
+  public function plugins() {
+
+    // check for a cached plugins array
+    if(!is_null($this->plugins)) return $this->plugins;
+
+    // get the plugins root
+    $root = $this->roots->plugins();
+
+    // start the plugin registry
+    $this->plugins = array();
+
+    // check for an existing plugins dir
+    if(!is_dir($root)) return $this->plugins;
+
+    foreach(array_diff(scandir($root), array('.', '..')) as $file) {
+      if(is_dir($root . DS . $file)) {
+        $this->plugin($file, 'dir');
+      } else if(f::extension($file) == 'php') {
+        $this->plugin(f::name($file), 'file');
+      }
+    }
+
+    return $this->plugins;
+
+  }
+
+  /**
+   * Load all default extensions
+   */
+  public function extensions() {
+
+    // load all kirby tags and field methods
+    include_once(__DIR__ . DS . 'extensions'  . DS . 'tags.php');
+    include_once(__DIR__ . DS . 'extensions'  . DS . 'methods.php');
+
+    // install additional kirby tags
+    kirbytext::install($this->roots->tags());
+
+  }
+
+  /**
+   * Loads a single plugin
+   *
+   * @param string $name
+   * @param string $mode
+   * @return mixed
+   */
+  public function plugin($name, $mode = 'dir') {
+
+    if(isset($this->plugins[$name])) return true;
+
+    if($mode == 'dir') {
+      $file = $this->roots->plugins() . DS . $name . DS . $name . '.php';
+    } else {
+      $file = $this->roots->plugins() . DS . $name . '.php';
+    }
+
+    if(file_exists($file)) return $this->plugins[$name] = include_once($file);
+
+  }
+
+  /**
+   * Tries to find a controller for
+   * the current page and loads the data
+   *
+   * @return array
+   */
+  public function controller($page, $arguments = array()) {
+
+    $file = $this->roots->controllers() . DS . $page->template() . '.php';
+
+    if(file_exists($file)) {
+
+      $callback = include_once($file);
+
+      if(is_callable($callback)) return (array)call_user_func_array($callback, array(
+        $this->site(),
+        $this->site()->children(),
+        $page,
+        $arguments
+      ));
+
+    }
+
+    return array();
+
+  }
+
+  public function localize() {
+
+    // set the local for the specific language
+    setlocale(LC_ALL, $this->site()->locale());
+
+    // additional language variables for multilang sites
+    if($this->site()->multilang()) {
+      // path for the language file
+      $file = $this->roots()->languages() . DS . $this->site()->language()->code() . '.php';
+      // load the file if it exists
+      if(file_exists($file)) include_once($file);
+    }
+
+  }
+
+  /**
+   * Initializes and returns the site object
+   * depending on the appropriate branch
+   *
+   * @return Site
+   */
+  public function site() {
+
+    // check for a cached version of the site object
+    if(!is_null($this->site)) return $this->site;
+
+    // load all options
+    $this->configure();
+
+    // setup the cache
+    $this->cache();
+
+    // which branch?
+    $this->branch = count($this->options['languages']) > 0 ? 'multilang' : 'default';
+
+    // load the main branch file
+    include_once($this->roots()->kirby() . DS . 'branches' . DS . $this->branch . '.php');
+
+    // create the site object
+    return $this->site = new Site($this);
+
+  }
+
+  /**
+   * Cache setup
+   *
+   * @return Cache
+   */
+  public function cache() {
+
+    if(!is_null($this->cache)) return $this->cache;
+
+    // cache setup
+    if($this->options['cache']) {
+      if($this->options['cache.driver'] == 'file' and empty($this->options['cache.options'])) {
+        $this->options['cache.options'] = array(
+          'root' => $this->roots()->cache()
+        );
+      }
+      return $this->cache = cache::setup($this->options['cache.driver'], $this->options['cache.options']);
+    } else {
+      return $this->cache = cache::setup('mock');
+    }
+
+  }
+
+  /**
+   * Renders the HTML for the page or fetches it from the cache
+   *
+   * @param Page $page
+   * @param boolean $headers
    * @return string
    */
-  static public function start($config = array()) {
+  public function render(Page $page, $data = array(), $headers = true) {
 
-    if(is_null(static::$site) or !empty($config)) static::setup($config);
+    // register the currently rendered page
+    $this->page = $page;
+
+    // send all headers for the page
+    if($headers) $page->headers();
+
+    // if the cache is activated…
+    if($this->options['cache']) {
+
+      // TODO: check for site modification date and flush the cache
+
+      // try to read the cache by cid (cache id)
+      $cid      = $page->cid();
+      $template = $this->cache()->get($cid);
+
+      // fetch fresh content if the cache is empty
+      if(empty($html)) {
+        $template = $this->template($page, $data);
+        $this->cache()->set($cid, $template);
+      }
+
+      return $template;
+
+    } else {
+      // render the template
+      return $this->template($page, $data);
+    }
+
+  }
+
+  /**
+   * Template configuration
+   *
+   * @param Page $page
+   * @param array $data
+   * @return string
+   */
+  public function template(Page $page, $data = array()) {
+
+    // set the timezone for all date functions
+    date_default_timezone_set($this->options['timezone']);
+
+    // load all language variables
+    $this->localize();
+
+    // load all extensions
+    $this->extensions();
+
+    // load all plugins
+    $this->plugins();
+
+    // apply the basic template vars
+    tpl::$data = array_merge(array(
+      'kirby' => $this,
+      'site'  => $this->site(),
+      'pages' => $this->site()->children(),
+      'page'  => $page
+    ), $data, $this->controller($page, $data));
+
+    return tpl::load($page->templateFile());
+
+  }
+
+  /**
+   * Starts the router, renders the page and returns the response
+   *
+   * @return mixed
+   */
+  public function launch() {
+
+    $router = new Router($this->routes());
+    $route  = $router->run($this->path());
 
     // check for a valid route
-    if(is_null(static::$route)) {
+    if(is_null($route)) {
       header::status('500');
       header::type('json');
       die(json_encode(array(
@@ -80,7 +431,7 @@ class Kirby {
       )));
     }
 
-    $response = call(static::$route->action(), static::$route->arguments());
+    $response = call($route->action(), $route->arguments());
 
     if(is_string($response)) {
       return static::render(page($response));
@@ -94,470 +445,6 @@ class Kirby {
       return null;
     }
 
-  }
-
-  /**
-   * The path which will be used for the router
-   *
-   * @return string
-   */
-  static public function path() {
-    return implode('/', (array)url::fragments(detect::path()));
-  }
-
-  /**
-   * Custom site setup for the panel
-   *
-   * @return Site
-   */
-  static public function panelsetup() {
-
-    // setup the site object
-    $site = static::setup(array(
-      'url' => dirname(static::url())
-    ));
-
-    $site->visit('/');
-
-    return $site;
-
-  }
-
-  /**
-   * Registers all routes
-   *
-   * @return array
-   */
-  static protected function routes() {
-
-    $routes = c::get('routes', array());
-
-    if(static::$site->multilang()) {
-
-      // language resolver
-      $routes['languages'] = array(
-        'pattern' => '(' . implode('|', static::$site->languages->codes()) . ')/(:all?)',
-        'method'  => 'ALL',
-        'action'  => function($lang, $path = null) {
-          // visit the currently active page for a specific language
-          return kirby::$site->visit($path, $lang);
-        }
-      );
-
-    }
-
-    // tinyurl handling
-    if(c::$data['tinyurl.enabled']) {
-      $routes['tinyurl'] = array(
-        'pattern' => c::$data['tinyurl.folder'] . '/(:any)/(:any?)',
-        'action'  => function($hash, $lang = null) {
-          $page = kirby::$site->index()->findBy('hash', $hash);
-          if(!$page) return kirby::$site->errorPage();
-          go($page->url($lang));
-        }
-      );
-    }
-
-    // all other urls
-    $routes['others'] = array(
-      'pattern' => '(:all)',
-      'method'  => 'ALL',
-      'action'  => function($path = null) {
-        // visit the currently active page
-        $page = kirby::$site->visit($path);
-
-        // react on errors for invalid URLs
-        if($page->isErrorPage() and $page->uri() != $path) {
-
-          // get the filename
-          $filename = basename($path);
-          $pagepath = dirname($path);
-
-          // check if there's a page for the parent path
-          if($page = kirby::$site->find($pagepath)) {
-            // check if there's a file for the last element of the path
-            if($file = $page->file($filename)) {
-              // TODO: put asset pipe here
-              // redirect to the real file url to make this snappy
-              go($file->url());
-            }
-          }
-
-          // return the error page if there's no such page
-          return kirby::$site->errorPage();
-
-        }
-
-        return $page;
-      }
-    );
-
-    return $routes;
-
-  }
-
-  /**
-   * Loads the applicable branch
-   */
-  static public function branch() {
-
-    // which branch?
-    if(isset(c::$data['languages']) and count((array)c::$data['languages']) > 0) {
-      // if there are more than two installed languages, use the multilang branch
-      include_once(__DIR__ . DS . 'branches' . DS . 'multilang.php');
-    } else {
-      // otherwise load the default branch
-      include_once(__DIR__ . DS . 'branches' . DS . 'default.php');
-    }
-
-  }
-
-  /**
-   * Returns the proper base url for the installation
-   *
-   * @return string
-   */
-  static protected function url() {
-    // auto-detect the url
-    if(empty(c::$data['url'])) {
-      if(r::cli()) {
-        return c::$data['url'] = '/';
-      } else {
-        return c::$data['url'] = url::scheme() . '://' . server::get('HTTP_HOST') . preg_replace('!\/index\.php$!i', '', server::get('SCRIPT_NAME'));
-      }
-    } else {
-      return c::$data['url'];
-    }
-  }
-
-  /**
-   * Sets all defaults and loads the user configuration
-   *
-   * @param array $config
-   */
-  static protected function configure($config = array()) {
-
-    // start with a fresh configuration
-    c::$data = array();
-
-    // set some defaults
-    c::$data['root']         = dirname(__DIR__);
-    c::$data['root.kirby']   = __DIR__;
-    c::$data['root.content'] = c::$data['root'] . DS . 'content';
-    c::$data['root.site']    = c::$data['root'] . DS . 'site';
-
-    // the default timezone
-    c::$data['timezone'] = 'UTC';
-
-    // tinyurl handling
-    c::$data['tinyurl.enabled'] = true;
-    c::$data['tinyurl.folder']  = 'x';
-
-    // disable the cache by default
-    c::$data['cache']         = false;
-    c::$data['cache.driver']  = 'file';
-    c::$data['cache.options'] = array();
-
-    // set the default license code
-    c::$data['license'] = null;
-
-    // url rewriting
-    c::$data['rewrite'] = true;
-
-    // markdown defaults
-    c::$data['markdown']        = true;
-    c::$data['markdown.extra']  = false;
-    c::$data['markdown.breaks'] = true;
-
-    // pass the config vars from the constructor
-    // to be able to set all roots
-    c::$data = array_merge(c::$data, $config);
-
-    // set the subroots for site
-    c::$data['root.cache']       = c::$data['root.site']  . DS . 'cache';
-    c::$data['root.plugins']     = c::$data['root.site']  . DS . 'plugins';
-    c::$data['root.templates']   = c::$data['root.site']  . DS . 'templates';
-    c::$data['root.snippets']    = c::$data['root.site']  . DS . 'snippets';
-    c::$data['root.controllers'] = c::$data['root.site']  . DS . 'controllers';
-    c::$data['root.config']      = c::$data['root.site']  . DS . 'config';
-    c::$data['root.tags']        = c::$data['root.site']  . DS . 'tags';
-    c::$data['root.accounts']    = c::$data['root.site']  . DS . 'accounts';
-
-    // auto css and js setup
-    c::$data['auto.css.url']  = 'assets/css/templates';
-    c::$data['auto.css.root'] = c::$data['root'] . DS . 'assets' . DS . 'css' . DS . 'templates';
-    c::$data['auto.js.url']   = 'assets/js/templates';
-    c::$data['auto.js.root']  = c::$data['root'] . DS . 'assets' . DS . 'js'  . DS . 'templates';
-
-    // load all available config files
-    $configs = array(
-      'main' => c::$data['root.config'] . DS . 'config.php',
-      'host' => c::$data['root.config'] . DS . 'config.' . server::get('HTTP_HOST') . '.php',
-      'addr' => c::$data['root.config'] . DS . 'config.' . server::get('SERVER_ADDR') . '.php',
-    );
-
-    foreach($configs as $confile) {
-      if(file_exists($confile)) include_once($confile);
-    }
-
-    // pass the config vars from the constructor again to overwrite
-    // stuff from the user config
-    c::$data = array_merge(c::$data, $config);
-
-    // detect and store the url
-    static::url();
-
-    // default url handler
-    if(empty(c::$data['url.to'])) {
-      c::$data['url.to'] = function($url = '') {
-
-        if(url::isAbsolute($url)) return $url;
-
-        $start = substr($url, 0, 1);
-
-        switch($start) {
-          case '#':
-            return $url;
-            break;
-          case '.':
-            return page()->url() . '/' . $url;
-            break;
-          default:
-            // don't convert absolute urls
-            return url::makeAbsolute($url);
-            break;
-        }
-
-      };
-    }
-
-    // connect the url class with its handlers
-    url::$home = c::$data['url'];
-    url::$to   = c::$data['url.to'];
-
-    // setup the thumbnail generator
-    thumb::$defaults['root']     = isset(c::$data['thumb.root'])     ? c::$data['thumb.root']     : c::$data['root'] . DS . 'thumbs';
-    thumb::$defaults['url']      = isset(c::$data['thumb.url'])      ? c::$data['thumb.url']      : 'thumbs';
-    thumb::$defaults['driver']   = isset(c::$data['thumb.driver'])   ? c::$data['thumb.driver']   : 'gd';
-    thumb::$defaults['filename'] = isset(c::$data['thumb.filename']) ? c::$data['thumb.filename'] : '{safeName}-{hash}.{extension}';
-
-    // build absolute urls
-    c::$data['auto.css.url'] = url::makeAbsolute(c::$data['auto.css.url'], url::$home);
-    c::$data['auto.js.url']  = url::makeAbsolute(c::$data['auto.js.url'], url::$home);
-
-    thumb::$defaults['url']  = url::makeAbsolute(thumb::$defaults['url'], url::$home);
-
-    // cache setup
-    if(c::$data['cache']) {
-      if(c::$data['cache.driver'] == 'file' and empty(c::$data['cache.options'])) {
-        c::$data['cache.options'] = array(
-          'root' => c::get('root.cache')
-        );
-      }
-      cache::setup(c::$data['cache.driver'], c::$data['cache.options']);
-    } else {
-      cache::setup('mock');
-    }
-
-    // set the timezone for all date functions
-    date_default_timezone_set(c::$data['timezone']);
-
-    // return the entire config array
-    return c::$data;
-
-  }
-
-  /**
-   * Apply all locale settings and
-   * load language data
-   */
-  static protected function localize() {
-
-    // set the local for the specific language
-    setlocale(LC_ALL, static::$site->locale());
-
-    // additional language variables for multilang sites
-    if(static::$site->multilang()) {
-      // path for the language file
-      $file = c::$data['root.site'] . DS . 'languages' . DS . static::$site->language()->code() . '.php';
-      // load the file if it exists
-      if(file_exists($file)) include_once($file);
-    }
-
-  }
-
-  /**
-   * Loads all available plugins for the site
-   *
-   * @return array
-   */
-  static protected function plugins() {
-
-    // load all field methods
-    include(__DIR__ . DS . 'config' . DS . 'methods.php');
-
-    // check for a cached plugins array
-    if(!is_null(static::$plugins)) return static::$plugins;
-
-    // check for an existing plugins dir
-    if(!is_dir(c::$data['root.plugins'])) return static::$plugins = array();
-
-    foreach(array_diff(scandir(c::$data['root.plugins']), array('.', '..')) as $file) {
-      if(is_dir(c::$data['root.plugins'] . DS . $file)) {
-        static::plugin($file, 'dir');
-      } else if(f::extension($file) == 'php') {
-        static::plugin(f::name($file), 'file');
-      }
-    }
-
-    return static::$plugins;
-
-  }
-
-  /**
-   * Loads a single plugin
-   * Can be used in other plugins to require
-   * a plugin, which is not yet loaded
-   *
-   * @param string $name
-   * @param string $mode
-   * @return mixed
-   */
-  static protected function plugin($name, $mode = 'dir') {
-
-    if(isset(static::$plugins[$name])) return true;
-
-    if($mode == 'dir') {
-      $file = c::$data['root.plugins'] . DS . $name . DS . $name . '.php';
-    } else {
-      $file = c::$data['root.plugins'] . DS . $name . '.php';
-    }
-
-    if(file_exists($file)) return static::$plugins[$name] = include_once($file);
-
-  }
-
-  /**
-   * Tries to find a controller for
-   * the current page and loads the data
-   *
-   * @return array
-   */
-  static protected function controller($page, $arguments = array()) {
-
-    $file = c::$data['root.controllers'] . DS . $page->template() . '.php';
-
-    if(file_exists($file)) {
-
-      $callback = include_once($file);
-
-      if(is_callable($callback)) return (array)call_user_func_array($callback, array(
-        static::$site,
-        static::$site->children(),
-        $page,
-        $arguments
-      ));
-
-    }
-
-    return array();
-
-  }
-
-  static protected function tags() {
-
-    // load all kirby tags
-    include_once(__DIR__ . DS . 'config'  . DS . 'kirbytext.php');
-
-    // install additional kirby tags
-    kirbytext::install(c::$data['root.tags']);
-
-  }
-
-  /**
-   * Renders the HTML for the page or fetches it from the cache
-   *
-   * @param Page $page
-   * @param boolean $headers
-   * @return string
-   */
-  static public function render(Page $page, $data = array(), $headers = true) {
-
-    // register the currently rendered page
-    static::$page = $page;
-
-    // send all headers for the page
-    if($headers) $page->headers();
-
-    // load all language variables
-    static::localize();
-
-    // if the cache is activated…
-    if(c::$data['cache']) {
-      // return the page from cache
-      return static::cache($page, $data);
-    } else {
-      // render the template
-      return static::template($page, $data);
-    }
-
-  }
-
-  /**
-   * Template configuration
-   */
-  static protected function template(Page $page, $data = array()) {
-
-    // apply the basic template vars
-    tpl::$data = array_merge(array(
-      'site'  => static::$site,
-      'pages' => static::$site->children(),
-      'page'  => $page
-    ), $data, static::controller($page, $data));
-
-    return tpl::load($page->templateFile());
-
-  }
-
-  /**
-   * Returns the HTML for a page with caching enabled
-   *
-   * @return string
-   */
-  static protected function cache(Page $page, $data = array()) {
-
-    // TODO: check for site modification date and flush the cache
-
-    // try to read the cache
-    $id    = static::$site->multilang() ? static::$site->language()->code() . '.' . md5($page->id()) : md5($page->id());
-    $cache = true ? cache::get($id) : null;
-
-    // fetch fresh content if the cache is empty
-    if(empty($cache)) {
-      $cache = static::template($page, $data);
-      cache::set($page->id(), $cache);
-    }
-
-    return $cache;
-
-  }
-
-  /**
-   * Returns the site singleton
-   *
-   * @return Site
-   */
-  static public function site() {
-    return static::$site;
-  }
-
-  /**
-   * Returns the currently active page
-   *
-   * @return Page
-   */
-  static public function page() {
-    return static::$page;
   }
 
 }

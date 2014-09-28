@@ -14,47 +14,26 @@ abstract class SiteAbstract extends Page {
   // the current page
   public $page = null;
 
-  // options for the site and all dependent objects
-  public $options = array(
-    'url'                    => '/',
-    'rewrite'                => true,
-    'error'                  => 'error',
-    'home'                   => 'home',
-    'content.file.extension' => 'txt',
-    'content.file.ignore'    => array(),
-    'tinyurl.folder'         => 'x',
-    'tinyurl.enabled'        => true,
-    'headers'                => array()
-  );
-
   /**
    * Constructor
    *
    */
-  public function __construct($params = array()) {
-    $this->options = array_merge($this->options, $params);
-    $this->url     = $this->options['url'];
+  public function __construct(Kirby $kirby) {
+
+    $this->kirby   = $kirby;
+    $this->url     = $kirby->urls()->index();
     $this->depth   = 0;
     $this->uri     = '';
     $this->site    = $this;
     $this->page    = null;
 
     // build ugly urls if rewriting is disabled
-    if($this->options['rewrite'] === false) {
+    if($this->kirby->options['rewrite'] === false) {
       $this->url .= '/index.php';
     }
 
-    if(!isset($this->options['root.templates'])) {
-      $this->options['root.templates'] = $this->options['root.site'] . DS . 'templates';
-    }
-
-    $this->root    = $this->options['root.content'];
+    $this->root    = $kirby->roots()->content();
     $this->dirname = basename($this->root);
-
-    // default fallback for the content folder url
-    if(!isset($this->options['content.url'])) {
-      $this->options['content.url'] = url::makeAbsolute('content', $this->options['url']);
-    }
 
   }
 
@@ -222,7 +201,7 @@ abstract class SiteAbstract extends Page {
    */
   public function errorPage() {
     if(isset($this->cache['errorPage'])) return $this->cache['errorPage'];
-    return $this->cache['errorPage'] = $this->children()->find($this->options['error']);
+    return $this->cache['errorPage'] = $this->children()->find($this->kirby->options['error']);
   }
 
   /**
@@ -232,7 +211,7 @@ abstract class SiteAbstract extends Page {
    */
   public function homePage() {
     if(isset($this->cache['homePage'])) return $this->cache['homePage'];
-    return $this->cache['homePage'] = $this->children()->find($this->options['home']);
+    return $this->cache['homePage'] = $this->children()->find($this->kirby->options['home']);
   }
 
   /**
@@ -241,7 +220,7 @@ abstract class SiteAbstract extends Page {
    * @return string
    */
   public function locale() {
-    return isset($this->options['locale']) ? $this->options['locale'] : 'en_US';
+    return isset($this->kirby->options['locale']) ? $this->kirby->options['locale'] : 'en_US';
   }
 
   /**

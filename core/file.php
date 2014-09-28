@@ -11,6 +11,7 @@
  */
 abstract class FileAbstract extends Media {
 
+  public $kirby;
   public $site;
   public $page;
   public $files;
@@ -23,13 +24,23 @@ abstract class FileAbstract extends Media {
    */
   public function __construct(Files $files, $filename) {
 
-    $this->site  = $files->site();
-    $this->page  = $files->page();
+    $this->kirby = $files->kirby;
+    $this->site  = $files->site;
+    $this->page  = $files->page;
     $this->files = $files;
     $this->root  = $this->files->page()->root() . DS . $filename;
 
     parent::__construct($this->root);
 
+  }
+
+  /**
+   * Returns the kirby object
+   *
+   * @return Kirby
+   */
+  public function kirby() {
+    return $this->kirby;
   }
 
   /**
@@ -100,7 +111,7 @@ abstract class FileAbstract extends Media {
    * @return string
    */
   public function url() {
-    return $this->site->options['content.url'] . '/' . $this->page->diruri() . '/' . $this->filename;
+    return kirby::instance()->urls()->content() . '/' . $this->page->diruri() . '/' . $this->filename;
   }
 
   /**

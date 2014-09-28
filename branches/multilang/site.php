@@ -14,13 +14,13 @@ class Site extends SiteAbstract {
   /**
    * Constructor
    */
-  public function __construct($options = array()) {
+  public function __construct(Kirby $kirby) {
 
-    parent::__construct($options);
+    parent::__construct($kirby);
 
     $this->languages = new Languages($this);
 
-    foreach($options['languages'] as $lang) {
+    foreach($kirby->options['languages'] as $lang) {
 
       $language = new Language($this, $lang);
 
@@ -55,7 +55,7 @@ class Site extends SiteAbstract {
       // return the specific language url
       return $this->languages->find($lang)->url();
     } else {
-      return $this->options['url'];
+      return $this->kirby->urls()->index();
     }
   }
 

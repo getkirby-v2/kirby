@@ -10,7 +10,7 @@
  */
 function snippet($file, $data = array(), $return = false) {
   if(is_object($data)) $data = array('item' => $data);
-  return tpl::load(c::get('root.snippets') . DS . $file . '.php', $data, $return);
+  return tpl::load(kirby::instance()->roots()->snippets() . DS . $file . '.php', $data, $return);
 }
 
 /**
@@ -31,10 +31,10 @@ function css($url, $media = null) {
   // auto template css files
   if($url == '@auto') {
 
-    $site = kirby::site();
-    $file = $site->page()->template() . '.css';
-    $root = $site->options['auto.css.root'] . DS . $file;
-    $url  = $site->options['auto.css.url'] . '/' . $file;
+    $kirby = kirby::instance();
+    $file  = $kirby->site()->page()->template() . '.css';
+    $root  = $kirby->roots()->autocss() . DS . $file;
+    $url   = $kirby->urls()->autocss() . '/' . $file;
 
     if(!file_exists($root)) return false;
 
@@ -66,10 +66,10 @@ function js($src, $async = false) {
   // auto template css files
   if($src == '@auto') {
 
-    $site = kirby::site();
-    $file = $site->page()->template() . '.js';
-    $root = $site->options['auto.js.root'] . DS . $file;
-    $src  = $site->options['auto.js.url'] . '/' . $file;
+    $kirby = kirby::instance();
+    $file  = $kirby->site()->page()->template() . '.js';
+    $root  = $kirby->roots()->autojs() . DS . $file;
+    $src   = $kirby->urls()->autojs() . '/' . $file;
 
     if(!file_exists($root)) return false;
 
@@ -90,13 +90,13 @@ function js($src, $async = false) {
  */
 function markdown($text) {
 
-  if(!c::get('markdown')) return $text;
+  $kirby = kirby::instance();
 
   // markdown
-  $parsedown = c::get('markdown.extra') ? new ParsedownExtra() : new Parsedown();
+  $parsedown = $kirby->options['markdown.extra'] ? new ParsedownExtra() : new Parsedown();
 
   // markdown auto-breaks
-  if(c::get('markdown.breaks')) {
+  if($kirby->options['markdown.breaks']) {
     $parsedown->setBreaksEnabled(true);
   }
 
@@ -116,12 +116,21 @@ function kirbytext($field) {
 }
 
 /**
+ * Returns the Kirby class singleton
+ *
+ * @return Kirby
+ */
+function kirby($class = null) {
+  return kirby::instance($class);
+}
+
+/**
  * Returns the site object
  *
  * @return Site
  */
 function site() {
-  return kirby::site();
+  return kirby::instance()->site();
 }
 
 /**
@@ -130,7 +139,7 @@ function site() {
  * @return Page
  */
 function page() {
-  return call_user_func_array(array(kirby::site(), 'page'), func_get_args());
+  return call_user_func_array(array(kirby::instance()->site(), 'page'), func_get_args());
 }
 
 /**
@@ -173,8 +182,10 @@ function textfile($uri, $template = null, $lang = null) {
 
   }
 
-  $uri = ltrim($curi, '/');
-  return c::get('root.content') . DS . r(!empty($uri), str_replace('/', DS, $uri) . DS) . $template . r($lang, '.' . $lang) . '.' . c::get('content.file.extension', 'txt');
+  $uri  = ltrim($curi, '/');
+  $root = kirby::instance()->roots()->content();
+  $ext  = kirby::instance()->option('content.file.extension', 'txt');
+  return $root . DS . r(!empty($uri), str_replace('/', DS, $uri) . DS) . $template . r($lang, '.' . $lang) . '.' . $ext;
 
 }
 

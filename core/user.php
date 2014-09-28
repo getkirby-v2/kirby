@@ -63,10 +63,10 @@ class UserAbstract {
     if(isset($this->cache['avatar'])) return $this->cache['avatar'];
 
     // try to find the avatar
-    $root = c::get('root') . DS . 'assets' . DS . 'avatars' . DS . $this->username() . '.{jpg,png}';
+    $root = kirby::instance()->roots()->avatars() . DS . $this->username() . '.{jpg,png}';
 
     if($avatar = a::first((array)glob($root, GLOB_BRACE))) {
-      return $this->cache['avatar'] = new Media($avatar, url('assets/avatars/' . f::filename($avatar)));
+      return $this->cache['avatar'] = new Media($avatar, kirby::instance()->urls()->avatars() . '/' . f::filename($avatar));
     } else {
       return $this->cache['avatar'] = false;
     }
@@ -74,7 +74,7 @@ class UserAbstract {
   }
 
   public function avatarRoot($extension = 'jpg') {
-    return c::get('root') . DS . 'assets' . DS . 'avatars' . DS . $this->username() . '.' . $extension;
+    return kirby::instance()->roots()->avatars() . DS . $this->username() . '.' . $extension;
   }
 
   public function gravatar($size = 256) {
@@ -82,7 +82,7 @@ class UserAbstract {
   }
 
   protected function file() {
-    return c::get('root.accounts') . DS . $this->username() . '.php';
+    return kirby::instance()->roots()->accounts() . DS . $this->username() . '.php';
   }
 
   public function exists() {
@@ -210,7 +210,7 @@ class UserAbstract {
     $data['username'] = str::lower($data['username']);
 
     // create the file root
-    $file = c::get('root.accounts') . DS . $data['username'] . '.php';
+    $file = kirby::instance()->roots()->accounts() . DS . $data['username'] . '.php';
 
     // check for an existing username
     if(file_exists($file)) {

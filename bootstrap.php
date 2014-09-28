@@ -11,6 +11,10 @@ s::start();
 
 // load all core classes
 load(array(
+  // kirby class and subclasses
+  'kirby'             => __DIR__ . DS . 'kirby.php',
+  'kirby\\roots'      => __DIR__ . DS . 'kirby' . DS . 'roots.php',
+  'kirby\\urls'       => __DIR__ . DS . 'kirby' . DS . 'urls.php',
 
   // all core abstracts
   'childrenabstract'  => __DIR__ . DS . 'core' . DS . 'children.php',
@@ -36,6 +40,3 @@ load(array(
 
 // load all helper functions
 include(__DIR__ . DS . 'helpers.php');
-
-// load the main kirby class
-include(__DIR__ . DS . 'kirby.php');
