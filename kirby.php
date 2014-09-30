@@ -429,6 +429,8 @@ class Kirby extends Obj {
    */
   public function launch() {
 
+    // this will trigger the configuration
+    $site   = $this->site();
     $router = new Router($this->routes());
     $route  = $router->run($this->path());
 
