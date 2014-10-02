@@ -90,8 +90,23 @@ class Kirby extends Obj {
     // connect the url class with its handlers
     url::$home = $this->urls()->index();
     url::$to   = $this->option('url.to', function($url = '') {
-      // don't convert absolute urls
-      return url::isAbsolute($url) ? $url : url::makeAbsolute($url);
+
+      if(url::isAbsolute($url)) return $url;
+
+      $start = substr($url, 0, 1);
+      switch($start) {
+        case '#':
+          return $url;
+          break;
+        case '.':
+          return page()->url() . '/' . $url;
+          break;
+        default:
+          // don't convert absolute urls
+          return url::makeAbsolute($url);
+          break;
+      }
+
     });
 
     // setup the thumbnail generator
