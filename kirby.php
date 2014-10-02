@@ -313,7 +313,7 @@ class Kirby extends Obj {
     $branch = count($this->options['languages']) > 0 ? 'multilang' : 'default';
 
     // build the path for the branch file
-    return $this->roots()->kirby() . DS . 'branches' . DS . $branch . '.php';
+    return __DIR__ . DS . 'branches' . DS . $branch . '.php';
 
   }
 
@@ -335,7 +335,7 @@ class Kirby extends Obj {
     $this->cache();
 
     // load the main branch file
-    require($this->branch());
+    include_once($this->branch());
 
     // create the site object
     return $this->site = new Site($this);
