@@ -55,7 +55,9 @@ class Kirby extends Obj {
       'kirbytext.video.width'  => false,
       'kirbytext.video.height' => false,
       'content.file.extension' => 'txt',
-      'content.file.ignore'    => array()
+      'content.file.ignore'    => array(),
+      'thumbs.driver'          => 'gd',
+      'thumbs.filename'        => '{safeName}-{hash}.{extension}',
     );
   }
 
@@ -113,8 +115,8 @@ class Kirby extends Obj {
     // setup the thumbnail generator
     thumb::$defaults['root']     = $this->roots->thumbs();
     thumb::$defaults['url']      = $this->urls->thumbs();
-    thumb::$defaults['driver']   = $this->option('thumb.driver', 'gd');
-    thumb::$defaults['filename'] = $this->option('thumb.driver', '{safeName}-{hash}.{extension}');
+    thumb::$defaults['driver']   = $this->option('thumbs.driver');
+    thumb::$defaults['filename'] = $this->option('thumbs.filename');
 
   }
 
