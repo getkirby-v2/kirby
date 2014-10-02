@@ -8,11 +8,9 @@ use URL;
 
 class Urls {
 
-  public $index;
-
   public function index() {
 
-    if(!is_null($this->index)) return $this->index;
+    if(isset($this->index)) return $this->index;
 
     if(r::cli()) {
       return $this->index = '/';

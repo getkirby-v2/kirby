@@ -30,7 +30,6 @@ class Kirby extends Obj {
     $this->options = $this->defaults();
     $this->rewrite = false;
     $this->path    = implode('/', (array)url::fragments(detect::path()));
-
   }
 
   public function defaults() {
