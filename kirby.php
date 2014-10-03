@@ -43,6 +43,7 @@ class Kirby extends Obj {
       'routes'                 => array(),
       'headers'                => array(),
       'languages'              => array(),
+      'roles'                  => array(),
       'cache'                  => false,
       'cache.driver'           => 'file',
       'cache.options'          => array(),

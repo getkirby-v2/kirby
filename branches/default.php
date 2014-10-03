@@ -8,6 +8,8 @@ class Files extends FilesAbstract {}
 class Kirbytext extends KirbytextAbstract {}
 class Kirbytag extends KirbytagAbstract {}
 class Page extends PageAbstract {}
+class Role extends RoleAbstract {}
+class Roles extends RolesAbstract {}
 class Site extends SiteAbstract {}
 class Users extends UsersAbstract {}
 class User extends UserAbstract {}

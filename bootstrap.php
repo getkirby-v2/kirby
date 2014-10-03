@@ -25,6 +25,8 @@ load(array(
   'kirbytextabstract' => __DIR__ . DS . 'core' . DS . 'kirbytext.php',
   'kirbytagabstract'  => __DIR__ . DS . 'core' . DS . 'kirbytag.php',
   'pageabstract'      => __DIR__ . DS . 'core' . DS . 'page.php',
+  'roleabstract'      => __DIR__ . DS . 'core' . DS . 'role.php',
+  'rolesabstract'     => __DIR__ . DS . 'core' . DS . 'roles.php',
   'siteabstract'      => __DIR__ . DS . 'core' . DS . 'site.php',
   'usersabstract'     => __DIR__ . DS . 'core' . DS . 'users.php',
   'userabstract'      => __DIR__ . DS . 'core' . DS . 'user.php',

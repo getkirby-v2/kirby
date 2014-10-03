@@ -257,6 +257,15 @@ abstract class SiteAbstract extends Page {
   }
 
   /**
+   * Returns a collection of all roles
+   *
+   * @return Roles
+   */
+  public function roles() {
+    return new Roles();
+  }
+
+  /**
    * Checks if any content of the site has been
    * modified after the given unix timestamp
    * This is mainly used to auto-update the cache

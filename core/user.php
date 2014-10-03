@@ -1,6 +1,15 @@
 <?php
 
-class UserAbstract {
+/**
+ * Users
+ *
+ * @package   Kirby CMS
+ * @author    Bastian Allgeier <bastian@getkirby.com>
+ * @link      http://getkirby.com
+ * @copyright Bastian Allgeier
+ * @license   http://getkirby.com/license
+ */
+abstract class UserAbstract {
 
   protected $username = null;
   protected $cache = array();
@@ -56,6 +65,38 @@ class UserAbstract {
 
   public function __call($key, $arguments = null) {
     return $this->__get($key);
+  }
+
+  public function role() {
+
+    $roles = kirby::instance()->site()->roles();
+    $data  = $this->data();
+
+    if(empty($data['role'])) {
+      // apply the default role, if no role is stored for the user
+      $data['role'] = $roles->findDefault()->id();
+    }
+
+    // return the role by id
+    if($role = $roles->get($data['role'])) {
+      return $role;
+    } else {
+      return $roles->findDefault();
+    }
+
+  }
+
+  public function hasRole() {
+    $roles = func_get_args();
+    return in_array($this->role()->id(), $roles);
+  }
+
+  public function hasPanelAccess() {
+    return $this->role()->hasPanelAccess();
+  }
+
+  public function isAdmin() {
+    return $this->role()->id() == 'admin';
   }
 
   public function avatar() {

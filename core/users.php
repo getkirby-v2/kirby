@@ -1,6 +1,15 @@
 <?php
 
-class UsersAbstract extends Collection {
+/**
+ * Users
+ *
+ * @package   Kirby CMS
+ * @author    Bastian Allgeier <bastian@getkirby.com>
+ * @link      http://getkirby.com
+ * @copyright Bastian Allgeier
+ * @license   http://getkirby.com/license
+ */
+abstract class UsersAbstract extends Collection {
 
   public function __construct() {
 
