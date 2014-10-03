@@ -22,25 +22,25 @@ abstract class RolesAbstract extends Collection {
     $roles = kirby::instance()->option('roles');
 
     // set the default set of roles, if roles are not configured
-    if(empty($roles)) $roles = array(
-      array(
-        'id'      => 'admin',
-        'name'    => 'Admin',
-        'default' => true,
-        'panel'   => true
-      ),
-      array(
-        'id'      => 'editor',
-        'name'    => 'Editor',
-        'panel'   => true
-      )
-    );
+    if(empty($roles)) {
+      $roles = array(
+        array(
+          'id'      => 'admin',
+          'name'    => 'Admin',
+          'default' => true,
+          'panel'   => true
+        ),
+        array(
+          'id'      => 'editor',
+          'name'    => 'Editor',
+          'panel'   => true
+        )
+      );
+    }
 
     foreach($roles as $role) {
-
       $role = new Role($role);
       $this->data[$role->id()] = $role;
-
     }
 
     // check for a valid admin role

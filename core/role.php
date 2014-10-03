@@ -32,8 +32,8 @@ abstract class RoleAbstract {
     $this->name = $data['name'];
 
     // does this role have panel access?
-    $this->panel   = isset($data['panel'])   and $data['panel']   ? true : false;
-    $this->default = isset($data['default']) and $data['default'] ? true : false;
+    $this->panel   = (isset($data['panel'])   and $data['panel'])   === true ? true : false;
+    $this->default = (isset($data['default']) and $data['default']) === true ? true : false;
 
   }
 

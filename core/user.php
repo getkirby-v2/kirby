@@ -248,7 +248,7 @@ abstract class UserAbstract {
     static::validate($data, 'insert');
 
     // all usernames must be lowercase
-    $data['username'] = str::lower($data['username']);
+    $data['username'] = str::slug($data['username']);
 
     // create the file root
     $file = kirby::instance()->roots()->accounts() . DS . $data['username'] . '.php';
