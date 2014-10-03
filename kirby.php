@@ -46,6 +46,8 @@ class Kirby extends Obj {
       'cache'                  => false,
       'cache.driver'           => 'file',
       'cache.options'          => array(),
+      'cache.ignore'           => array(),
+      'cache.autoupdate'       => true,
       'tinyurl.enabled'        => true,
       'tinyurl.folder'         => 'x',
       'markdown.extra'         => false,
@@ -388,27 +390,42 @@ class Kirby extends Obj {
     // send all headers for the page
     if($headers) $page->headers();
 
-    // if the cache is activated…
-    if($this->options['cache']) {
-
-      // TODO: check for site modification date and flush the cache
+    // cache the result if possible
+    if($this->options['cache'] and $page->isCachable()) {
 
       // try to read the cache by cid (cache id)
-      $cid      = $page->cid();
-      $template = $this->cache()->get($cid);
+      $cacheId = $page->cacheId();
+
+      // check for modified content within the content folder
+      // and auto-expire the page cache in such a case
+      if($this->options['cache.autoupdate']) {
+
+        // get the creation date of the cache file
+        $created = $this->cache()->created($cacheId);
+
+        // make sure to kill the cache if the site has been modified
+        if($this->site->wasModifiedAfter($created)) {
+          $this->cache()->remove($cacheId);
+        }
+
+      }
+
+      // try to fetch the template from cache
+      $template = $this->cache()->get($cacheId);
 
       // fetch fresh content if the cache is empty
-      if(empty($html)) {
+      if(empty($template)) {
         $template = $this->template($page, $data);
-        $this->cache()->set($cid, $template);
+        // store the result for the next round
+        $this->cache()->set($cacheId, $template);
       }
 
       return $template;
 
-    } else {
-      // render the template
-      return $this->template($page, $data);
     }
+
+    // return a fresh template
+    return $this->template($page, $data);
 
   }
 

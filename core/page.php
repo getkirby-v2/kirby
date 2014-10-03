@@ -224,8 +224,17 @@ abstract class PageAbstract {
    *
    * @return string
    */
-  public function cid() {
+  public function cacheId() {
     return sha1($this->id());
+  }
+
+  /**
+   * Checks if the page can be cached
+   *
+   * @return boolean
+   */
+  public function isCachable() {
+    return !in_array($this->uri(), kirby()->option('cache.ignore'));
   }
 
   /**

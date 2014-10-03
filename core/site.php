@@ -256,4 +256,15 @@ abstract class SiteAbstract extends Page {
     }
   }
 
+  /**
+   * Checks if any content of the site has been
+   * modified after the given unix timestamp
+   * This is mainly used to auto-update the cache
+   *
+   * @return boolean
+   */
+  public function wasModifiedAfter($time) {
+    return dir::wasModifiedAfter($this->root(), $time);
+  }
+
 }
