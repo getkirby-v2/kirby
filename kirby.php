@@ -50,6 +50,7 @@ class Kirby extends Obj {
       'tinyurl.folder'         => 'x',
       'markdown.extra'         => false,
       'markdown.breaks'        => true,
+      'smartypants'            => false,
       'kirbytext.video.class'  => 'video',
       'kirbytext.video.width'  => false,
       'kirbytext.video.height' => false,
@@ -233,11 +234,16 @@ class Kirby extends Obj {
   public function extensions() {
 
     // load all kirby tags and field methods
-    include_once(__DIR__ . DS . 'extensions'  . DS . 'tags.php');
-    include_once(__DIR__ . DS . 'extensions'  . DS . 'methods.php');
+    include_once(__DIR__ . DS . 'extensions' . DS . 'tags.php');
+    include_once(__DIR__ . DS . 'extensions' . DS . 'methods.php');
 
     // install additional kirby tags
     kirbytext::install($this->roots->tags());
+
+    // install the smartypants class if enabled
+    if($this->options['smartypants']) {
+      include_once(__DIR__ . DS . 'vendors' . DS . 'smartypants.php');
+    }
 
   }
 

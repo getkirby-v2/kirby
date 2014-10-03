@@ -38,25 +38,30 @@ abstract class KirbytextAbstract {
 
     if(!$this->field) return '';
 
-    $val = $this->field->value;
+    $text = $this->field->value;
 
     // pre filters
     foreach(static::$pre as $filter) {
-      $val = call_user_func_array($filter, array($this, $val));
+      $text = call_user_func_array($filter, array($this, $text));
     }
 
     // tags
-    $val = preg_replace_callback('!(?=[^\]])\([a-z0-9]+:.*?\)!i', array($this, 'tag'), $val);
+    $text = preg_replace_callback('!(?=[^\]])\([a-z0-9]+:.*?\)!i', array($this, 'tag'), $text);
 
     // markdownify
-    $val = markdown($val);
+    $text = markdown($text);
+
+    // smartypants
+    if(kirby()->option('smartypants')) {
+      $text = smartypants($text);
+    }
 
     // post filters
     foreach(static::$post as $filter) {
-      $val = call_user_func_array($filter, array($this, $val));
+      $text = call_user_func_array($filter, array($this, $text));
     }
 
-    return $val;
+    return $text;
 
   }
 
