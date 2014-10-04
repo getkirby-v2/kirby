@@ -54,7 +54,7 @@ abstract class FilesAbstract extends Collection {
       }
       return $files;
     } else {
-      return @$this->data[$args[0]];
+      return isset($this->data[$args[0]]) ? $this->data[$args[0]] : null;
     }
 
   }
