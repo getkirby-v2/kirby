@@ -117,7 +117,19 @@ abstract class ContentAbstract {
    * @return Field
    */
   public function get($key, $arguments = null) {
-    return isset($this->data[$key]) ? $this->data[$key] : null;
+    if(isset($this->data[$key])) {
+      return $this->data[$key];
+    } else {
+
+      // return an empty field on demand
+      $field        = new Field();
+      $field->key   = $key;
+      $field->page  = $this->page;
+      $field->value = '';
+
+      return $this->data[$key] = $field;
+
+    }
   }
 
   public function __call($method, $arguments = null) {
