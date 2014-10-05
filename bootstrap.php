@@ -24,6 +24,7 @@ load(array(
   'kirby\\urls'       => __DIR__ . DS . 'kirby' . DS . 'urls.php',
 
   // all core abstracts
+  'pagesabstract'     => __DIR__ . DS . 'core' . DS . 'pages.php',
   'childrenabstract'  => __DIR__ . DS . 'core' . DS . 'children.php',
   'contentabstract'   => __DIR__ . DS . 'core' . DS . 'content.php',
   'fieldabstract'     => __DIR__ . DS . 'core' . DS . 'field.php',

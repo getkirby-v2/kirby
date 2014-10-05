@@ -143,6 +143,15 @@ function page() {
 }
 
 /**
+ * Helper to build page collections
+ *
+ * @param array $data
+ */
+function pages($data = array()) {
+  return new Pages($data);
+}
+
+/**
  * Creates an excerpt without html and kirbytext
  *
  * @param mixed $text Variable object or string
