@@ -233,6 +233,27 @@ abstract class SiteAbstract extends Page {
   }
 
   /**
+   * Placeholder for multilanguage sites
+   */
+  public function languages() {
+    return null;
+  }
+
+  /**
+   * Placeholder for multilanguage sites
+   */
+  public function language() {
+    return null;
+  }
+
+  /**
+   * Placeholder for multilanguage sites
+   */
+  public function defaultLanguage() {
+    return null;
+  }
+
+  /**
    * Returns a collection of all users
    *
    * @return Users
