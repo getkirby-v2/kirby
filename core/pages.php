@@ -11,6 +11,8 @@
  */
 abstract class PagesAbstract extends Collection {
 
+  static public $methods = array();
+
   /**
    * Constructor
    */
@@ -18,6 +20,17 @@ abstract class PagesAbstract extends Collection {
     foreach($data as $object) {
       $this->add($object);
     }
+  }
+
+  public function __call($method, $arguments) {
+
+    if(isset(static::$methods[$method])) {
+      array_unshift($arguments, clone $this);
+      return call(static::$methods[$method], $arguments);
+    } else {
+      return $this->get($method);
+    }
+
   }
 
   /**
