@@ -11,7 +11,7 @@ field::$methods['xml'] = field::$methods['x'] = function($field) {
 };
 
 field::$methods['kirbytext'] = field::$methods['kt'] = function($field) {
-  $field->value = kirbytext($field->value);
+  $field->value = kirbytext($field);
   return $field;
 };
 
