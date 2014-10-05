@@ -2,6 +2,7 @@
 
 use Kirby\Roots;
 use Kirby\Urls;
+use Kirby\Request;
 
 class Kirby extends Obj {
 
@@ -20,6 +21,7 @@ class Kirby extends Obj {
   public $page;
   public $plugins;
   public $response;
+  public $request;
 
   static public function instance($class = null) {
     if(!is_null(static::$instance)) return static::$instance;
@@ -33,6 +35,8 @@ class Kirby extends Obj {
     $this->rewrite = false;
     $this->path    = implode('/', (array)url::fragments(detect::path()));
 
+    // make sure the instance is stored / overwritten
+    static::$instance = $this;
   }
 
   public function version() {
@@ -469,6 +473,11 @@ class Kirby extends Obj {
 
     return tpl::load($page->templateFile());
 
+  }
+
+  public function request() {
+    if(!is_null($this->request)) return $this->request;
+    return $this->request = new Request($this);
   }
 
   public function response() {
