@@ -407,7 +407,7 @@ class Kirby extends Obj {
 
       // check for modified content within the content folder
       // and auto-expire the page cache in such a case
-      if($this->options['cache.autoupdate']) {
+      if($this->options['cache.autoupdate'] and $this->cache()->exists($cacheId)) {
 
         // get the creation date of the cache file
         $created = $this->cache()->created($cacheId);
