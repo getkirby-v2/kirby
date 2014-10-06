@@ -198,6 +198,10 @@ abstract class UserAbstract {
 
   public function update($data = array()) {
 
+    // sanitize the given data
+    $data = $this->sanitize($data, 'update');
+
+    // validate the updated dataset
     $this->validate($data, 'update');
 
     // don't update the username
@@ -237,6 +241,16 @@ abstract class UserAbstract {
 
   }
 
+  static public function sanitize($data, $mode = 'insert') {
+
+    // all usernames must be lowercase
+    $data['username'] = str::slug(a::get($data, 'username'));
+
+    // return the cleaned up data
+    return $data;
+
+  }
+
   /**
    * Creates a new user
    *
@@ -245,10 +259,11 @@ abstract class UserAbstract {
    */
   static public function create($data = array()) {
 
-    static::validate($data, 'insert');
+    // sanitize the given data for the new user
+    $data = static::sanitize($data, 'insert');
 
-    // all usernames must be lowercase
-    $data['username'] = str::slug($data['username']);
+    // validate the dataset
+    static::validate($data, 'insert');
 
     // create the file root
     $file = kirby::instance()->roots()->accounts() . DS . $data['username'] . '.php';
