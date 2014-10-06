@@ -56,7 +56,7 @@ class Terror {
   static public function error($message, $type, $file, $line) {
 
     // remove everything that has been rendered so far
-    ob_end_clean();
+    if(ob_get_level()) ob_end_clean();
 
     if(class_exists('kirby') and !is_null(kirby::$instance)) {
       $kirby = kirby::$instance;
@@ -64,16 +64,32 @@ class Terror {
       $kirby = null;
     }
 
-    header::status(500);
+    if(r::ajax()) {
+      if(terror::debug()) {
+        echo response::error($message, 400, array(
+          'type' => $type,
+          'file' => $file,
+          'line' => $line
+        ));
+      } else {
+        echo response::error('Unexpected error', 400);
+      }
+    } else {
+      header::status(400);
+      static::view($message, $type, $file, $line, $kirby);
+    }
 
+    die();
+  }
+
+
+  static public function view($message, $type, $file, $line, $kirby) {
     if(terror::debug()) {
       $extract = terror::extract($file, $line);
       require(__DIR__ . DS . 'views' . DS . 'debug.php');
     } else {
       require(__DIR__ . DS . 'views' . DS . 'sorry.php');
     }
-
-    die();
   }
 
   static public function extract($file, $line) {

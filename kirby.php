@@ -28,6 +28,10 @@ class Kirby extends Obj {
     return static::$instance = $class ? new $class : new static;
   }
 
+  static public function version() {
+    return static::$version;
+  }
+
   public function __construct() {
     $this->roots   = new Roots(dirname(__DIR__));
     $this->urls    = new Urls();
@@ -37,10 +41,6 @@ class Kirby extends Obj {
 
     // make sure the instance is stored / overwritten
     static::$instance = $this;
-  }
-
-  public function version() {
-    return static::$version;
   }
 
   public function defaults() {
