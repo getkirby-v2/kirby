@@ -65,11 +65,17 @@ field::$methods['empty'] = function($field) {
 
 field::$methods['pages'] = function($field) {
 
+  $values = $field->yaml();
   $related = array();
 
-  foreach($field->yaml() as $r) {
-    // make sure to only add found related pages
-    if($rel = page($r)) $related[$rel->id()] = $rel;
+  // Handle structure fields
+  if (is_array(a::first($values))) {
+    $values = a::extract($values, 'uri');
+  }
+
+  foreach($values as $uri) {
+    // Only add existing pages
+    if($rel = page($uri)) $related[$rel->id()] = $rel;
   }
 
   return new Collection($related);
