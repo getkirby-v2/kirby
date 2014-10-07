@@ -103,14 +103,20 @@ abstract class UserAbstract {
 
     if(isset($this->cache['avatar'])) return $this->cache['avatar'];
 
-    // try to find the avatar
-    $root = kirby::instance()->roots()->avatars() . DS . $this->username() . '.{jpg,jpeg,png}';
+    // allowed extensions
+    $extensions = array('jpg', 'jpeg', 'png', 'gif');
 
-    if($avatar = a::first((array)glob($root, GLOB_BRACE))) {
-      return $this->cache['avatar'] = new Media($avatar, kirby::instance()->urls()->avatars() . '/' . f::filename($avatar));
-    } else {
-      return $this->cache['avatar'] = false;
+    // try to find the avatar
+    $root = kirby::instance()->roots()->avatars() . DS . $this->username();
+
+    foreach($extensions as $ext) {
+      $file = $root . '.' . $ext;
+      if(file_exists($file)) {
+        return $this->cache['avatar'] = new Media($file, kirby::instance()->urls()->avatars() . '/' . f::filename($file));
+      }
     }
+
+    return $this->cache['avatar'] = false;
 
   }
 
