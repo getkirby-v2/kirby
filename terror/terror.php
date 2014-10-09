@@ -56,7 +56,10 @@ class Terror {
   static public function error($message, $type, $file, $line) {
 
     // remove everything that has been rendered so far
-    if(ob_get_level()) ob_end_clean();
+    if(ob_get_level()) {
+      ob_end_flush();
+      ob_end_clean();
+    }
 
     if(class_exists('kirby') and !is_null(kirby::$instance)) {
       $kirby = kirby::$instance;
