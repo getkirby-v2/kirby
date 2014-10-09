@@ -158,6 +158,17 @@ class Kirby extends Obj {
         }
       );
 
+      $routes['home'] = array(
+        'pattern' => '/',
+        'method'  => 'ALL',
+        'action'  => function() use($site) {
+          $defaultLanguage = $site->languages()->findDefault();
+          if(url::path($defaultLanguage->url()) !== url::path()) {
+            go($defaultLanguage->url());
+          }
+        }
+      );
+
     }
 
     // tinyurl handling
