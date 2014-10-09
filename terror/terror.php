@@ -13,13 +13,11 @@ class Terror {
       terror::error($error['message'], $error['type'], $error['file'], $error['line']);
     }
 
-    /*
     // switch off conventional error reporting…
     error_reporting(0);
 
     // …to run our own
     ini_set('display_errors', 0);
-    */
 
     // set a global error handler
     set_error_handler(array('Terror', 'errorHandler'));
