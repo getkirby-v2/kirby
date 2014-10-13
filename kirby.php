@@ -17,6 +17,7 @@ class Kirby extends Obj {
   public $license;
   public $routes;
   public $router;
+  public $route;
   public $site;
   public $page;
   public $plugins;
@@ -148,24 +149,36 @@ class Kirby extends Obj {
 
     if($site->multilang()) {
 
-      // language resolver
-      $routes['languages'] = array(
-        'pattern' => '(' . implode('|', $site->languages()->codes()) . ')/(:all?)',
-        'method'  => 'ALL',
-        'action'  => function($lang, $path = null) use($site) {
-          // visit the currently active page for a specific language
-          return $site->visit($path, $lang);
-        }
-      );
+      foreach($site->languages() as $lang) {
 
-      $routes['home'] = array(
+        $routes[] = array(
+          'pattern' => ltrim($lang->url . '/(:all?)', '/'),
+          'method'  => 'ALL',
+          'lang'    => $lang,
+          'action'  => function($path = null) use($kirby, $site) {
+            return $site->visit($path, $kirby->route->lang->code());
+          }
+        );
+
+      }
+
+      // fallback for the homepage
+      $routes[] = array(
         'pattern' => '/',
         'method'  => 'ALL',
         'action'  => function() use($site) {
+
+          // fetch the default language to display
           $defaultLanguage = $site->languages()->findDefault();
-          if(url::path($defaultLanguage->url()) !== url::path()) {
+
+          // redirected home pages
+          if($defaultLanguage->url != '/' and $defaultLanguage->url != '') {
             go($defaultLanguage->url());
           }
+
+          // plain home pages
+          return $site->visit('/');
+
         }
       );
 
@@ -491,15 +504,25 @@ class Kirby extends Obj {
     return $this->request = new Request($this);
   }
 
+  public function router() {
+    return $this->router;
+  }
+
+  public function route() {
+    return $this->route;
+  }
+
   public function response() {
 
     // this will trigger the configuration
-    $site   = $this->site();
-    $router = new Router($this->routes());
-    $route  = $router->run($this->path());
+    $site = $this->site();
+
+    // start the router
+    $this->router = new Router($this->routes());
+    $this->route  = $this->router->run($this->path());
 
     // check for a valid route
-    if(is_null($route)) {
+    if(is_null($this->route)) {
       header::status('500');
       header::type('json');
       die(json_encode(array(
@@ -508,7 +531,7 @@ class Kirby extends Obj {
       )));
     }
 
-    $response = call($route->action(), $route->arguments());
+    $response = call($this->route->action(), $this->route->arguments());
 
     if(is_string($response)) {
       $this->response = static::render(page($response));
