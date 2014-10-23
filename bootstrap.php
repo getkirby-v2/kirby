@@ -7,12 +7,6 @@ if(!defined('TERROR')) define('TERROR', true);
 // load the kirby toolkit
 include(__DIR__ . DS . 'toolkit' . DS . 'bootstrap.php');
 
-// load the custom error handler
-if(TERROR) {
-  include(__DIR__ . DS . 'terror' . DS . 'terror.php');
-  terror::init();
-}
-
 // start a session
 s::start();
 
