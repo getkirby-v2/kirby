@@ -117,6 +117,10 @@ abstract class ContentAbstract {
    * @return Field
    */
   public function get($key, $arguments = null) {
+  
+    // case-insensitive data fetching    
+    $key = strtolower($key);
+
     if(isset($this->data[$key])) {
       return $this->data[$key];
     } else {
