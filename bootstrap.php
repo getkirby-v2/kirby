@@ -2,7 +2,6 @@
 
 if(!defined('KIRBY'))  define('KIRBY', true);
 if(!defined('DS'))     define('DS', DIRECTORY_SEPARATOR);
-if(!defined('TERROR')) define('TERROR', true);
 
 // load the kirby toolkit
 include(__DIR__ . DS . 'toolkit' . DS . 'bootstrap.php');

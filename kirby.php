@@ -134,6 +134,15 @@ class Kirby extends Obj {
     thumb::$defaults['driver']   = $this->option('thumbs.driver');
     thumb::$defaults['filename'] = $this->option('thumbs.filename');
 
+    // simple error handling
+    if($this->option('debug')) {
+      error_reporting(E_ALL);
+      ini_set('display_errors', 1);
+    } else {
+      error_reporting(0);
+      ini_set('display_errors', 0);
+    }
+
   }
 
   /**
