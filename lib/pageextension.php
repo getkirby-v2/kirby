@@ -7,7 +7,11 @@
  */
 class PageExtension extends Page {
   public function __construct($page) {
-    $page = is_string($page) ? page($page) : $page;
-    parent::__construct($page->parent(), $page->dirname());
+    $page = is_string($page) ? page($page) : $page;    
+    if($page) {
+      parent::__construct($page->parent(), $page->dirname());      
+    } else {
+      throw new Exception('The page could not be found');
+    }
   }
 }
