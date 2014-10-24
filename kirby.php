@@ -535,9 +535,6 @@ class Kirby extends Obj {
     // set the timezone for all date functions
     date_default_timezone_set($this->options['timezone']);
 
-    // load all language variables
-    $this->localize();
-
     // load all extensions
     $this->extensions();
 
@@ -560,6 +557,12 @@ class Kirby extends Obj {
 
     $response = call($this->route->action(), $this->route->arguments());
 
+    // load all language variables
+    // this can only be loaded once the router action has been called
+    // otherwise the current language is not yet available
+    $this->localize();
+
+    // work with the response
     if(is_string($response)) {
       $this->response = static::render(page($response));
     } else if(is_array($response)) {
