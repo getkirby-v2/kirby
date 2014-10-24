@@ -22,6 +22,8 @@ class Language extends Obj {
     return url::makeAbsolute($this->url, $this->site->url());
   }
 
+  public function __toString() {
+    return $this->code;
+  }
+
 }
-
-

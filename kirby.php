@@ -184,16 +184,27 @@ class Kirby extends Obj {
         'method'  => 'ALL',
         'action'  => function() use($site) {
 
-          // fetch the default language to display
-          $defaultLanguage = $site->languages()->findDefault();
+          if(!s::get('language')) {
 
-          // redirected home pages
-          if($defaultLanguage->url != '/' and $defaultLanguage->url != '') {
-            go($defaultLanguage->url());
+            // get the last session language
+            if($language = $this->site()->sessionLanguage()) {
+              $language = $language;
+            // detect the user language
+            } else {
+              $language = $this->site()->detectedLanguage();
+            }
+
+          } else {
+            $language = $this->site()->defaultLanguage();
+          }
+
+          // redirect to the language homepage if necessary
+          if($language->url != '/' and $language->url != '') {
+            go($language->url());
           }
 
           // plain home pages
-          return $site->visit('/');
+          return $site->visit('/', $language->code());
 
         }
       );
@@ -555,6 +566,7 @@ class Kirby extends Obj {
       )));
     }
 
+    // call the router action with all arguments from the pattern
     $response = call($this->route->action(), $this->route->arguments());
 
     // load all language variables
@@ -564,15 +576,30 @@ class Kirby extends Obj {
 
     // work with the response
     if(is_string($response)) {
-      $this->response = static::render(page($response));
+      $page = page($response);
+      $this->response = static::render($page);
     } else if(is_array($response)) {
-      $this->response = static::render(page($response[0]), $response[1]);
-    } else if(is_a($response, 'Response')) {
-      $this->response = $response;
+      $page = page($response[0]);
+      $this->response = static::render($page, $response[1]);
     } else if(is_a($response, 'Page')) {
-      $this->response = static::render($response);
+      $page = $response;
+      $this->response = static::render($page);      
+    } else if(is_a($response, 'Response')) {
+      $page = null;
+      $this->response = $response;
     } else {
+      $page = null;
       $this->response = null;
+    }
+
+    // auto-detect the matching language for the user
+    // and redirect to the according page
+    if($page and $this->site()->multilang()) {
+      if(!s::get('language')) {
+        $this->site()->switchLanguage($this->site()->detectedLanguage());
+      } else {
+        $this->site()->switchLanguage($this->site()->language());
+      }
     }
 
     return $this->response;

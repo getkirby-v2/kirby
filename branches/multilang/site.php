@@ -96,6 +96,54 @@ class Site extends SiteAbstract {
   }
 
   /**
+   * Tries to find the language for the current visitor 
+   * 
+   * @return Language
+   */
+  public function visitorLanguage() {
+    return $this->languages()->find(visitor::acceptedLanguageCode());
+  }
+
+  /**
+   * Returns the detected language
+   * 
+   * @return Language
+   */
+  public function detectedLanguage() {
+
+    if($language = $this->visitorLanguage()) {
+      return $language;
+    } else {
+      return $this->defaultLanguage();
+    }
+
+  }
+
+  /**
+   * Returns the language which will be 
+   * remembered for the next visit
+   * 
+   * @return Language
+   */
+  public function sessionLanguage() {
+    if($code = s::get('language') and $language = $this->languages()->find($code)) {
+      return $language;
+    } else {
+      return null;
+    }
+  }
+
+  public function switchLanguage(Language $language) {
+
+    s::set('language', $language->code());
+
+    if($this->language()->code() != $language->code()) {
+      go($this->page()->url($language->code()));
+    }
+
+  }
+
+  /**
    * Sets the currently active page
    * and returns its page object
    *

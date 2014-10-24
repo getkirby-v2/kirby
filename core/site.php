@@ -254,6 +254,13 @@ abstract class SiteAbstract extends Page {
   }
 
   /**
+   * Return the detected language
+   */
+  public function detectedLanguage() {
+    return null;
+  }
+
+  /**
    * Returns a collection of all users
    *
    * @return Users
