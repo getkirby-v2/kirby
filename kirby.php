@@ -149,9 +149,15 @@ class Kirby extends Obj {
   /**
    * Registers all routes
    *
+   * @param array $routes New routes
    * @return array
    */
-  public function routes() {
+  public function routes($routes = array()) {
+
+    // extend the existing routes
+    if(!empty($routes) and is_array($routes)) {
+      return $this->options['routes'] = array_merge($this->options['routes'], $routes);
+    }
 
     $routes = $this->options['routes'];
     $kirby  = $this;
@@ -485,18 +491,6 @@ class Kirby extends Obj {
    */
   public function template(Page $page, $data = array()) {
 
-    // set the timezone for all date functions
-    date_default_timezone_set($this->options['timezone']);
-
-    // load all language variables
-    $this->localize();
-
-    // load all extensions
-    $this->extensions();
-
-    // load all plugins
-    $this->plugins();
-
     // apply the basic template vars
     tpl::$data = array_merge(array(
       'kirby' => $this,
@@ -537,6 +531,18 @@ class Kirby extends Obj {
       // rebuild the current url with https
       go(url::build(array('scheme' => 'https')));
     }
+
+    // set the timezone for all date functions
+    date_default_timezone_set($this->options['timezone']);
+
+    // load all language variables
+    $this->localize();
+
+    // load all extensions
+    $this->extensions();
+
+    // load all plugins
+    $this->plugins();
 
     // start the router
     $this->router = new Router($this->routes());
