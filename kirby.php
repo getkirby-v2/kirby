@@ -58,6 +58,7 @@ class Kirby extends Obj {
       'roles'                  => array(),
       'cache'                  => false,
       'debug'                  => false,
+      'ssl'                    => false,
       'cache.driver'           => 'file',
       'cache.options'          => array(),
       'cache.ignore'           => array(),
@@ -521,10 +522,21 @@ class Kirby extends Obj {
     return $this->route;
   }
 
-  public function response() {
+  /**
+   * Starts the router, renders the page and returns the response
+   *
+   * @return mixed
+   */
+  public function launch() {
 
     // this will trigger the configuration
     $site = $this->site();
+
+    // force secure connections if enabled
+    if($this->option('ssl') and !r::secure()) {
+      // rebuild the current url with https
+      go(url::build(array('scheme' => 'https')));
+    }
 
     // start the router
     $this->router = new Router($this->routes());
@@ -556,15 +568,6 @@ class Kirby extends Obj {
 
     return $this->response;
 
-  }
-
-  /**
-   * Starts the router, renders the page and returns the response
-   *
-   * @return mixed
-   */
-  public function launch() {
-    return $this->response();
   }
 
   static public function start() {
