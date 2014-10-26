@@ -59,7 +59,7 @@ field::$methods['yaml'] = function($field) {
   return yaml($field->value);
 };
 
-field::$methods['empty'] = function($field) {
+field::$methods['empty'] = field::$methods['isEmpty'] = function($field) {
   return empty($field->value);
 };
 

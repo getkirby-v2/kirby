@@ -6,7 +6,7 @@ use Kirby\Request;
 
 class Kirby extends Obj {
 
-  static public $version = '2.0.0';
+  static public $version = '2.0.1';
   static public $instance;
 
   public $roots;
@@ -17,6 +17,7 @@ class Kirby extends Obj {
   public $license;
   public $routes;
   public $router;
+  public $route;
   public $site;
   public $page;
   public $plugins;
@@ -57,6 +58,7 @@ class Kirby extends Obj {
       'roles'                  => array(),
       'cache'                  => false,
       'debug'                  => false,
+      'ssl'                    => false,
       'cache.driver'           => 'file',
       'cache.options'          => array(),
       'cache.ignore'           => array(),
@@ -133,14 +135,29 @@ class Kirby extends Obj {
     thumb::$defaults['driver']   = $this->option('thumbs.driver');
     thumb::$defaults['filename'] = $this->option('thumbs.filename');
 
+    // simple error handling
+    if($this->option('debug')) {
+      error_reporting(E_ALL);
+      ini_set('display_errors', 1);
+    } else {
+      error_reporting(0);
+      ini_set('display_errors', 0);
+    }
+
   }
 
   /**
    * Registers all routes
    *
+   * @param array $routes New routes
    * @return array
    */
-  public function routes() {
+  public function routes($routes = array()) {
+
+    // extend the existing routes
+    if(!empty($routes) and is_array($routes)) {
+      return $this->options['routes'] = array_merge($this->options['routes'], $routes);
+    }
 
     $routes = $this->options['routes'];
     $kirby  = $this;
@@ -148,13 +165,47 @@ class Kirby extends Obj {
 
     if($site->multilang()) {
 
-      // language resolver
-      $routes['languages'] = array(
-        'pattern' => '(' . implode('|', $site->languages()->codes()) . ')/(:all?)',
+      foreach($site->languages() as $lang) {
+
+        $routes[] = array(
+          'pattern' => ltrim($lang->url . '/(:all?)', '/'),
+          'method'  => 'ALL',
+          'lang'    => $lang,
+          'action'  => function($path = null) use($kirby, $site) {
+            return $site->visit($path, $kirby->route->lang->code());
+          }
+        );
+
+      }
+
+      // fallback for the homepage
+      $routes[] = array(
+        'pattern' => '/',
         'method'  => 'ALL',
-        'action'  => function($lang, $path = null) use($site) {
-          // visit the currently active page for a specific language
-          return $site->visit($path, $lang);
+        'action'  => function() use($site) {
+
+          if(!s::get('language')) {
+
+            // get the last session language
+            if($language = $this->site()->sessionLanguage()) {
+              $language = $language;
+            // detect the user language
+            } else {
+              $language = $this->site()->detectedLanguage();
+            }
+
+          } else {
+            $language = $this->site()->defaultLanguage();
+          }
+
+          // redirect to the language homepage if necessary
+          if($language->url != '/' and $language->url != '') {
+            go($language->url());
+          }
+
+          // plain home pages
+          return $site->visit('/', $language->code());
+
         }
       );
 
@@ -451,18 +502,6 @@ class Kirby extends Obj {
    */
   public function template(Page $page, $data = array()) {
 
-    // set the timezone for all date functions
-    date_default_timezone_set($this->options['timezone']);
-
-    // load all language variables
-    $this->localize();
-
-    // load all extensions
-    $this->extensions();
-
-    // load all plugins
-    $this->plugins();
-
     // apply the basic template vars
     tpl::$data = array_merge(array(
       'kirby' => $this,
@@ -480,39 +519,12 @@ class Kirby extends Obj {
     return $this->request = new Request($this);
   }
 
-  public function response() {
+  public function router() {
+    return $this->router;
+  }
 
-    // this will trigger the configuration
-    $site   = $this->site();
-    $router = new Router($this->routes());
-    $route  = $router->run($this->path());
-
-    // check for a valid route
-    if(is_null($route)) {
-      header::status('500');
-      header::type('json');
-      die(json_encode(array(
-        'status'  => 'error',
-        'message' => 'Invalid route or request method'
-      )));
-    }
-
-    $response = call($route->action(), $route->arguments());
-
-    if(is_string($response)) {
-      $this->response = static::render(page($response));
-    } else if(is_array($response)) {
-      $this->response = static::render(page($response[0]), $response[1]);
-    } else if(is_a($response, 'Response')) {
-      $this->response = $response;
-    } else if(is_a($response, 'Page')) {
-      $this->response = static::render($response);
-    } else {
-      $this->response = null;
-    }
-
-    return $this->response;
-
+  public function route() {
+    return $this->route;
   }
 
   /**
@@ -521,7 +533,77 @@ class Kirby extends Obj {
    * @return mixed
    */
   public function launch() {
-    return $this->response();
+
+    // this will trigger the configuration
+    $site = $this->site();
+
+    // force secure connections if enabled
+    if($this->option('ssl') and !r::secure()) {
+      // rebuild the current url with https
+      go(url::build(array('scheme' => 'https')));
+    }
+
+    // set the timezone for all date functions
+    date_default_timezone_set($this->options['timezone']);
+
+    // load all extensions
+    $this->extensions();
+
+    // load all plugins
+    $this->plugins();
+
+    // start the router
+    $this->router = new Router($this->routes());
+    $this->route  = $this->router->run($this->path());
+
+    // check for a valid route
+    if(is_null($this->route)) {
+      header::status('500');
+      header::type('json');
+      die(json_encode(array(
+        'status'  => 'error',
+        'message' => 'Invalid route or request method'
+      )));
+    }
+
+    // call the router action with all arguments from the pattern
+    $response = call($this->route->action(), $this->route->arguments());
+
+    // load all language variables
+    // this can only be loaded once the router action has been called
+    // otherwise the current language is not yet available
+    $this->localize();
+
+    // work with the response
+    if(is_string($response)) {
+      $page = page($response);
+      $this->response = static::render($page);
+    } else if(is_array($response)) {
+      $page = page($response[0]);
+      $this->response = static::render($page, $response[1]);
+    } else if(is_a($response, 'Page')) {
+      $page = $response;
+      $this->response = static::render($page);      
+    } else if(is_a($response, 'Response')) {
+      $page = null;
+      $this->response = $response;
+    } else {
+      $page = null;
+      $this->response = null;
+    }
+
+    // auto-detect the matching language for the user
+    // and redirect to the according page
+    if($page and $this->site()->multilang()) {
+      if(!s::get('language')) {
+        $this->site()->switchLanguage($this->site()->detectedLanguage());
+      } else {
+        $this->site()->switchLanguage($this->site()->language());
+      }
+    }
+
+    return $this->response;
+
   }
 
   static public function start() {

@@ -62,7 +62,11 @@ abstract class PagesAbstract extends Collection {
   public function not() {
     $collection = clone $this;
     foreach(func_get_args() as $uri) {
-      if(is_a($uri, 'Page')) {
+      if(is_array($uri)) {
+        foreach($uri as $u) {
+          $collection = $collection->not($u);
+        }
+      } else if(is_a($uri, 'Page')) {
         // unset by Page object
         unset($collection->data[$uri->id()]);
       } else if(isset($collection->data[$uri])) {

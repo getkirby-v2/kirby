@@ -275,3 +275,12 @@ function gist($url, $file = null) {
     'file' => $file,
   ));
 }
+
+/**
+ * Returns the current url
+ *
+ * @return string
+ */
+function thisUrl() {
+  return url::current();
+}
