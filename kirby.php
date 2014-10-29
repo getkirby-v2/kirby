@@ -182,20 +182,20 @@ class Kirby extends Obj {
       $routes[] = array(
         'pattern' => '/',
         'method'  => 'ALL',
-        'action'  => function() use($site) {
+        'action'  => function() use($kirby, $site) {
 
           if(!s::get('language')) {
 
             // get the last session language
-            if($language = $this->site()->sessionLanguage()) {
+            if($language = $kirby->site()->sessionLanguage()) {
               $language = $language;
             // detect the user language
             } else {
-              $language = $this->site()->detectedLanguage();
+              $language = $kirby->site()->detectedLanguage();
             }
 
           } else {
-            $language = $this->site()->defaultLanguage();
+            $language = $kirby->site()->defaultLanguage();
           }
 
           // redirect to the language homepage if necessary
