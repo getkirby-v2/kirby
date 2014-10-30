@@ -184,17 +184,18 @@ class Kirby extends Obj {
         'method'  => 'ALL',
         'action'  => function() use($kirby, $site) {
 
-          if(!s::get('language')) {
+          // check if the language detector is activated
+          if($kirby->option('language.detect')) {
 
-            // get the last session language
-            if($language = $kirby->site()->sessionLanguage()) {
-              $language = $language;
-            // detect the user language
+            if(s::get('language') and $language = $kirby->site()->sessionLanguage()) {
+              // $language is already set
             } else {
+              // detect the user language
               $language = $kirby->site()->detectedLanguage();
             }
 
           } else {
+            // always use the default language if the detector is disabled
             $language = $kirby->site()->defaultLanguage();
           }
 
@@ -592,14 +593,9 @@ class Kirby extends Obj {
       $this->response = null;
     }
 
-    // auto-detect the matching language for the user
-    // and redirect to the according page
-    if($page and $this->site()->multilang()) {
-      if(!s::get('language')) {
-        $this->site()->switchLanguage($this->site()->detectedLanguage());
-      } else {
-        $this->site()->switchLanguage($this->site()->language());
-      }
+    if($this->site()->multilang() and $language = $this->site()->language()) {
+      // store the current language in the session
+      s::set('language', $language->code());
     }
 
     return $this->response;
