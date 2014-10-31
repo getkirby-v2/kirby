@@ -209,13 +209,13 @@ abstract class PagesAbstract extends Collection {
         $score = a::get($options['score'], $key, 1);
 
         // check for a match
-        if($matches = preg_match_all($preg, $data[$key])) {
+        if($matches = preg_match_all($preg, $data[$key], $pregResults)) {
 
           $page->searchHits  += $matches;
           $page->searchScore += $matches * $score;
 
           // check for full matches
-          if($matches = preg_match_all('!' . preg_quote($query) . '!i', $data[$key])) {
+          if($matches = preg_match_all('!' . preg_quote($query) . '!i', $data[$key], $pregResults)) {
             $page->searchScore += $matches * $score;
           }
 
