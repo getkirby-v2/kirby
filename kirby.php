@@ -191,11 +191,11 @@ class Kirby extends Obj {
               $language = $language;
             // detect the user language
             } else {
-              $language = $this->site()->detectedLanguage();
+              $language = $site->detectedLanguage();
             }
 
           } else {
-            $language = $this->site()->defaultLanguage();
+            $language = $site->defaultLanguage();
           }
 
           // redirect to the language homepage if necessary
