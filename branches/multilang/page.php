@@ -29,9 +29,9 @@ class Page extends PageAbstract {
    *
    * @return string
    */
-  public function cid($lang = null) {
+  public function cacheId($lang = null) {
     if(is_null($lang)) $lang = $this->site->language->code;
-    return $lang . '.' . parent::cid();
+    return $lang . '.' . parent::cacheId();
   }
 
   /**
