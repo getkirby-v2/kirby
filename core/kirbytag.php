@@ -146,5 +146,9 @@ abstract class KirbytagAbstract {
   public function __toString() {
     return (string)$this->html();
   }
+  
+  public function get_all_attributes() {
+    return  $this->attr;
+  }
 
 }
