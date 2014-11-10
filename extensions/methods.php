@@ -5,6 +5,11 @@ field::$methods['html'] = field::$methods['h'] = function($field) {
   return $field;
 };
 
+field::$methods['escape'] = field::$methods['esc'] = function($field, $context = 'html') {
+  $field->value = esc($field->value, $context);
+  return $field;
+};
+
 field::$methods['xml'] = field::$methods['x'] = function($field) {
   $field->value = xml($field->value);
   return $field;
