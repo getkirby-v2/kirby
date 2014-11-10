@@ -31,10 +31,10 @@ abstract class ContentAbstract {
     if(empty($this->root) or !is_file($this->root) or !is_readable($this->root)) return;
 
     // read the content file and remove the BOM
-    $this->raw = str_replace("\xEF\xBB\xBF", '', file_get_contents($this->root));
+    $this->raw = str_replace(BOM, '', file_get_contents($this->root));
 
     // explode all fields by the line separator
-    $fields = explode("\n----", $this->raw);
+    $fields = preg_split('!\n----\s*\n*!', $this->raw);
 
     // loop through all fields and add them to the content
     foreach($fields as $field) {

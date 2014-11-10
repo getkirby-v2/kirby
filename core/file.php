@@ -111,7 +111,7 @@ abstract class FileAbstract extends Media {
    * @return string
    */
   public function url() {
-    return kirby::instance()->urls()->content() . '/' . $this->page->diruri() . '/' . $this->filename;
+    return kirby::instance()->urls()->content() . '/' . $this->page->diruri() . '/' . rawurlencode($this->filename);
   }
 
   /**

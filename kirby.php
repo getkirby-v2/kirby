@@ -6,7 +6,7 @@ use Kirby\Request;
 
 class Kirby extends Obj {
 
-  static public $version = '2.0.3';
+  static public $version = '2.0.4';
   static public $instance;
 
   public $roots;
