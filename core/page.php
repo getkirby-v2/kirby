@@ -275,7 +275,8 @@ abstract class PageAbstract {
     if(isset($this->cache['inventory'])) return $this->cache['inventory'];
 
     // get all items within the directory
-    $items = array_diff(scandir($this->root), array('.', '..', '.DS_Store', '.git', '.svn', 'Thumb.db'));
+    $ignore = array('.', '..', '.DS_Store', '.git', '.svn', 'Thumb.db');
+    $items  = array_diff(scandir($this->root), array_merge($ignore, (array)kirby::instance()->option('content.file.ignore')));
 
     // create the inventory
     $this->cache['inventory'] = array(
