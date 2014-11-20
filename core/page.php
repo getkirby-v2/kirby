@@ -47,9 +47,9 @@ abstract class PageAbstract {
     $this->depth   = $parent->depth() + 1;
 
     // extract the uid and num of the directory
-    if(preg_match('/^([0-9]+[\-]+)(.*)/', $this->dirname, $match)) {
+    if(preg_match('/^([0-9]+)[\-](.*)$/', $this->dirname, $match)) {
       $this->uid = $match[2];
-      $this->num = trim(rtrim($match[1], '-'));
+      $this->num = $match[1];
     } else {
       $this->num = null;
       $this->uid = $this->dirname;
