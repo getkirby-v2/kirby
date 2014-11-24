@@ -896,16 +896,75 @@ abstract class PageAbstract {
   public function template() {
 
     // check for a cached template name
-    if(isset($this->cache['template'])) return $this->cache['template'];
+    if(isset($this->cache['template'])) {
+      if ($withExtension) {
+        return join('.', $this->cache['template']);
+      } else {
+        return $this->cache['template'][0];
+      }
+    }
 
     // get the template name
     $templateName = $this->intendedTemplate();
 
-    // check if the file exists and return the appropriate template name
-    return $this->cache['template'] =
-      file_exists(kirby::instance()->roots()->templates() . DS . $templateName . '.php') ?
-        $templateName : 'default';
+    // template root folder
+    $templates = kirby::instance()->roots()->templates();
+    // hook for external templating engines
+    $engines = c::get('tpl.engines');
 
+    $ret = array('', 'php');
+
+    if ($engines) {
+      $this->cache['template'] = $this->templateWithExternal($templateName);
+    } else {
+      $this->cache['template'][0] =
+      file_exists($templates . DS . $templateName . '.php') ?
+      $templateName : 'default';
+    }
+
+    if ($withExtension) {
+      return join('.', $this->cache['template']);
+    } else {
+      return $this->cache['template'][0];
+    }
+
+  }
+
+  * Returns the name of the used template
+  * by using one of the custom templating engines registered at tpl.engines.
+  *
+  * @return array
+  */
+  public function templateWithExternal($templateName) {
+    $res = array();
+
+    // template root folder
+    $templates = kirby::instance()->roots()->templates();
+
+    // hook for external templating engines
+    $engines = c::get('tpl.engines');
+
+    $checkExtension = function($name, $extension) use($templates) {
+      if (file_exists($templates . DS . "$name.$extension")) {
+        return array($name, $extension);
+      }
+      return false;
+    };
+
+    foreach($engines as $extension => $engine) {
+      $res = $checkExtension($templateName, $extension);
+      if ($res) break;
+    }
+
+    // The specific template wasn't found, try again with 'default'
+    if (!$res && $templateName != 'default') {
+      foreach($engines as $extension => $engine) {
+        $res = array('default', $extension);
+        if ($res) break;
+      }
+    }
+
+    return $res;
   }
 
   /**
@@ -914,7 +973,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function templateFile() {
-    return kirby::instance()->roots()->templates() . DS . $this->template() . '.php';
+    return kirby::instance()->roots()->templates() . DS . $this->template(true);
   }
 
   /**
