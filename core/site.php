@@ -76,7 +76,7 @@ abstract class SiteAbstract extends Page {
    *
    * @return string
    */
-  public function template() {
+  public function template($withExtension = false) {
     return 'site';
   }
 
