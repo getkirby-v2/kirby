@@ -665,7 +665,15 @@ abstract class PageAbstract {
    */
   public function title() {
     $title = $this->content()->get('title');
-    return $title != '' ? $title : $this->uid();
+    
+    if (empty($title)) {
+      $title = new Field();
+      $title->key = 'title';
+      $title->page = $this;
+      $title->value = $this->uid();
+    }
+    
+    return $title;
   }
 
   /**
