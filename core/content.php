@@ -129,7 +129,7 @@ abstract class ContentAbstract {
       $field        = new Field();
       $field->key   = $key;
       $field->page  = $this->page;
-      $field->value = '';
+      $field->value = isset($arguments['default']) ? $arguments['default'] : '';
 
       return $this->data[$key] = $field;
 
