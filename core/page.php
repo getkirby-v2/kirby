@@ -664,8 +664,8 @@ abstract class PageAbstract {
    * @return Field | string
    */
   public function title() {
-    $title = $this->content()->get('title');
-    return $title != '' ? $title : $this->uid();
+    $title = $this->content()->get('title', array('default' => $this->uid()));
+    return $title;
   }
 
   /**
