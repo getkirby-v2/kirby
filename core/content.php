@@ -47,10 +47,8 @@ abstract class ContentAbstract {
       // add the key to the fields list
       $this->fields[] = $key;
 
-      $this->data[$key] = new Field;
-      $this->data[$key]->page  = $this->page;
-      $this->data[$key]->key   = $key;
-      $this->data[$key]->value = trim(substr($field, $pos+1));
+      // add the key object
+      $this->data[$key] = new Field($this->page, $key, trim(substr($field, $pos+1)));
     }
 
   }
@@ -124,16 +122,10 @@ abstract class ContentAbstract {
     if(isset($this->data[$key])) {
       return $this->data[$key];
     } else {
-
-      // return an empty field on demand
-      $field        = new Field();
-      $field->key   = $key;
-      $field->page  = $this->page;
-      $field->value = '';
-
-      return $this->data[$key] = $field;
-
+      // return an empty field as default
+      return $this->data[$key] = new Field($this->page, $key);
     }
+
   }
 
   public function __call($method, $arguments = null) {
