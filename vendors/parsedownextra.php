@@ -206,22 +206,18 @@ class ParsedownExtra extends Parsedown
             }
         }
 
-        foreach ($nestedElements as $index => $text)
+        foreach ($nestedElements as $index => $nestedElement)
         {
-            $markdown = str_replace('\x1A'.$index.'/', $text, $markdown);
+            $markdown = str_replace('\x1A'.$index.'/', $nestedElement, $markdown);
         }
 
-        $markup = $this->text($markdown);
+        $text = $this->text($markdown);
 
-        $DOMDocument->documentElement->nodeValue = '';
-
-        $Fragment = $DOMDocument->createDocumentFragment();
-
-        $Fragment->appendXML($markup);
-
-        $DOMDocument->documentElement->appendChild($Fragment);
+        # because we don't want markup to get encoded
+        $DOMDocument->documentElement->nodeValue = "\n".'placeholder'."\n";
 
         $markup = $DOMDocument->saveXML($DOMDocument->documentElement);
+        $markup = str_replace('placeholder', $text, $markup);
 
         $Block['element'] = $markup;
 
@@ -386,7 +382,9 @@ class ParsedownExtra extends Parsedown
             $text = $Data['text'];
             $text = $this->line($text);
 
-            foreach (range(1, $Data['count']) as $number)
+            $numbers = range(1, $Data['count']);
+
+            foreach ($numbers as $number)
             {
                 $text .= '&#160;<a href="#fnref'.$number.':'.$name.'" rev="footnote" class="footnote-backref">&#8617;</a>';
             }
@@ -408,10 +406,10 @@ class ParsedownExtra extends Parsedown
     }
 
     #
-    # Private
+    # ~
     #
 
-    private function parseAttributes($attributeString)
+    protected function parseAttributes($attributeString)
     {
         $Data = array();
 
@@ -437,5 +435,5 @@ class ParsedownExtra extends Parsedown
         return $Data;
     }
 
-    private $attributesPattern = '{((?:[#.][-\w]+[ ]*)+)}';
+    protected $attributesPattern = '{((?:[#.][-\w]+[ ]*)+)}';
 }
