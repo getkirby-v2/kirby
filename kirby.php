@@ -509,7 +509,7 @@ class Kirby extends Obj {
   public function template(Page $page, $data = array()) {
 
     // apply the basic template vars
-    tpl::$data = array_merge(array(
+    tpl::$data = array_merge(tpl::$data, array(
       'kirby' => $this,
       'site'  => $this->site(),
       'pages' => $this->site()->children(),
