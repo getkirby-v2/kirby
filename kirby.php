@@ -96,8 +96,8 @@ class Kirby extends Obj {
     $root    = $this->roots()->config();
     $configs = array(
       'main' => $root . DS . 'config.php',
-      'host' => $root . DS . 'config.' . server::get('HTTP_HOST') . '.php',
-      'addr' => $root . DS . 'config.' . server::get('SERVER_ADDR') . '.php',
+      'host' => $root . DS . 'config.' . basename(server::get('SERVER_NAME')) . '.php',
+      'addr' => $root . DS . 'config.' . basename(server::get('SERVER_ADDR')) . '.php',
     );
 
     foreach($configs as $config) {
