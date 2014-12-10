@@ -95,14 +95,19 @@ class Kirby extends Obj {
     // load all available config files
     $root    = $this->roots()->config();
     $configs = array(
-      'main' => $root . DS . 'config.php',
-      'host' => $root . DS . 'config.' . basename(server::get('SERVER_NAME')) . '.php',
-      'addr' => $root . DS . 'config.' . basename(server::get('SERVER_ADDR')) . '.php',
+      'main' => 'config.php',
+      'host' => 'config.' . server::get('SERVER_NAME') . '.php',
+      'addr' => 'config.' . server::get('SERVER_ADDR') . '.php',
     );
 
+    $allowed = array_filter(scandir($root), function($file) {
+      return substr($file, 0, 7) === 'config.' and substr($file, -4) === '.php';
+    });
+
     foreach($configs as $config) {
-      if(file_exists($config)) include_once($config);
-    }
+      $file = $root . DS . $config;
+      if(in_array($config, $allowed, true) and file_exists($file)) include_once($file);
+    } 
 
     // apply the options
     $this->options = array_merge($this->options, c::$data);
