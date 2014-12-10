@@ -15,7 +15,7 @@ class Urls {
     if(r::cli()) {
       return $this->index = '/';
     } else {
-      return $this->index = url::scheme() . '://' . server::get('HTTP_HOST') . preg_replace('!\/index\.php$!i', '', server::get('SCRIPT_NAME'));
+      return $this->index = url::scheme() . '://' . server::get('SERVER_NAME') . preg_replace('!\/index\.php$!i', '', server::get('SCRIPT_NAME'));
     }
 
   }
