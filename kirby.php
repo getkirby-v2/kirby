@@ -100,7 +100,7 @@ class Kirby extends Obj {
       'addr' => 'config.' . server::get('SERVER_ADDR') . '.php',
     );
 
-    $allowed = array_filter(scandir($root), function($file) {
+    $allowed = array_filter(dir::read($root), function($file) {
       return substr($file, 0, 7) === 'config.' and substr($file, -4) === '.php';
     });
 
