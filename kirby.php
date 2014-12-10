@@ -6,7 +6,7 @@ use Kirby\Request;
 
 class Kirby extends Obj {
 
-  static public $version = '2.0.4';
+  static public $version = '2.0.5';
   static public $instance;
 
   public $roots;
@@ -95,14 +95,19 @@ class Kirby extends Obj {
     // load all available config files
     $root    = $this->roots()->config();
     $configs = array(
-      'main' => $root . DS . 'config.php',
-      'host' => $root . DS . 'config.' . server::get('HTTP_HOST') . '.php',
-      'addr' => $root . DS . 'config.' . server::get('SERVER_ADDR') . '.php',
+      'main' => 'config.php',
+      'host' => 'config.' . server::get('SERVER_NAME') . '.php',
+      'addr' => 'config.' . server::get('SERVER_ADDR') . '.php',
     );
 
+    $allowed = array_filter(dir::read($root), function($file) {
+      return substr($file, 0, 7) === 'config.' and substr($file, -4) === '.php';
+    });
+
     foreach($configs as $config) {
-      if(file_exists($config)) include_once($config);
-    }
+      $file = $root . DS . $config;
+      if(in_array($config, $allowed, true) and file_exists($file)) include_once($file);
+    } 
 
     // apply the options
     $this->options = array_merge($this->options, c::$data);
@@ -504,7 +509,7 @@ class Kirby extends Obj {
   public function template(Page $page, $data = array()) {
 
     // apply the basic template vars
-    tpl::$data = array_merge(array(
+    tpl::$data = array_merge(tpl::$data, array(
       'kirby' => $this,
       'site'  => $this->site(),
       'pages' => $this->site()->children(),

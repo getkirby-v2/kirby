@@ -47,9 +47,9 @@ abstract class PageAbstract {
     $this->depth   = $parent->depth() + 1;
 
     // extract the uid and num of the directory
-    if(preg_match('/^([0-9]+[\-]+)(.*)/', $this->dirname, $match)) {
+    if(preg_match('/^([0-9]+)[\-](.*)$/', $this->dirname, $match)) {
       $this->uid = $match[2];
-      $this->num = trim(rtrim($match[1], '-'));
+      $this->num = $match[1];
     } else {
       $this->num = null;
       $this->uid = $this->dirname;
@@ -275,7 +275,8 @@ abstract class PageAbstract {
     if(isset($this->cache['inventory'])) return $this->cache['inventory'];
 
     // get all items within the directory
-    $items = array_diff(scandir($this->root), array('.', '..', '.DS_Store', '.git', '.svn', 'Thumb.db'));
+    $ignore = array('.', '..', '.DS_Store', '.git', '.svn', 'Thumb.db');
+    $items  = array_diff(scandir($this->root), array_merge($ignore, (array)kirby::instance()->option('content.file.ignore')));
 
     // create the inventory
     $this->cache['inventory'] = array(
@@ -661,11 +662,16 @@ abstract class PageAbstract {
    * Returns the title for this page and
    * falls back to the uid if no title exists
    *
-   * @return Field | string
+   * @return Field
    */
-  public function title() {
+  public function title() {    
     $title = $this->content()->get('title');
-    return $title != '' ? $title : $this->uid();
+    if($title != '') {
+      return $title;
+    } else {
+      $title->value = $this->uid();
+      return $title;
+    }
   }
 
   /**

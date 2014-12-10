@@ -670,7 +670,7 @@ class Parsedown
             return;
         }
 
-        if (preg_match('/<'.$Block['name'].'([ ][^\/]+)?>/', $Line['text'])) # opening tag
+        if (preg_match('/<'.$Block['name'].'([ ].*[\'"])?[ ]*>/', $Line['text'])) # opening tag
         {
             $Block['depth'] ++;
         }
@@ -685,6 +685,13 @@ class Parsedown
             {
                 $Block['closed'] = true;
             }
+        }
+
+        if (isset($Block['interrupted']))
+        {
+            $Block['element'] .= "\n";
+
+            unset($Block['interrupted']);
         }
 
         $Block['element'] .= "\n".$Line['body'];
@@ -965,6 +972,7 @@ class Parsedown
         '*' => array('Emphasis'),
         '/' => array('Url'),
         '<' => array('UrlTag', 'EmailTag', 'Tag', 'LessThan'),
+        '>' => array('GreaterThan'),
         '[' => array('Link'),
         '_' => array('Emphasis'),
         '`' => array('InlineCode'),
@@ -974,7 +982,7 @@ class Parsedown
 
     # ~
 
-    protected $spanMarkerList = '*_!&[</`~\\';
+    protected $spanMarkerList = '*_!&[<>/`~\\';
 
     #
     # ~
@@ -1125,6 +1133,14 @@ class Parsedown
         );
     }
 
+    protected function identifyGreaterThan()
+    {
+        return array(
+            'markup' => '&gt;',
+            'extent' => 1,
+        );
+    }
+
     protected function identifyUrlTag($Excerpt)
     {
         if (strpos($Excerpt['text'], '>') !== false and preg_match('/^<(https?:[\/]{2}[^\s]+?)>/i', $Excerpt['text'], $matches))
@@ -1168,7 +1184,7 @@ class Parsedown
             return;
         }
 
-        if (strpos($Excerpt['text'], '>') !== false and preg_match('/^<\/?\w.*?>/', $Excerpt['text'], $matches))
+        if (strpos($Excerpt['text'], '>') !== false and preg_match('/^<\/?\w.*?>/s', $Excerpt['text'], $matches))
         {
             return array(
                 'markup' => $matches[0],
@@ -1181,10 +1197,11 @@ class Parsedown
     {
         $marker = $Excerpt['text'][0];
 
-        if (preg_match('/^('.$marker.'+)[ ]*(.+?)[ ]*(?<!'.$marker.')\1(?!'.$marker.')/', $Excerpt['text'], $matches))
+        if (preg_match('/^('.$marker.'+)[ ]*(.+?)[ ]*(?<!'.$marker.')\1(?!'.$marker.')/s', $Excerpt['text'], $matches))
         {
             $text = $matches[2];
             $text = htmlspecialchars($text, ENT_NOQUOTES, 'UTF-8');
+            $text = preg_replace("/[ ]*\n/", ' ', $text);
 
             return array(
                 'extent' => strlen($matches[0]),
@@ -1260,8 +1277,8 @@ class Parsedown
             $Element = array(
                 'name' => 'img',
                 'attributes' => array(
-                    'alt' => $Link['text'],
                     'src' => $url,
+                    'alt' => $Link['text'],
                 ),
             );
         }
@@ -1325,9 +1342,10 @@ class Parsedown
 
     protected function readPlainText($text)
     {
-        $breakMarker = $this->breaksEnabled ? "\n" : "  \n";
+        $breakMarker = $this->breaksEnabled ? "\n" : array("  \n", "\\\n");
 
         $text = str_replace($breakMarker, "<br />\n", $text);
+        $text = str_replace(" \n", "\n", $text);
 
         return $text;
     }
@@ -1403,13 +1421,13 @@ class Parsedown
     );
 
     protected $StrongRegex = array(
-        '*' => '/^[*]{2}((?:[^*]|[*][^*]*[*])+?)[*]{2}(?![*])/s',
-        '_' => '/^__((?:[^_]|_[^_]*_)+?)__(?!_)/us',
+        '*' => '/^[*]{2}((?:\\\\\*|[^*]|[*][^*]*[*])+?)[*]{2}(?![*])/s',
+        '_' => '/^__((?:\\\\_|[^_]|_[^_]*_)+?)__(?!_)/us',
     );
 
     protected $EmRegex = array(
-        '*' => '/^[*]((?:[^*]|[*][*][^*]+?[*][*])+?)[*](?![*])/s',
-        '_' => '/^_((?:[^_]|__[^_]*__)+?)_(?!_)\b/us',
+        '*' => '/^[*]((?:\\\\\*|[^*]|[*][*][^*]+?[*][*])+?)[*](?![*])/s',
+        '_' => '/^_((?:\\\\_|[^_]|__[^_]*__)+?)_(?!_)\b/us',
     );
 
     protected $voidElements = array(

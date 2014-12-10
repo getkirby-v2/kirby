@@ -156,7 +156,7 @@ abstract class PagesAbstract extends Collection {
    * @return boolean
    */
   public function has($page) {
-    $uri = is_string($page) ? $page : $page->uri();
+    $uri = is_string($page) ? $page : $page->id();
     return isset($this->data[$uri]);
   }
 
