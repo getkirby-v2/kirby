@@ -21,9 +21,7 @@ abstract class KirbytextAbstract {
 
     if(empty($field) or is_string($field)) {
       $value = $field;
-      $field = new Field();
-      $field->value = $value;
-      $field->page  = page();
+      $field = new Field(page(), null, $value);
     }
 
     $this->field = $field;
