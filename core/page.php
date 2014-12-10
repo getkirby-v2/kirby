@@ -662,11 +662,16 @@ abstract class PageAbstract {
    * Returns the title for this page and
    * falls back to the uid if no title exists
    *
-   * @return Field | string
+   * @return Field
    */
-  public function title() {
+  public function title() {    
     $title = $this->content()->get('title');
-    return $title != '' ? $title : $this->uid();
+    if($title != '') {
+      return $title;
+    } else {
+      $title->value = $this->uid();
+      return $title;
+    }
   }
 
   /**
