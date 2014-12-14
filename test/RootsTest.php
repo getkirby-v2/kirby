@@ -46,11 +46,11 @@ class RootsTest extends PHPUnit_Framework_TestCase {
     $roots = new Kirby\Roots(__DIR__);
     $roots->thumbs = __DIR__ . DS . 'mythumbs';
 
-    $this->assertEquals(__DIR__ . DS . 'mythumbs', $roots->kirby());
+    $this->assertEquals(__DIR__ . DS . 'mythumbs', $roots->thumbs());
 
   }
 
-  public function testModifiedContent() {
+  public function testModifiedKirby() {
 
     $roots = new Kirby\Roots(__DIR__);
     $roots->kirby = __DIR__ . DS . 'mykirby';
