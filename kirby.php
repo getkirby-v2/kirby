@@ -33,11 +33,10 @@ class Kirby extends Obj {
     return static::$version;
   }
 
-  public function __construct() {
+  public function __construct($options = array()) {
     $this->roots   = new Roots(dirname(__DIR__));
     $this->urls    = new Urls();
-    $this->options = $this->defaults();
-    $this->rewrite = false;
+    $this->options = array_merge($this->defaults(), $options);
     $this->path    = implode('/', (array)url::fragments(detect::path()));
 
     // make sure the instance is stored / overwritten
