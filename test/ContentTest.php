@@ -16,12 +16,12 @@ class ContentTest extends PHPUnit_Framework_TestCase {
 
   public function testContent() {
 
-    $content = new Content(null, TEST_ROOT_ETC . DS . 'content.txt');
+    $content = new Content(null, TEST_ROOT_ETC . DS . 'content' . DS . 'site.txt');
 
-    $this->assertEquals(TEST_ROOT_ETC . DS . 'content.txt', $content->root);
-    $this->assertEquals(TEST_ROOT_ETC . DS . 'content.txt', $content->root());
+    $this->assertEquals(TEST_ROOT_ETC . DS . 'content' . DS . 'site.txt', $content->root);
+    $this->assertEquals(TEST_ROOT_ETC . DS . 'content' . DS . 'site.txt', $content->root());
 
-    $this->assertEquals('content', $content->name());
+    $this->assertEquals('site', $content->name());
 
     $this->assertEquals(array_keys($this->dummyData()), $content->fields());
     $this->assertEquals($this->dummyData(), $content->toArray());
