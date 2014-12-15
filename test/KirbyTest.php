@@ -95,7 +95,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
 
   public function testCacheSetup() {
 
-    $kirby = new Kirby();
+    $kirby = new Kirby(array('debug' => true));
     $kirby->roots->site = TEST_ROOT_ETC . DS . 'site';
 
     // disabled cache
@@ -106,6 +106,8 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
       'cache'        => true,
       'cache.driver' => 'file'
     ));
+
+    $kirby->roots->site = TEST_ROOT_ETC . DS . 'site';
 
     $this->assertInstanceOf('Cache\\Driver\\File', $kirby->cache());
 
