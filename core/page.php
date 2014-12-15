@@ -177,6 +177,15 @@ abstract class PageAbstract {
   }
 
   /**
+   * Returns the full URL for the content folder
+   * 
+   * @return string
+   */
+  public function contentUrl() {
+    return $this->kirby()->urls()->content() . '/' . $this->diruri();
+  }
+
+  /**
    * Builds and returns the short url for the current page
    *
    * @return string
@@ -594,19 +603,8 @@ abstract class PageAbstract {
    * @return Files
    */
   public function files() {
-
     if(isset($this->cache['files'])) return $this->cache['files'];
-
-    $this->cache['files'] = new Files($this);
-
-    $inventory = $this->inventory();
-
-    foreach($inventory['files'] as $filename) {
-      $this->cache['files']->add($filename);
-    }
-
-    return $this->cache['files'];
-
+    return $this->cache['files'] = new Files($this);
   }
 
   /**
@@ -714,6 +712,13 @@ abstract class PageAbstract {
    * Alternative for $this->equals()
    */
   public function is(Page $page) {
+    return $this == $page;
+  }
+
+  /**
+   * Alternative for $this->is()
+   */
+  public function equals(Page $page) {
     return $this == $page;
   }
 

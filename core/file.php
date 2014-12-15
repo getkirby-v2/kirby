@@ -62,21 +62,21 @@ abstract class FileAbstract extends Media {
   }
 
   /**
-   * Returns the full root for the content file
-   *
-   * @return string
-   */
-  public function textfile() {
-    return $this->page->textfile($this->filename());
-  }
-
-  /**
    * Returns the parent files collection
    *
    * @return Files
    */
   public function files() {
     return $this->files;
+  }
+
+  /**
+   * Returns the full root for the content file
+   *
+   * @return string
+   */
+  public function textfile() {
+    return $this->page->textfile($this->filename());
   }
 
   public function siblings() {
@@ -111,7 +111,7 @@ abstract class FileAbstract extends Media {
    * @return string
    */
   public function url() {
-    return kirby::instance()->urls()->content() . '/' . $this->page->diruri() . '/' . rawurlencode($this->filename);
+    return $this->page->contentUrl() . '/' . rawurlencode($this->filename);
   }
 
   /**
