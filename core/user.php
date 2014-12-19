@@ -60,7 +60,7 @@ abstract class UserAbstract {
   }
 
   public function __get($key) {
-    return a::get($this->data(), $key);
+    return a::get($this->data(), strtolower($key));
   }
 
   public function __call($key, $arguments = null) {
