@@ -45,6 +45,7 @@ class Kirby extends Obj {
 
   public function defaults() {
     return array(
+      'url'                    => false,
       'timezone'               => 'UTC',
       'license'                => null,
       'rewrite'                => true,
@@ -110,6 +111,11 @@ class Kirby extends Obj {
 
     // apply the options
     $this->options = array_merge($this->options, c::$data);
+
+    // overwrite the autodetected url
+    if($this->options['url']) {
+      $this->urls->index = $this->options['url'];
+    }
 
     // connect the url class with its handlers
     url::$home = $this->urls()->index();
