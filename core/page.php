@@ -18,6 +18,8 @@
  */
 abstract class PageAbstract {
 
+  static public $models = array();
+
   public $kirby;
   public $site;
   public $parent;
@@ -351,8 +353,23 @@ abstract class PageAbstract {
 
     $inventory = $this->inventory();
 
-    foreach($inventory['children'] as $child) {
-      $this->cache['children']->add($child);
+    // with page models
+    if(!empty(static::$models)) {
+      foreach($inventory['children'] as $dirname) {
+        $child = new Page($this, $dirname);
+        // let's create a model if one is defined
+        if(isset(static::$models[$child->intendedTemplate()])) {
+          $model = static::$models[$child->intendedTemplate()];
+          $child = new $model($this, $dirname);
+        }
+        $this->cache['children']->data[$child->id()] = $child;
+      }
+    // without page models
+    } else {
+      foreach($inventory['children'] as $dirname) {
+        $child = new Page($this, $dirname);
+        $this->cache['children']->data[$child->id()] = $child;
+      }
     }
 
     return $this->cache['children'];

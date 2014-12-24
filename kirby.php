@@ -306,6 +306,27 @@ class Kirby extends Obj {
   }
 
   /**
+   * Loads a single plugin
+   *
+   * @param string $name
+   * @param string $mode
+   * @return mixed
+   */
+  public function plugin($name, $mode = 'dir') {
+
+    if(isset($this->plugins[$name])) return true;
+
+    if($mode == 'dir') {
+      $file = $this->roots->plugins() . DS . $name . DS . $name . '.php';
+    } else {
+      $file = $this->roots->plugins() . DS . $name . '.php';
+    }
+
+    if(file_exists($file)) return $this->plugins[$name] = include_once($file);
+
+  }
+
+  /**
    * Load all default extensions
    */
   public function extensions() {
@@ -325,23 +346,30 @@ class Kirby extends Obj {
   }
 
   /**
-   * Loads a single plugin
-   *
-   * @param string $name
-   * @param string $mode
-   * @return mixed
+   * Autoloads all page models
    */
-  public function plugin($name, $mode = 'dir') {
+  public function models() {
 
-    if(isset($this->plugins[$name])) return true;
+    if(!is_dir($this->roots()->models())) return false;
 
-    if($mode == 'dir') {
-      $file = $this->roots->plugins() . DS . $name . DS . $name . '.php';
-    } else {
-      $file = $this->roots->plugins() . DS . $name . '.php';
+    $root  = $this->roots()->models();
+    $files = dir::read($root);
+    $load  = array();
+
+    foreach($files as $file) {
+      if(f::extension($file) != 'php') continue;
+      $name      = f::name($file);
+      $classname = $name . 'page';
+      $load[$classname] = $root . DS . $file;
+
+      // register the model
+      page::$models[$name] = $classname;
     }
 
-    if(file_exists($file)) return $this->plugins[$name] = include_once($file);
+    // start the autoloader
+    if(!empty($load)) {
+      load($load);
+    }
 
   }
 
@@ -562,6 +590,9 @@ class Kirby extends Obj {
 
     // load all plugins
     $this->plugins();
+
+    // load all models
+    $this->models();
 
     // start the router
     $this->router = new Router($this->routes());
