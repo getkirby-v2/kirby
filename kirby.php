@@ -547,7 +547,7 @@ class Kirby extends Obj {
       'site'  => $this->site(),
       'pages' => $this->site()->children(),
       'page'  => $page
-    ), $data, $this->controller($page, $data));
+    ), $page->templateData(), $data, $this->controller($page, $data));
 
     return tpl::load($page->templateFile());
 

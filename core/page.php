@@ -946,6 +946,15 @@ abstract class PageAbstract {
   }
 
   /**
+   * Additional data, which will be passed to the template
+   *
+   * @return array
+   */
+  public function templateData() {
+    return array();
+  }
+
+  /**
    * Returns the name of the content text file / intended template
    * So even if there's no such template it will return the intended name.
    *
