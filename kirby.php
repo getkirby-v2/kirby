@@ -71,6 +71,7 @@ class Kirby extends Obj {
       'kirbytext.video.class'  => 'video',
       'kirbytext.video.width'  => false,
       'kirbytext.video.height' => false,
+      'kirbytext.image.figure' => true,
       'content.file.extension' => 'txt',
       'content.file.ignore'    => array(),
       'thumbs.driver'          => 'gd',
