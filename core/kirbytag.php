@@ -106,7 +106,7 @@ abstract class KirbytagAbstract {
     if(preg_match('!(http|https)\:\/\/!i', $url)) return false;
 
     // skip urls without extensions
-    if(!preg_match('!\.[a-z]+$!',$url)) return false;
+    if(!preg_match('!\.[a-z0-9]+$!i',$url)) return false;
 
     // try to get all files for the current page
     $files = $this->files();
