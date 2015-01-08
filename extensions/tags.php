@@ -166,11 +166,11 @@ kirbytext::$tags['link'] = array(
     'popup'
   ),
   'html' => function($tag) {
-    return html::a(url($tag->attr('link')), html($tag->attr('text')), array(
-      'rel'    => $tag->attr('rel'),
-      'class'  => $tag->attr('class'),
-      'title'  => html($tag->attr('title')),
-      'target' => $tag->target(),
+    return html::a(url($tag->attr('link')), escape::html($tag->attr('text')), array(
+      'rel'    => escape::attr($tag->attr('rel')),
+      'class'  => escape::attr($tag->attr('class')),
+      'title'  => escape::attr($tag->attr('title')),
+      'target' => escape::attr($tag->target()),
     ));
   }
 );
