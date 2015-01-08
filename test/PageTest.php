@@ -4,13 +4,21 @@ require_once('lib/bootstrap.php');
 
 class PageTest extends PHPUnit_Framework_TestCase {
 
-  public function testConstruction() {
-
+  private function kirby() {
     $kirby = new Kirby();    
     $kirby->roots->content = TEST_ROOT_ETC . DS . 'content';
+    return $kirby;
+  }
 
-    $site = new Site($kirby);
-    $page = new Page($site, '1-a');
+  private function site() {
+    return new Site($this->kirby());
+  }
+
+  public function testConstruction() {
+
+    $kirby = $this->kirby();
+    $site  = new Site($kirby);
+    $page  = new Page($site, '1-a');
 
     $this->assertInstanceOf('Kirby', $page->kirby());
     $this->assertEquals($kirby, $page->kirby());
@@ -38,6 +46,18 @@ class PageTest extends PHPUnit_Framework_TestCase {
     $this->assertFalse($page->isHomePage());
     $this->assertFalse($page->isErrorPage());
     $this->assertEquals($page->id(), (string)$page);
+
+  }
+
+  public function testDate() {
+
+    $site = $this->site();
+    $page = new Page($site, '1-a');
+
+    $this->assertEquals(1355270400, $page->date());
+    $this->assertEquals('2012-12-12', $page->date('Y-m-d'));
+    $this->assertEquals('2012-12-12', $page->date('Y-m-d', 'date'));
+    $this->assertEquals('2012-12-12', $page->date('Y-m-d', 'created'));
 
   }
 
