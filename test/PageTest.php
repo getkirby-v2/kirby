@@ -74,13 +74,24 @@ class PageTest extends PHPUnit_Framework_TestCase {
 
   public function testNums() {
 
-    $site = $this->site();
+    $site  = $this->site();
+    $tests = array(
+      '1-a'    => array('1', 'a'),
+      'a'      => array(null, 'a'),
+      '-a'     => array(null, '-a'),
+      '1-1-a'  => array('1', '1-a'),
+      '1-1-1'  => array('1', '1-1'),
+      '-1-1-1' => array(null, '-1-1-1'),
+    );
 
-    $page = new Page($site, '2121-b');
+    foreach($tests as $key => $value) {
 
-    var_dump($page->num());
+      $page = new Page($site, $key);
 
+      $this->assertEquals($value[0], $page->num());
+      $this->assertEquals($value[1], $page->uid());
 
+    }
 
   }
 
