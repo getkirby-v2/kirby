@@ -61,4 +61,27 @@ class PageTest extends PHPUnit_Framework_TestCase {
 
   }
 
+  public function testEmptyField() {
+
+    $site = $this->site();
+    $page = new Page($site, '1-a');
+
+    $this->assertInstanceOf('Field', $page->missingfield());
+    $this->assertTrue($page->missingfield()->empty());
+    $this->assertTrue($page->missingfield()->isEmpty());
+
+  }
+
+  public function testNums() {
+
+    $site = $this->site();
+
+    $page = new Page($site, '2121-b');
+
+    var_dump($page->num());
+
+
+
+  }
+
 }
