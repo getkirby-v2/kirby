@@ -27,7 +27,7 @@ class Content extends ContentAbstract {
     $codes = $this->page->site()->languages()->codes();
     $code  = f::extension(f::name($this->root));
 
-    return $this->language = in_array($code, $codes) ? $this->page->site()->language($code) : false;
+    return $this->language = in_array($code, $codes) ? $this->page->site()->languages()->find($code) : false;
 
   }
 
