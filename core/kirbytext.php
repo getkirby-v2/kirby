@@ -44,7 +44,7 @@ abstract class KirbytextAbstract {
     }
 
     // tags
-    $text = preg_replace_callback('!\(((.*?|(?R))*)\)!', array($this, 'tag'), $text);
+    $text = preg_replace_callback('!\(((.*?|(?R))*)\)!s', array($this, 'tag'), $text);
 
     // markdownify
     $text = markdown($text);
