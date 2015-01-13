@@ -470,7 +470,7 @@ class Kirby extends Obj {
     if($this->options['cache'] and $page->isCachable()) {
 
       // try to read the cache by cid (cache id)
-      $cacheId = $page->cacheId();
+      $cacheId = md5(url::current());
 
       // check for modified content within the content folder
       // and auto-expire the page cache in such a case
