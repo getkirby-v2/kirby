@@ -119,10 +119,10 @@ kirbytext::$tags['image'] = array(
       }
 
       return html::a(url($href), $image, array(
-        'rel'    => esc($tag->attr('rel'), 'attr'),
-        'class'  => esc($tag->attr('linkclass'), 'attr'),
-        'title'  => esc($tag->attr('title'), 'attr'),
-        'target' => esc($tag->target(), 'attr')
+        'rel'    => $tag->attr('rel'),
+        'class'  => $tag->attr('linkclass'),
+        'title'  => $tag->attr('title'),
+        'target' => $tag->target()
       ));
 
     };
@@ -130,11 +130,11 @@ kirbytext::$tags['image'] = array(
     // image builder
     $_image = function($class) use($tag, $url, $alt, $title) {
       return html::img($url, array(
-        'width'  => esc($tag->attr('width'), 'attr'),
-        'height' => esc($tag->attr('height'), 'attr'),
-        'class'  => esc($class, 'attr'),
-        'title'  => esc($title, 'attr'),
-        'alt'    => esc($alt, 'attr')
+        'width'  => $tag->attr('width'),
+        'height' => $tag->attr('height'),
+        'class'  => $class,
+        'title'  => $title,
+        'alt'    => $alt
       ));
     };
 
@@ -166,12 +166,23 @@ kirbytext::$tags['link'] = array(
     'popup'
   ),
   'html' => function($tag) {
-    return html::a(url($tag->attr('link')), escape::html($tag->attr('text')), array(
-      'rel'    => escape::attr($tag->attr('rel')),
-      'class'  => escape::attr($tag->attr('class')),
-      'title'  => escape::attr($tag->attr('title')),
-      'target' => escape::attr($tag->target()),
+
+    $link = url($tag->attr('link'));
+    $text = $tag->attr('text');
+
+    if(empty($text)) {
+      $text = escape::attr($link);
+    } else if(str::isURL($text)) {
+      $text = escape::attr($text);
+    }
+
+    return html::a($link, $text, array(
+      'rel'    => $tag->attr('rel'),
+      'class'  => $tag->attr('class'),
+      'title'  => $tag->attr('title'),
+      'target' => $tag->target(),
     ));
+
   }
 );
 
