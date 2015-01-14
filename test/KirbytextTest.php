@@ -4,7 +4,7 @@ require_once('lib/bootstrap.php');
 
 class KirbytextTest extends PHPUnit_Framework_TestCase {
 
-  private function kt($value, $markdownExtra = false) {
+  public function kt($value, $markdownExtra = false) {
     $kirby = new Kirby(array(
       'markdown.extra' => $markdownExtra
     ));    
@@ -18,7 +18,7 @@ class KirbytextTest extends PHPUnit_Framework_TestCase {
 
   }
 
-  private function runTests($result) {
+  public function runTests($result) {
 
     $root = TEST_ROOT_ETC . DS . 'kirbytext';
     $dirs = dir::read($root);
