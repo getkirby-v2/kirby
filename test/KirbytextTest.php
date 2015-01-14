@@ -2,15 +2,15 @@
 
 require_once('lib/bootstrap.php');
 
-class KirbytextTest extends PHPUnit_Framework_TestCase {
+class KirbytextTest extends KirbyTestCase {
 
   public function kt($value, $markdownExtra = false) {
-    $kirby = new Kirby(array(
+
+    $kirby = $this->kirbyInstance(array(
       'markdown.extra' => $markdownExtra
     ));    
-    $kirby->roots->content = TEST_ROOT_ETC . DS . 'content';
       
-    $site  = new Site($kirby);
+    $site  = $this->siteInstance($kirby);
     $page  = new Page($site, '1-a');
     $field = new Field($page, null, $value);
 

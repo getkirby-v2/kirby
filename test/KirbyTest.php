@@ -2,11 +2,11 @@
 
 require_once('lib/bootstrap.php');
 
-class KirbyTest extends PHPUnit_Framework_TestCase {
+class KirbyTest extends KirbyTestCase {
 
   public function testConstruction() {
 
-    $kirby = new Kirby();
+    $kirby = $this->kirbyInstance();
 
     $this->assertInstanceOf('Kirby\\Roots', $kirby->roots());
     $this->assertInstanceOf('Kirby\\Urls',  $kirby->urls());
@@ -17,7 +17,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
 
   public function testOptions() {
 
-    $kirby = new Kirby();
+    $kirby = $this->kirbyInstance();
 
     $this->assertEquals('UTC', $kirby->option('timezone'));
     $this->assertEquals(null, $kirby->option('license'));
@@ -53,7 +53,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
 
   public function testInstanceConfiguration() {
 
-    $kirby = new Kirby(array(
+    $kirby = $this->kirbyInstance(array(
       'timezone' => 'Europe/Berlin'
     ));
 
@@ -63,7 +63,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
 
   public function testUrl() {
 
-    $kirby = new Kirby();
+    $kirby = $this->kirbyInstance();
 
     $this->assertEquals('/', $kirby->urls()->index());
 
@@ -77,7 +77,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
 
   public function testInstance() {
 
-    $kirby = new Kirby();
+    $kirby = $this->kirbyInstance();
 
     $this->assertEquals($kirby, kirby::instance());
 
@@ -85,7 +85,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
 
   public function testPathManipulation() {
 
-    $kirby = new Kirby();
+    $kirby = $this->kirbyInstance();
 
     $kirby->path = $path = 'blog/article-xy';
     $this->assertEquals($path, $kirby->path);
@@ -95,14 +95,14 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
 
   public function testCacheSetup() {
 
-    $kirby = new Kirby(array('debug' => true));
+    $kirby = $this->kirbyInstance();
     $kirby->roots->site = TEST_ROOT_ETC . DS . 'site';
 
     // disabled cache
     $this->assertInstanceOf('Cache\\Driver\\Mock', $kirby->cache());
 
     // switch to file cache
-    $kirby = new Kirby(array(
+    $kirby = $this->kirbyInstance(array(
       'cache'        => true,
       'cache.driver' => 'file'
     ));
@@ -115,7 +115,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
 
   public function testConfigure() {
 
-    $kirby = new Kirby();
+    $kirby = $this->kirbyInstance();
 
     // point to a non existing site directory
     // to load the default configuration
@@ -129,7 +129,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(thumb::$defaults['filename'], $kirby->option('thumbs.filename'));
     $this->assertEquals(url::$home, $kirby->urls()->index());
 
-    $kirby = new Kirby();
+    $kirby = $this->kirbyInstance();
     // load a custom config file
     $kirby->roots->site = TEST_ROOT_ETC . DS . 'site';    
     $kirby->configure();
@@ -140,7 +140,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
 
   public function testPlugins() {
 
-    $kirby = new Kirby();
+    $kirby = $this->kirbyInstance();
     $kirby->roots->site = TEST_ROOT_ETC . DS . 'site';
 
     $plugins = $kirby->plugins();
@@ -152,7 +152,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
 
   public function testExtensions() {
 
-    $kirby = new Kirby();
+    $kirby = $this->kirbyInstance();
     $kirby->roots->site = TEST_ROOT_ETC . DS . 'site';
 
     $kirby->extensions();
@@ -165,7 +165,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
 
   public function testRequest() {
 
-    $kirby = new Kirby();
+    $kirby = $this->kirbyInstance();
     $this->assertInstanceOf('Kirby\\Request', $kirby->request());
 
   }
@@ -173,12 +173,12 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
   public function testBranches() {
 
     // single language
-    $kirby = new Kirby();
+    $kirby = $this->kirbyInstance();
 
     $this->assertEquals($kirby->roots()->kirby() . DS . 'branches' . DS . 'default.php', $kirby->branch());
 
     // multi language
-    $kirby = new Kirby(array(
+    $kirby = $this->kirbyInstance(array(
       'languages' => array(
         array(
           'code'    => 'en',

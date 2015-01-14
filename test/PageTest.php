@@ -2,22 +2,12 @@
 
 require_once('lib/bootstrap.php');
 
-class PageTest extends PHPUnit_Framework_TestCase {
-
-  private function kirby() {
-    $kirby = new Kirby();    
-    $kirby->roots->content = TEST_ROOT_ETC . DS . 'content';
-    return $kirby;
-  }
-
-  private function site() {
-    return new Site($this->kirby());
-  }
+class PageTest extends KirbyTestCase {
 
   public function testConstruction() {
 
-    $kirby = $this->kirby();
-    $site  = new Site($kirby);
+    $kirby = $this->kirbyInstance();
+    $site  = $this->siteInstance($kirby);
     $page  = new Page($site, '1-a');
 
     $this->assertInstanceOf('Kirby', $page->kirby());
@@ -51,7 +41,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 
   public function testDate() {
 
-    $site = $this->site();
+    $site = $this->siteInstance();
     $page = new Page($site, '1-a');
 
     $this->assertEquals(1355270400, $page->date());
@@ -63,7 +53,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 
   public function testEmptyField() {
 
-    $site = $this->site();
+    $site = $this->siteInstance();
     $page = new Page($site, '1-a');
 
     $this->assertInstanceOf('Field', $page->missingfield());
@@ -74,7 +64,7 @@ class PageTest extends PHPUnit_Framework_TestCase {
 
   public function testNums() {
 
-    $site  = $this->site();
+    $site  = $this->siteInstance();
     $tests = array(
       '1-a'    => array('1', 'a'),
       'a'      => array(null, 'a'),

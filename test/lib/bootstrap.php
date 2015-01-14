@@ -16,6 +16,9 @@ date_default_timezone_set('UTC');
 // include the kirby bootstrapper file
 require_once(dirname(TEST_ROOT) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
+// include the kirby testcase file
+require_once(__DIR__ . DS . 'testcase.php');
+
 // dummy classes
 class Page extends PageAbstract {}
 class Pages extends PagesAbstract {}

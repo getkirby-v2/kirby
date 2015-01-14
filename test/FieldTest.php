@@ -2,7 +2,7 @@
 
 require_once('lib/bootstrap.php');
 
-class FieldTest extends PHPUnit_Framework_TestCase {
+class FieldTest extends KirbyTestCase {
 
   public function testField() {
 
