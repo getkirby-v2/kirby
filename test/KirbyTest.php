@@ -30,7 +30,7 @@ class KirbyTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(array(), $kirby->option('languages'));
     $this->assertEquals(array(), $kirby->option('roles'));
     $this->assertFalse($kirby->option('cache'));
-    $this->assertFalse($kirby->option('debug'));
+    $this->assertEquals('env', $kirby->option('debug'));
     $this->assertFalse($kirby->option('ssl'));
     $this->assertEquals('file', $kirby->option('cache.driver'));
     $this->assertEquals(array(), $kirby->option('cache.options'));

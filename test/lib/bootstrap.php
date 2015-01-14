@@ -1,5 +1,8 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 $dir = realpath(dirname(__FILE__));
 
 if(!defined('TEST_ROOT'))     define('TEST_ROOT',     dirname($dir));
@@ -12,7 +15,6 @@ date_default_timezone_set('UTC');
 
 // include the kirby bootstrapper file
 require_once(dirname(TEST_ROOT) . DIRECTORY_SEPARATOR . 'bootstrap.php');
-
 
 // dummy classes
 class Page extends PageAbstract {}

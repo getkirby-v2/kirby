@@ -57,7 +57,7 @@ class Kirby extends Obj {
       'languages'              => array(),
       'roles'                  => array(),
       'cache'                  => false,
-      'debug'                  => false,
+      'debug'                  => 'env',
       'ssl'                    => false,
       'cache.driver'           => 'file',
       'cache.options'          => array(),
@@ -147,10 +147,10 @@ class Kirby extends Obj {
     thumb::$defaults['filename'] = $this->option('thumbs.filename');
 
     // simple error handling
-    if($this->option('debug')) {
+    if($this->options['debug'] === true) {
       error_reporting(E_ALL);
       ini_set('display_errors', 1);
-    } else {
+    } else if($this->options['debug'] === false) {
       error_reporting(0);
       ini_set('display_errors', 0);
     }
