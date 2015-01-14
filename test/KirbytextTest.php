@@ -28,7 +28,7 @@ class KirbytextTest extends KirbyTestCase {
       $testFile     = $root . DS . $dir . DS . 'test.txt';
       $expectedFile = $root . DS . $dir . DS . 'expected.html';
 
-      $this->assertEquals($result(f::read($testFile)), f::read($expectedFile));
+      $this->assertEquals(f::read($expectedFile), $result(f::read($testFile)), 'test: ' . $dir);
 
     }
 
