@@ -2,7 +2,7 @@
 
 require_once('lib/bootstrap.php');
 
-class UrlsTest extends PHPUnit_Framework_TestCase {
+class UrlsTest extends KirbyTestCase {
 
   public function testDefaults() {
 

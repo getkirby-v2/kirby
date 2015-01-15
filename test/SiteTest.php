@@ -2,12 +2,12 @@
 
 require_once('lib/bootstrap.php');
 
-class SiteTest extends PHPUnit_Framework_TestCase {
+class SiteTest extends KirbyTestCase {
 
   public function testConstruction() {
 
-    $kirby = new Kirby();    
-    $site  = new Site($kirby);
+    $kirby = $this->kirbyInstance();    
+    $site  = $this->siteInstance($kirby);
 
     $this->assertInstanceOf('Kirby', $site->kirby());
     $this->assertEquals($kirby, $site->kirby());

@@ -2,7 +2,7 @@
 
 require_once('lib/bootstrap.php');
 
-class ContentTest extends PHPUnit_Framework_TestCase {
+class ContentTest extends KirbyTestCase {
 
   private function dummyData() {
     return array(
@@ -43,4 +43,25 @@ class ContentTest extends PHPUnit_Framework_TestCase {
 
   }
 
+  public function testFieldNames() {
+
+    $page    = $this->siteInstance()->page('tests/field-name-test');
+    $content = $page->content();
+    $fields  = array(
+      'camelcase',
+      'lowercase',
+      'uppercase',
+      'name_with_dashes',
+      'name_with_underscores',
+    );
+
+    foreach($fields as $field) {
+
+      $this->assertEquals('test', $content->get(strtolower($field)));
+      $this->assertEquals('test', $content->get(strtoupper($field)));
+      $this->assertEquals('test', $page->$field());
+
+    }
+    
+  }
 }

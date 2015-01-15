@@ -57,7 +57,7 @@ class Kirby extends Obj {
       'languages'              => array(),
       'roles'                  => array(),
       'cache'                  => false,
-      'debug'                  => false,
+      'debug'                  => 'env',
       'ssl'                    => false,
       'cache.driver'           => 'file',
       'cache.options'          => array(),
@@ -71,6 +71,7 @@ class Kirby extends Obj {
       'kirbytext.video.class'  => 'video',
       'kirbytext.video.width'  => false,
       'kirbytext.video.height' => false,
+      'kirbytext.image.figure' => true,
       'content.file.extension' => 'txt',
       'content.file.ignore'    => array(),
       'thumbs.driver'          => 'gd',
@@ -146,10 +147,10 @@ class Kirby extends Obj {
     thumb::$defaults['filename'] = $this->option('thumbs.filename');
 
     // simple error handling
-    if($this->option('debug')) {
+    if($this->options['debug'] === true) {
       error_reporting(E_ALL);
       ini_set('display_errors', 1);
-    } else {
+    } else if($this->options['debug'] === false) {
       error_reporting(0);
       ini_set('display_errors', 0);
     }
@@ -497,7 +498,7 @@ class Kirby extends Obj {
     if($this->options['cache'] and $page->isCachable()) {
 
       // try to read the cache by cid (cache id)
-      $cacheId = $page->cacheId();
+      $cacheId = md5(url::current());
 
       // check for modified content within the content folder
       // and auto-expire the page cache in such a case

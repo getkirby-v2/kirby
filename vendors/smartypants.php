@@ -16,6 +16,8 @@ define( 'SMARTYPANTS_VERSION',  "1.5.1f" ); # Sun 23 Jan 2013
 define( 'SMARTYPANTSTYPOGRAPHER_VERSION',  "1.0.1" ); # Sun 23 Jan 2013
 
 
+
+
 #
 # Default configuration:
 #
@@ -24,38 +26,40 @@ define( 'SMARTYPANTSTYPOGRAPHER_VERSION',  "1.0.1" ); # Sun 23 Jan 2013
 #  3  ->  "--" for em-dashes; "---" for en-dashes  
 #  See docs for more configuration options.
 #
-define( 'SMARTYPANTS_ATTR',    1 );
+define( 'SMARTYPANTS_ATTR',    c::get('smartypants.attr', 1) );
 
 # Openning and closing smart double-quotes.
-define( 'SMARTYPANTS_SMART_DOUBLEQUOTE_OPEN',  "&#8220;" );
-define( 'SMARTYPANTS_SMART_DOUBLEQUOTE_CLOSE', "&#8221;" );
+define( 'SMARTYPANTS_SMART_DOUBLEQUOTE_OPEN',  c::get('smartypants.doublequote.open', '&#8220;') );
+define( 'SMARTYPANTS_SMART_DOUBLEQUOTE_CLOSE', c::get('smartypants.doublequote.close', '&#8221;') );
 
 # Space around em-dashes.  "He_—_or she_—_should change that."
-define( 'SMARTYPANTS_SPACE_EMDASH',      " " );
+define( 'SMARTYPANTS_SPACE_EMDASH', c::get('smartypants.space.emdash', ' ') );
 
 # Space around en-dashes.  "He_–_or she_–_should change that."
-define( 'SMARTYPANTS_SPACE_ENDASH',      " " );
+define( 'SMARTYPANTS_SPACE_ENDASH', c::get('smartypants.space.endash', ' ') );
 
 # Space before a colon. "He said_: here it is."
-define( 'SMARTYPANTS_SPACE_COLON',       "&#160;" );
+define( 'SMARTYPANTS_SPACE_COLON', c::get('smartypants.space.colon', '&#160;') );
 
 # Space before a semicolon. "That's what I said_; that's what he said."
-define( 'SMARTYPANTS_SPACE_SEMICOLON',   "&#160;" );
+define( 'SMARTYPANTS_SPACE_SEMICOLON', c::get('smartypants.space.semicolon', '&#160;') );
 
 # Space before a question mark and an exclamation mark: "¡_Holà_! What_?"
-define( 'SMARTYPANTS_SPACE_MARKS',       "&#160;" );
+define( 'SMARTYPANTS_SPACE_MARKS', c::get('smartypants.space.marks', '&#160;') );
 
 # Space inside french quotes. "Voici la «_chose_» qui m'a attaqué."
-define( 'SMARTYPANTS_SPACE_FRENCHQUOTE', "&#160;" );
+define( 'SMARTYPANTS_SPACE_FRENCHQUOTE', c::get('smartypants.space.frenchquote', '&#160;') );
 
 # Space as thousand separator. "On compte 10_000 maisons sur cette liste."
-define( 'SMARTYPANTS_SPACE_THOUSAND',    "&#160;" );
+define( 'SMARTYPANTS_SPACE_THOUSAND', c::get('smartypants.space.thousand', '&#160;') );
 
 # Space before a unit abreviation. "This 12_kg of matter costs 10_$."
-define( 'SMARTYPANTS_SPACE_UNIT',        "&#160;" );
+define( 'SMARTYPANTS_SPACE_UNIT', c::get('smartypants.space.unit', '&#160;') );
 
 # SmartyPants will not alter the content of these tags:
-define( 'SMARTYPANTS_TAGS_TO_SKIP', 'pre|code|kbd|script|style|math');
+define( 'SMARTYPANTS_TAGS_TO_SKIP', c::get('smartypants.skip', 'pre|code|kbd|script|style|math') );
+
+
 
 
 
@@ -106,46 +110,6 @@ function SmartEllipsis($text, $attr = 1) {
 }
 
 
-### WordPress Plugin Interface ###
-
-/*
-Plugin Name: SmartyPants Typographer
-Plugin URI: http://michelf.ca/projects/php-smartypants/
-Description: SmartyPants is a web publishing utility that translates plain ASCII punctuation characters into &#8220;smart&#8221; typographic punctuation HTML entities. The Typographer extension will also replace normal spaces with unbrekable ones where appropriate to silently remove unwanted line breaks around punctuation and at some other places. This plugin <strong>replace the default WordPress Texturize algorithm</strong> for the content and the title of your posts, the comments body and author name, and everywhere else Texturize normally apply.
-Version: 1.0.1
-Author: Michel Fortin
-Author URI: http://michelf.ca/
-*/
-
-if (isset($wp_version)) {
-	# Remove default Texturize filter that would conflict with SmartyPants.
-	remove_filter('category_description', 'wptexturize');
-	remove_filter('list_cats', 'wptexturize');
-	remove_filter('comment_author', 'wptexturize');
-	remove_filter('comment_text', 'wptexturize');
-	remove_filter('single_post_title', 'wptexturize');
-	remove_filter('the_title', 'wptexturize');
-	remove_filter('the_content', 'wptexturize');
-	remove_filter('the_excerpt', 'wptexturize');
-	remove_filter('the_tags', 'wptexturize');
-	# Add SmartyPants filter.
-	add_filter('category_description', 'SmartyPants', 11);
-	add_filter('list_cats', 'SmartyPants', 11);
-	add_filter('comment_author', 'SmartyPants', 11);
-	add_filter('comment_text', 'SmartyPants', 11);
-	add_filter('single_post_title', 'SmartyPants', 11);
-	add_filter('the_title', 'SmartyPants', 11);
-	add_filter('the_content', 'SmartyPants', 11);
-	add_filter('the_excerpt', 'SmartyPants', 11);
-	add_filter('the_tags', 'SmartyPants', 11);
-}
-
-
-### Smarty Modifier Interface ###
-
-function smarty_modifier_smartypants($text, $attr = NULL) {
-	return SmartyPants($text, $attr);
-}
 
 
 

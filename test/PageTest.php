@@ -2,15 +2,13 @@
 
 require_once('lib/bootstrap.php');
 
-class PageTest extends PHPUnit_Framework_TestCase {
+class PageTest extends KirbyTestCase {
 
   public function testConstruction() {
 
-    $kirby = new Kirby();    
-    $kirby->roots->content = TEST_ROOT_ETC . DS . 'content';
-
-    $site = new Site($kirby);
-    $page = new Page($site, '1-a');
+    $kirby = $this->kirbyInstance();
+    $site  = $this->siteInstance($kirby);
+    $page  = new Page($site, '1-a');
 
     $this->assertInstanceOf('Kirby', $page->kirby());
     $this->assertEquals($kirby, $page->kirby());
@@ -38,6 +36,52 @@ class PageTest extends PHPUnit_Framework_TestCase {
     $this->assertFalse($page->isHomePage());
     $this->assertFalse($page->isErrorPage());
     $this->assertEquals($page->id(), (string)$page);
+
+  }
+
+  public function testDate() {
+
+    $site = $this->siteInstance();
+    $page = new Page($site, '1-a');
+
+    $this->assertEquals(1355270400, $page->date());
+    $this->assertEquals('2012-12-12', $page->date('Y-m-d'));
+    $this->assertEquals('2012-12-12', $page->date('Y-m-d', 'date'));
+    $this->assertEquals('2012-12-12', $page->date('Y-m-d', 'created'));
+
+  }
+
+  public function testEmptyField() {
+
+    $site = $this->siteInstance();
+    $page = new Page($site, '1-a');
+
+    $this->assertInstanceOf('Field', $page->missingfield());
+    $this->assertTrue($page->missingfield()->empty());
+    $this->assertTrue($page->missingfield()->isEmpty());
+
+  }
+
+  public function testNums() {
+
+    $site  = $this->siteInstance();
+    $tests = array(
+      '1-a'    => array('1', 'a'),
+      'a'      => array(null, 'a'),
+      '-a'     => array(null, '-a'),
+      '1-1-a'  => array('1', '1-a'),
+      '1-1-1'  => array('1', '1-1'),
+      '-1-1-1' => array(null, '-1-1-1'),
+    );
+
+    foreach($tests as $key => $value) {
+
+      $page = new Page($site, $key);
+
+      $this->assertEquals($value[0], $page->num());
+      $this->assertEquals($value[1], $page->uid());
+
+    }
 
   }
 

@@ -5,6 +5,8 @@
  */
 class Content extends ContentAbstract {
 
+  public $language = null;
+
   /**
    * Constructor
    */
@@ -18,8 +20,15 @@ class Content extends ContentAbstract {
 
   }
 
+  public function language() {
+
+    if(!is_null($this->language)) return $this->language;
+      
+    $codes = $this->page->site()->languages()->codes();
+    $code  = f::extension(f::name($this->root));
+
+    return $this->language = in_array($code, $codes) ? $this->page->site()->languages()->find($code) : false;
+
+  }
+
 }
-
-
-
-

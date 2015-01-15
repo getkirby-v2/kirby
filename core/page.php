@@ -287,7 +287,7 @@ abstract class PageAbstract {
 
     // get all items within the directory
     $ignore = array('.', '..', '.DS_Store', '.git', '.svn', 'Thumb.db');
-    $items  = array_diff(scandir($this->root), array_merge($ignore, (array)kirby::instance()->option('content.file.ignore')));
+    $items  = array_diff(scandir($this->root), array_merge($ignore, (array)$this->kirby->option('content.file.ignore')));
 
     // create the inventory
     $this->cache['inventory'] = array(
@@ -931,7 +931,7 @@ abstract class PageAbstract {
 
     // check if the file exists and return the appropriate template name
     return $this->cache['template'] =
-      file_exists(kirby::instance()->roots()->templates() . DS . $templateName . '.php') ?
+      file_exists($this->kirby->roots()->templates() . DS . $templateName . '.php') ?
         $templateName : 'default';
 
   }
@@ -942,7 +942,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function templateFile() {
-    return kirby::instance()->roots()->templates() . DS . $this->template() . '.php';
+    return $this->kirby->roots()->templates() . DS . $this->template() . '.php';
   }
 
   /**
@@ -972,7 +972,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function intendedTemplateFile() {
-    return kirby::instance()->roots()->templates() . DS . $this->intendedTemplate() . '.php';
+    return $this->kirby->roots()->templates() . DS . $this->intendedTemplate() . '.php';
   }
 
   /**
@@ -1087,7 +1087,7 @@ abstract class PageAbstract {
       throw new Exception('The new page object could not be found');
     }
 
-    cache::flush();
+    $this->kirby->cache()->flush();
 
     return $page;
 
@@ -1106,7 +1106,7 @@ abstract class PageAbstract {
       throw new Exception('The page could not be updated');
     }
 
-    cache::flush();
+    $this->kirby->cache()->flush();
     $this->reset();
     $this->touch();
     return true;
@@ -1149,7 +1149,7 @@ abstract class PageAbstract {
     $this->id = $this->uri = ltrim($this->parent->id() . '/' . $this->uid, '/');
 
     // clean the cache
-    cache::flush();
+    $this->kirby->cache()->flush();
     $this->reset();
     return true;
 
@@ -1172,7 +1172,7 @@ abstract class PageAbstract {
     $this->dirname = $dir;
     $this->num     = $num;
     $this->root    = $root;
-    cache::flush();
+    $this->kirby->cache()->flush();
     $this->reset();
     return true;
 
@@ -1194,7 +1194,7 @@ abstract class PageAbstract {
     $this->dirname = $this->uid();
     $this->num     = null;
     $this->root    = $root;
-    cache::flush();
+    $this->kirby->cache()->flush();
     $this->reset();
     return true;
 
@@ -1231,7 +1231,7 @@ abstract class PageAbstract {
       throw new Exception('The page could not be deleted');
     }
 
-    cache::flush();
+    $this->kirby->cache()->flush();
     $parent->reset();
     return true;
 

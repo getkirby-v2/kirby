@@ -2,14 +2,12 @@
 
 require_once('lib/bootstrap.php');
 
-class FilesTest extends PHPUnit_Framework_TestCase {
+class FilesTest extends KirbyTestCase {
 
   public function testConstruction() {
 
-    $kirby = new Kirby();    
-    $kirby->roots->content = TEST_ROOT_ETC . DS . 'content';
-
-    $site  = new Site($kirby);
+    $kirby = $this->kirbyInstance();    
+    $site  = $this->siteInstance($kirby);
     $page  = new Page($site, '1-a');
     $files = new Files($page);
 

@@ -23,7 +23,7 @@ abstract class FilesAbstract extends Collection {
 
     foreach($inventory['files'] as $filename) {
       $file = new File($this, $filename);
-      $this->data[$file->filename()] = $file;
+      $this->data[strtolower($file->filename())] = $file;
     }
   }
 
@@ -54,7 +54,8 @@ abstract class FilesAbstract extends Collection {
       }
       return $files;
     } else {
-      return isset($this->data[$args[0]]) ? $this->data[$args[0]] : null;
+      $filename = strtolower($args[0]);
+      return isset($this->data[$filename]) ? $this->data[$filename] : null;
     }
 
   }
