@@ -71,6 +71,26 @@ class KirbyTest extends KirbyTestCase {
 
     $this->assertEquals('http://getkirby.com', $kirby->urls()->index());
 
+    // test with the old url config option
+    $kirby = $this->kirbyInstance(array(
+      'url' => '/'
+    ));
+
+    // run configure to apply the url option
+    $kirby->configure();
+
+    $this->assertEquals('/', $kirby->urls()->index());
+
+    // test with the old url config option
+    $kirby = $this->kirbyInstance(array(
+      'url' => 'http://getkirby.com'
+    ));
+
+    // run configure to apply the url option
+    $kirby->configure();
+
+    $this->assertEquals('http://getkirby.com', $kirby->urls()->index());
+
     // @see UrlsTest.php for more tests of the Urls class.
 
   }

@@ -3,9 +3,13 @@
 class KirbyTestCase extends PHPUnit_Framework_TestCase {
 
   public function kirbyInstance($options = array()) {
+
+    c::$data = array();
+
     $kirby = new Kirby($options);    
     $kirby->roots->content = TEST_ROOT_ETC . DS . 'content';
     return $kirby;
+
   }
 
   public function siteInstance($kirby = null, $options = array()) {
