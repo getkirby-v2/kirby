@@ -1061,7 +1061,7 @@ abstract class PageAbstract {
       throw new Exception('The new page object could not be found');
     }
 
-    $this->kirby->cache()->flush();
+    kirby::instance()->cache()->flush();
 
     return $page;
 
