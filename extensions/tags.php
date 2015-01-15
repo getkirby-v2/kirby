@@ -104,15 +104,10 @@ kirbytext::$tags['image'] = array(
 
     if(empty($alt)) $alt = pathinfo($url, PATHINFO_FILENAME);
 
-    $image = html::img($url, array(
-      'width'  => $tag->attr('width'),
-      'height' => $tag->attr('height'),
-      'class'  => $tag->attr('imgclass'),
-      'title'  => html($title),
-      'alt'    => html($alt)
-    ));
+    // link builder
+    $_link = function($image) use($tag, $url, $link, $file) {
 
-    if($tag->attr('link')) {
+      if(empty($link)) return $image;
 
       // build the href for the link
       if($link == 'self') {
@@ -123,24 +118,39 @@ kirbytext::$tags['image'] = array(
         $href = $link;
       }
 
-      $image = html::a(url($href), $image, array(
+      return html::a(url($href), $image, array(
         'rel'    => $tag->attr('rel'),
         'class'  => $tag->attr('linkclass'),
-        'title'  => html($tag->attr('title')),
+        'title'  => $tag->attr('title'),
         'target' => $tag->target()
       ));
 
+    };
+
+    // image builder
+    $_image = function($class) use($tag, $url, $alt, $title) {
+      return html::img($url, array(
+        'width'  => $tag->attr('width'),
+        'height' => $tag->attr('height'),
+        'class'  => $class,
+        'title'  => $title,
+        'alt'    => $alt
+      ));
+    };
+
+    if(kirby()->option('kirbytext.image.figure') or !empty($caption)) {
+      $image  = $_link($_image($tag->attr('imgclass')));
+      $figure = new Brick('figure');
+      $figure->addClass($tag->attr('class'));
+      $figure->append($image);
+      if(!empty($caption)) {
+        $figure->append('<figcaption>' . html($caption) . '</figcaption>');
+      }
+      return $figure;
+    } else {
+      $class = trim($tag->attr('class') . ' ' . $tag->attr('imgclass'));
+      return $_link($_image($class));
     }
-
-    $figure = new Brick('figure');
-    $figure->addClass($tag->attr('class'));
-    $figure->append($image);
-
-    if(!empty($caption)) {
-      $figure->append('<figcaption>' . html($caption) . '</figcaption>');
-    }
-
-    return $figure;
 
   }
 );
@@ -156,12 +166,23 @@ kirbytext::$tags['link'] = array(
     'popup'
   ),
   'html' => function($tag) {
-    return html::a(url($tag->attr('link')), html($tag->attr('text')), array(
+
+    $link = url($tag->attr('link'));
+    $text = $tag->attr('text');
+
+    if(empty($text)) {
+      $text = escape::attr($link);
+    } else if(str::isURL($text)) {
+      $text = escape::attr($text);
+    }
+
+    return html::a($link, $text, array(
       'rel'    => $tag->attr('rel'),
       'class'  => $tag->attr('class'),
-      'title'  => html($tag->attr('title')),
+      'title'  => $tag->attr('title'),
       'target' => $tag->target(),
     ));
+
   }
 );
 

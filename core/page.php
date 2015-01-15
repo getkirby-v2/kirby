@@ -18,6 +18,8 @@
  */
 abstract class PageAbstract {
 
+  static public $models = array();
+
   public $kirby;
   public $site;
   public $parent;
@@ -177,6 +179,15 @@ abstract class PageAbstract {
   }
 
   /**
+   * Returns the full URL for the content folder
+   * 
+   * @return string
+   */
+  public function contentUrl() {
+    return $this->kirby()->urls()->content() . '/' . $this->diruri();
+  }
+
+  /**
    * Builds and returns the short url for the current page
    *
    * @return string
@@ -276,7 +287,7 @@ abstract class PageAbstract {
 
     // get all items within the directory
     $ignore = array('.', '..', '.DS_Store', '.git', '.svn', 'Thumb.db');
-    $items  = array_diff(scandir($this->root), array_merge($ignore, (array)kirby::instance()->option('content.file.ignore')));
+    $items  = array_diff(scandir($this->root), array_merge($ignore, (array)$this->kirby->option('content.file.ignore')));
 
     // create the inventory
     $this->cache['inventory'] = array(
@@ -342,8 +353,23 @@ abstract class PageAbstract {
 
     $inventory = $this->inventory();
 
-    foreach($inventory['children'] as $child) {
-      $this->cache['children']->add($child);
+    // with page models
+    if(!empty(static::$models)) {
+      foreach($inventory['children'] as $dirname) {
+        $child = new Page($this, $dirname);
+        // let's create a model if one is defined
+        if(isset(static::$models[$child->intendedTemplate()])) {
+          $model = static::$models[$child->intendedTemplate()];
+          $child = new $model($this, $dirname);
+        }
+        $this->cache['children']->data[$child->id()] = $child;
+      }
+    // without page models
+    } else {
+      foreach($inventory['children'] as $dirname) {
+        $child = new Page($this, $dirname);
+        $this->cache['children']->data[$child->id()] = $child;
+      }
     }
 
     return $this->cache['children'];
@@ -594,19 +620,8 @@ abstract class PageAbstract {
    * @return Files
    */
   public function files() {
-
     if(isset($this->cache['files'])) return $this->cache['files'];
-
-    $this->cache['files'] = new Files($this);
-
-    $inventory = $this->inventory();
-
-    foreach($inventory['files'] as $filename) {
-      $this->cache['files']->add($filename);
-    }
-
-    return $this->cache['files'];
-
+    return $this->cache['files'] = new Files($this);
   }
 
   /**
@@ -714,6 +729,13 @@ abstract class PageAbstract {
    * Alternative for $this->equals()
    */
   public function is(Page $page) {
+    return $this == $page;
+  }
+
+  /**
+   * Alternative for $this->is()
+   */
+  public function equals(Page $page) {
     return $this == $page;
   }
 
@@ -909,7 +931,7 @@ abstract class PageAbstract {
 
     // check if the file exists and return the appropriate template name
     return $this->cache['template'] =
-      file_exists(kirby::instance()->roots()->templates() . DS . $templateName . '.php') ?
+      file_exists($this->kirby->roots()->templates() . DS . $templateName . '.php') ?
         $templateName : 'default';
 
   }
@@ -920,7 +942,16 @@ abstract class PageAbstract {
    * @return string
    */
   public function templateFile() {
-    return kirby::instance()->roots()->templates() . DS . $this->template() . '.php';
+    return $this->kirby->roots()->templates() . DS . $this->template() . '.php';
+  }
+
+  /**
+   * Additional data, which will be passed to the template
+   *
+   * @return array
+   */
+  public function templateData() {
+    return array();
   }
 
   /**
@@ -941,7 +972,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function intendedTemplateFile() {
-    return kirby::instance()->roots()->templates() . DS . $this->intendedTemplate() . '.php';
+    return $this->kirby->roots()->templates() . DS . $this->intendedTemplate() . '.php';
   }
 
   /**
@@ -1056,7 +1087,7 @@ abstract class PageAbstract {
       throw new Exception('The new page object could not be found');
     }
 
-    cache::flush();
+    kirby::instance()->cache()->flush();
 
     return $page;
 
@@ -1075,7 +1106,7 @@ abstract class PageAbstract {
       throw new Exception('The page could not be updated');
     }
 
-    cache::flush();
+    $this->kirby->cache()->flush();
     $this->reset();
     $this->touch();
     return true;
@@ -1118,7 +1149,7 @@ abstract class PageAbstract {
     $this->id = $this->uri = ltrim($this->parent->id() . '/' . $this->uid, '/');
 
     // clean the cache
-    cache::flush();
+    $this->kirby->cache()->flush();
     $this->reset();
     return true;
 
@@ -1141,7 +1172,7 @@ abstract class PageAbstract {
     $this->dirname = $dir;
     $this->num     = $num;
     $this->root    = $root;
-    cache::flush();
+    $this->kirby->cache()->flush();
     $this->reset();
     return true;
 
@@ -1163,7 +1194,7 @@ abstract class PageAbstract {
     $this->dirname = $this->uid();
     $this->num     = null;
     $this->root    = $root;
-    cache::flush();
+    $this->kirby->cache()->flush();
     $this->reset();
     return true;
 
@@ -1200,7 +1231,7 @@ abstract class PageAbstract {
       throw new Exception('The page could not be deleted');
     }
 
-    cache::flush();
+    $this->kirby->cache()->flush();
     $parent->reset();
     return true;
 

@@ -80,6 +80,10 @@ class Roots extends Obj {
     return $this->site() . DS . 'controllers';
   }
 
+  public function models() {
+    return $this->site() . DS . 'models';
+  }
+
   public function templates() {
     return $this->site() . DS . 'templates';
   }

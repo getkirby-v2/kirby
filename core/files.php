@@ -19,6 +19,12 @@ abstract class FilesAbstract extends Collection {
     $this->kirby = $page->kirby;
     $this->site  = $page->site;
     $this->page  = $page;
+    $inventory   = $page->inventory();
+
+    foreach($inventory['files'] as $filename) {
+      $file = new File($this, $filename);
+      $this->data[strtolower($file->filename())] = $file;
+    }
   }
 
   public function kirby() {
@@ -31,12 +37,6 @@ abstract class FilesAbstract extends Collection {
 
   public function page() {
     return $this->page;
-  }
-
-  public function add($filename) {
-    $file = new File($this, $filename);
-    $this->data[$file->filename()] = $file;
-    return $file;
   }
 
   public function find() {
@@ -54,7 +54,8 @@ abstract class FilesAbstract extends Collection {
       }
       return $files;
     } else {
-      return isset($this->data[$args[0]]) ? $this->data[$args[0]] : null;
+      $filename = strtolower($args[0]);
+      return isset($this->data[$filename]) ? $this->data[$filename] : null;
     }
 
   }

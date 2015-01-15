@@ -6,7 +6,7 @@ use Kirby\Request;
 
 class Kirby extends Obj {
 
-  static public $version = '2.0.5';
+  static public $version = '2.0.6';
   static public $instance;
 
   public $roots;
@@ -33,11 +33,10 @@ class Kirby extends Obj {
     return static::$version;
   }
 
-  public function __construct() {
+  public function __construct($options = array()) {
     $this->roots   = new Roots(dirname(__DIR__));
     $this->urls    = new Urls();
-    $this->options = $this->defaults();
-    $this->rewrite = false;
+    $this->options = array_merge($this->defaults(), $options);
     $this->path    = implode('/', (array)url::fragments(detect::path()));
 
     // make sure the instance is stored / overwritten
@@ -46,6 +45,7 @@ class Kirby extends Obj {
 
   public function defaults() {
     return array(
+      'url'                    => false,
       'timezone'               => 'UTC',
       'license'                => null,
       'rewrite'                => true,
@@ -57,7 +57,7 @@ class Kirby extends Obj {
       'languages'              => array(),
       'roles'                  => array(),
       'cache'                  => false,
-      'debug'                  => false,
+      'debug'                  => 'env',
       'ssl'                    => false,
       'cache.driver'           => 'file',
       'cache.options'          => array(),
@@ -71,6 +71,7 @@ class Kirby extends Obj {
       'kirbytext.video.class'  => 'video',
       'kirbytext.video.width'  => false,
       'kirbytext.video.height' => false,
+      'kirbytext.image.figure' => true,
       'content.file.extension' => 'txt',
       'content.file.ignore'    => array(),
       'thumbs.driver'          => 'gd',
@@ -112,6 +113,11 @@ class Kirby extends Obj {
     // apply the options
     $this->options = array_merge($this->options, c::$data);
 
+    // overwrite the autodetected url
+    if($this->options['url']) {
+      $this->urls->index = $this->options['url'];
+    }
+
     // connect the url class with its handlers
     url::$home = $this->urls()->index();
     url::$to   = $this->option('url.to', function($url = '') {
@@ -141,10 +147,10 @@ class Kirby extends Obj {
     thumb::$defaults['filename'] = $this->option('thumbs.filename');
 
     // simple error handling
-    if($this->option('debug')) {
+    if($this->options['debug'] === true) {
       error_reporting(E_ALL);
       ini_set('display_errors', 1);
-    } else {
+    } else if($this->options['debug'] === false) {
       error_reporting(0);
       ini_set('display_errors', 0);
     }
@@ -301,6 +307,27 @@ class Kirby extends Obj {
   }
 
   /**
+   * Loads a single plugin
+   *
+   * @param string $name
+   * @param string $mode
+   * @return mixed
+   */
+  public function plugin($name, $mode = 'dir') {
+
+    if(isset($this->plugins[$name])) return true;
+
+    if($mode == 'dir') {
+      $file = $this->roots->plugins() . DS . $name . DS . $name . '.php';
+    } else {
+      $file = $this->roots->plugins() . DS . $name . '.php';
+    }
+
+    if(file_exists($file)) return $this->plugins[$name] = include_once($file);
+
+  }
+
+  /**
    * Load all default extensions
    */
   public function extensions() {
@@ -320,23 +347,30 @@ class Kirby extends Obj {
   }
 
   /**
-   * Loads a single plugin
-   *
-   * @param string $name
-   * @param string $mode
-   * @return mixed
+   * Autoloads all page models
    */
-  public function plugin($name, $mode = 'dir') {
+  public function models() {
 
-    if(isset($this->plugins[$name])) return true;
+    if(!is_dir($this->roots()->models())) return false;
 
-    if($mode == 'dir') {
-      $file = $this->roots->plugins() . DS . $name . DS . $name . '.php';
-    } else {
-      $file = $this->roots->plugins() . DS . $name . '.php';
+    $root  = $this->roots()->models();
+    $files = dir::read($root);
+    $load  = array();
+
+    foreach($files as $file) {
+      if(f::extension($file) != 'php') continue;
+      $name      = f::name($file);
+      $classname = $name . 'page';
+      $load[$classname] = $root . DS . $file;
+
+      // register the model
+      page::$models[$name] = $classname;
     }
 
-    if(file_exists($file)) return $this->plugins[$name] = include_once($file);
+    // start the autoloader
+    if(!empty($load)) {
+      load($load);
+    }
 
   }
 
@@ -464,7 +498,7 @@ class Kirby extends Obj {
     if($this->options['cache'] and $page->isCachable()) {
 
       // try to read the cache by cid (cache id)
-      $cacheId = $page->cacheId();
+      $cacheId = md5(url::current());
 
       // check for modified content within the content folder
       // and auto-expire the page cache in such a case
@@ -514,7 +548,7 @@ class Kirby extends Obj {
       'site'  => $this->site(),
       'pages' => $this->site()->children(),
       'page'  => $page
-    ), $data, $this->controller($page, $data));
+    ), $page->templateData(), $data, $this->controller($page, $data));
 
     return tpl::load($page->templateFile());
 
@@ -557,6 +591,9 @@ class Kirby extends Obj {
 
     // load all plugins
     $this->plugins();
+
+    // load all models
+    $this->models();
 
     // start the router
     $this->router = new Router($this->routes());
