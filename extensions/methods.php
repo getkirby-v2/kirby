@@ -93,7 +93,7 @@ field::$methods['widont'] = function($field) {
  * @return string
  */
 field::$methods['excerpt'] = function($field, $chars = 140) {
-  return excerpt($field->value, $chars);
+  return excerpt($field, $chars);
 };
 
 /**
