@@ -245,7 +245,13 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isCachable() {
-    return !in_array($this->uri(), kirby()->option('cache.ignore'));
+    foreach (kirby()->option('cache.ignore') as $pattern) {
+      if (fnmatch($pattern, $this->uri()) === true) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
