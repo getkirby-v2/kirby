@@ -6,7 +6,7 @@ use Kirby\Request;
 
 class Kirby extends Obj {
 
-  static public $version = '2.0.6';
+  static public $version = '2.0.7';
   static public $instance;
 
   public $roots;
@@ -76,6 +76,7 @@ class Kirby extends Obj {
       'content.file.ignore'    => array(),
       'thumbs.driver'          => 'gd',
       'thumbs.filename'        => '{safeName}-{hash}.{extension}',
+      'thumbs.destination'     => false,
     );
   }
 
@@ -141,10 +142,11 @@ class Kirby extends Obj {
     });
 
     // setup the thumbnail generator
-    thumb::$defaults['root']     = $this->roots->thumbs();
-    thumb::$defaults['url']      = $this->urls->thumbs();
-    thumb::$defaults['driver']   = $this->option('thumbs.driver');
-    thumb::$defaults['filename'] = $this->option('thumbs.filename');
+    thumb::$defaults['root']        = $this->roots->thumbs();
+    thumb::$defaults['url']         = $this->urls->thumbs();
+    thumb::$defaults['driver']      = $this->option('thumbs.driver');
+    thumb::$defaults['filename']    = $this->option('thumbs.filename');
+    thumb::$defaults['destination'] = $this->option('thumbs.destination');
 
     // simple error handling
     if($this->options['debug'] === true) {
