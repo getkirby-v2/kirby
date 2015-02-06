@@ -63,7 +63,7 @@ class Kirby extends Obj {
       'cache.options'          => array(),
       'cache.ignore'           => array(),
       'cache.autoupdate'       => true,
-	  'cache.skip.flush'       => array(),
+      'cache.skip.flush'       => array(),
       'tinyurl.enabled'        => true,
       'tinyurl.folder'         => 'x',
       'markdown.extra'         => false,
