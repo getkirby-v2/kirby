@@ -1086,18 +1086,18 @@ abstract class PageAbstract {
     if(!is_a($page, 'Page')) {
       throw new Exception('The new page object could not be found');
     }
-	
-	$kirby = kirby::instance();
-	
-	// skip entire cache flush for specified templates
-	if(in_array($this->template(), $kirby->option('cache.skip.flush'))) {
+    
+    $kirby = kirby::instance();
+    
+    // skip entire cache flush for specified templates
+    if(in_array($this->template(), $kirby->option('cache.skip.flush'))) {
       $kirby->cache()->remove(md5($this->url()));
     } else {
-	  $kirby->cache()->flush();
-	}
-
+      $kirby->cache()->flush();
+    }
+    
     return $page;
-
+    
   }
 
   /**
@@ -1112,16 +1112,16 @@ abstract class PageAbstract {
     if(!data::write($this->textfile(), $data, 'kd')) {
       throw new Exception('The page could not be updated');
     }
-	
-	$kirby = $this->kirby;
-	
-	// skip entire cache flush for specified templates
-	if(in_array($this->template(), $kirby->option('cache.skip.flush'))) {
+    
+    $kirby = $this->kirby;
+    
+    // skip entire cache flush for specified templates
+    if(in_array($this->template(), $kirby->option('cache.skip.flush'))) {
       $kirby->cache()->remove(md5($this->url()));
     } else {
       $kirby->cache()->flush();
     }
-
+    
     $this->reset();
     $this->touch();
     return true;
