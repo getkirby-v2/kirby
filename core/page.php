@@ -1106,7 +1106,12 @@ abstract class PageAbstract {
       throw new Exception('The page could not be updated');
     }
 
-    $this->kirby->cache()->remove(md5($this->url()));
+    if(c::get('cache.skip.flush.pageupdate')) {
+      $this->kirby->cache()->remove(md5($this->url()));
+    } else {
+      $this->kirby->cache()->flush();
+    }
+
     $this->reset();
     $this->touch();
     return true;
