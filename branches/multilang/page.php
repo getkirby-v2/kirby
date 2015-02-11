@@ -145,16 +145,27 @@ class Page extends PageAbstract {
       preg_match($expression, $content, $match);
 
       $file = $match[1];
-      $lang = isset($match[3]) ? $match[3] : $defaultLang;
+      $lang = isset($match[3]) ? $match[3] : null;
 
       if(in_array($file, $inventory['files'])) {
         $inventory['meta'][$file][$lang] = $content;
       } else {
+
+        if(is_null($lang)) {
+          $lang = f::extension($file);
+          if(empty($lang)) $lang = $defaultLang;
+        }
+
         $inventory['content'][$lang] = $content;
       }
 
       unset($inventory['content'][$key]);
 
+    }
+
+    // try to fill the default language with something else
+    if(!isset($inventory['content'][$defaultLang])) {
+      $inventory['content'][$defaultLang] = a::first($inventory['content']);
     }
 
     return $inventory;
