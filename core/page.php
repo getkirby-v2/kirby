@@ -497,7 +497,11 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function nextVisible($sort = false, $direction = 'asc') {
-    return $this->_next($this->parent->children(), $sort, $direction, 'visible');
+    if(!$this->parent) {
+      return null;
+    } else {
+      return $this->_next($this->parent->children(), $sort, $direction, 'visible');      
+    }
   }
 
   /**
@@ -519,7 +523,11 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function nextInvisible($sort = false, $direction = 'asc') {
-    return $this->_next($this->parent->children(), $sort, $direction, 'invisible');
+    if(!$this->parent) {
+      return null;
+    } else {
+      return $this->_next($this->parent->children(), $sort, $direction, 'invisible');
+    }
   }
 
   /**
@@ -561,7 +569,11 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function prevVisible($sort = false, $direction = 'asc') {
-    return $this->_prev($this->parent->children(), $sort, $direction, 'visible');
+    if(!$this->parent) {
+      return null;
+    } else {
+      return $this->_prev($this->parent->children(), $sort, $direction, 'visible');
+    }
   }
 
   /**
@@ -583,7 +595,11 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function prevInvisible($sort = false, $direction = 'asc') {
-    return $this->_prev($this->parent->children(), $sort, $direction, 'invisible');
+    if(!$this->parent) {
+      return null;
+    } else {
+      return $this->_prev($this->parent->children(), $sort, $direction, 'invisible');
+    }
   }
 
   /**
