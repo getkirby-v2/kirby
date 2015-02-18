@@ -159,8 +159,22 @@ function pages($data = array()) {
  * @param array $params an array of options for kirbytext: array('markdown' => true, 'smartypants' => true)
  * @return string The shortened text
  */
-function excerpt($text, $length = 140) {
-  return str::excerpt(kirbytext($text), $length);
+function excerpt($text, $length = 140, $mode = 'chars') {
+
+  if(strtolower($mode) == 'words') {
+    $text = str::excerpt(kirbytext($text), 0);    
+
+    if(str_word_count($text, 0) > $length) {
+      $words = str_word_count($text, 2);
+      $pos   = array_keys($words);
+      $text  = str::substr($text, 0, $pos[$length]) . '...';
+    }
+    return $text;
+
+  } else {
+    return str::excerpt(kirbytext($text), $length);    
+  }
+
 }
 
 /**
