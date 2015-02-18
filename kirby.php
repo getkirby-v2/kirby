@@ -315,7 +315,7 @@ class Kirby extends Obj {
    */
   public function plugin($name, $mode = 'dir') {
 
-    if(isset($this->plugins[$name])) return true;
+    if(isset($this->plugins[$name])) return $this->plugins[$name];
 
     if($mode == 'dir') {
       $file = $this->roots->plugins() . DS . $name . DS . $name . '.php';
@@ -325,6 +325,7 @@ class Kirby extends Obj {
 
     if(file_exists($file)) return $this->plugins[$name] = include_once($file);
 
+    return false;
   }
 
   /**
