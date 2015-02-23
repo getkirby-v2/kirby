@@ -229,10 +229,15 @@ class Kirby extends Obj {
     if($this->options['tinyurl.enabled']) {
       $routes['tinyurl'] = array(
         'pattern' => $this->options['tinyurl.folder'] . '/(:any)/(:any?)',
-        'action'  => function($hash, $lang = null) use($site) {
-          $page = $site->index()->findBy('hash', $hash);
-          if(!$page) return $site->errorPage();
-          go($page->url($lang));
+        'action'  => function($hash, $lang = null) use($site) {          
+          // make sure the language is set
+          $site->visit('/', $lang);
+          // find the page by it's tiny hash
+          if($page = $site->index()->findBy('hash', $hash)) {
+            go($page->url($lang));            
+          } else {
+            return $site->errorPage();            
+          }
         }
       );
     }
