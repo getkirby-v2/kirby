@@ -750,14 +750,14 @@ abstract class PageAbstract {
    * Alternative for $this->equals()
    */
   public function is(Page $page) {
-    return $this == $page;
+    return $this->id() == $page->id();
   }
 
   /**
    * Alternative for $this->is()
    */
   public function equals(Page $page) {
-    return $this == $page;
+    return $this->is($page);
   }
 
   /**
@@ -775,7 +775,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isActive() {
-    return $this->site->page() == $this;
+    return $this->site->page()->is($this);
   }
 
   /**
