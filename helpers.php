@@ -20,32 +20,8 @@ function snippet($file, $data = array(), $return = false) {
  * @param string $media
  * @return string
  */
-function css($url, $media = null) {
-
-  if(is_array($url)) {
-    $css = array();
-    foreach($url as $u) $css[] = css($u);
-    return implode(PHP_EOL, $css) . PHP_EOL;
-  }
-
-  // auto template css files
-  if($url == '@auto') {
-
-    $kirby = kirby::instance();
-    $file  = $kirby->site()->page()->template() . '.css';
-    $root  = $kirby->roots()->autocss() . DS . $file;
-    $url   = $kirby->urls()->autocss() . '/' . $file;
-
-    if(!file_exists($root)) return false;
-
-  }
-
-  return html::tag('link', null, array(
-    'rel'   => 'stylesheet',
-    'href'  => url($url),
-    'media' => $media
-  ));
-
+function css() {
+  return call(kirby::instance()->option('css.handler'), func_get_args());
 }
 
 /**
@@ -56,30 +32,7 @@ function css($url, $media = null) {
  * @return string
  */
 function js($src, $async = false) {
-
-  if(is_array($src)) {
-    $js = array();
-    foreach($src as $s) $js[] = js($s);
-    return implode(PHP_EOL, $js) . PHP_EOL;
-  }
-
-  // auto template css files
-  if($src == '@auto') {
-
-    $kirby = kirby::instance();
-    $file  = $kirby->site()->page()->template() . '.js';
-    $root  = $kirby->roots()->autojs() . DS . $file;
-    $src   = $kirby->urls()->autojs() . '/' . $file;
-
-    if(!file_exists($root)) return false;
-
-  }
-
-  return html::tag('script', '', array(
-    'src'   => url($src),
-    'async' => $async
-  ));
-
+  return call(kirby::instance()->option('js.handler'), func_get_args());
 }
 
 /**
@@ -89,20 +42,17 @@ function js($src, $async = false) {
  * @return string
  */
 function markdown($text) {
+  return call(kirby::instance()->option('markdown.parser'), $text);
+}
 
-  $kirby = kirby::instance();
-
-  // markdown
-  $parsedown = $kirby->options['markdown.extra'] ? new ParsedownExtra() : new Parsedown();
-
-  // markdown auto-breaks
-  if($kirby->options['markdown.breaks']) {
-    $parsedown->setBreaksEnabled(true);
-  }
-
-  // parse it, baby!
-  return $parsedown->text($text);
-
+/**
+ * Global smartypants parser shortcut
+ *
+ * @param string $text
+ * @return string
+ */
+function smartypants($text) {
+  return call(kirby::instance()->option('smartypants.parser'), $text);
 }
 
 /**

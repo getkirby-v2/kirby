@@ -44,40 +44,136 @@ class Kirby extends Obj {
   }
 
   public function defaults() {
-    return array(
-      'url'                    => false,
-      'timezone'               => 'UTC',
-      'license'                => null,
-      'rewrite'                => true,
-      'error'                  => 'error',
-      'home'                   => 'home',
-      'locale'                 => 'en_US.UTF8',
-      'routes'                 => array(),
-      'headers'                => array(),
-      'languages'              => array(),
-      'roles'                  => array(),
-      'cache'                  => false,
-      'debug'                  => 'env',
-      'ssl'                    => false,
-      'cache.driver'           => 'file',
-      'cache.options'          => array(),
-      'cache.ignore'           => array(),
-      'cache.autoupdate'       => true,
-      'tinyurl.enabled'        => true,
-      'tinyurl.folder'         => 'x',
-      'markdown.extra'         => false,
-      'markdown.breaks'        => true,
-      'smartypants'            => false,
-      'kirbytext.video.class'  => 'video',
-      'kirbytext.video.width'  => false,
-      'kirbytext.video.height' => false,
-      'kirbytext.image.figure' => true,
-      'content.file.extension' => 'txt',
-      'content.file.ignore'    => array(),
-      'thumbs.driver'          => 'gd',
-      'thumbs.filename'        => '{safeName}-{hash}.{extension}',
-      'thumbs.destination'     => false,
+
+    $defaults = array(
+      'url'                           => false,
+      'timezone'                      => 'UTC',
+      'license'                       => null,
+      'rewrite'                       => true,
+      'error'                         => 'error',
+      'home'                          => 'home',
+      'locale'                        => 'en_US.UTF8',
+      'routes'                        => array(),
+      'headers'                       => array(),
+      'languages'                     => array(),
+      'roles'                         => array(),
+      'cache'                         => false,
+      'debug'                         => 'env',
+      'ssl'                           => false,
+      'cache.driver'                  => 'file',
+      'cache.options'                 => array(),
+      'cache.ignore'                  => array(),
+      'cache.autoupdate'              => true,
+      'tinyurl.enabled'               => true,
+      'tinyurl.folder'                => 'x',
+      'markdown'                      => true,
+      'markdown.extra'                => false,
+      'markdown.breaks'               => true,
+      'smartypants'                   => false,
+      'smartypants.attr'              => 1,
+      'smartypants.doublequote.open'  => '&#8220;',
+      'smartypants.doublequote.close' => '&#8221;',
+      'smartypants.space.emdash'      => ' ',
+      'smartypants.space.endash'      => ' ',
+      'smartypants.space.colon'       => '&#160;',
+      'smartypants.space.semicolon'   => '&#160;',
+      'smartypants.space.marks'       => '&#160;',
+      'smartypants.space.frenchquote' => '&#160;',
+      'smartypants.space.thousand'    => '&#160;',
+      'smartypants.space.unit'        => '&#160;',
+      'smartypants.skip'              => 'pre|code|kbd|script|style|math',
+      'kirbytext.video.class'         => 'video',
+      'kirbytext.video.width'         => false,
+      'kirbytext.video.height'        => false,
+      'kirbytext.image.figure'        => true,
+      'content.file.extension'        => 'txt',
+      'content.file.ignore'           => array(),
+      'thumbs.driver'                 => 'gd',
+      'thumbs.filename'               => '{safeName}-{hash}.{extension}',
+      'thumbs.destination'            => false,
     );
+
+    // default markdown parser callback
+    $defaults['markdown.parser'] = function($text) {
+
+      // initialize the right markdown class
+      $parsedown = kirby::instance()->option('markdown.extra') ? new ParsedownExtra() : new Parsedown();
+
+      // set markdown auto-breaks
+      $parsedown->setBreaksEnabled(kirby::instance()->option('markdown.breaks'));
+
+      // parse it!
+      return $parsedown->text($text);
+
+    };
+
+    // default smartypants parser callback
+    $defaults['smartypants.parser'] = function($text) {
+      $parser = new SmartyPantsTypographer_Parser(kirby::instance()->option('smartypants.attr', 1));
+      return $parser->transform($text);
+    };
+
+    // css handler
+    $defaults['css.handler'] = function($url, $media = null) {
+
+      $kirby = kirby::instance();
+
+      if(is_array($url)) {
+        $css = array();
+        foreach($url as $u) $css[] = call($kirby->option('css.handler'), $u);
+        return implode(PHP_EOL, $css) . PHP_EOL;
+      }
+
+      // auto template css files
+      if($url == '@auto') {
+
+        $file = $kirby->site()->page()->template() . '.css';
+        $root = $kirby->roots()->autocss() . DS . $file;
+        $url  = $kirby->urls()->autocss() . '/' . $file;
+
+        if(!file_exists($root)) return false;
+
+      }
+
+      return html::tag('link', null, array(
+        'rel'   => 'stylesheet',
+        'href'  => url($url),
+        'media' => $media
+      ));
+
+    };
+
+    // js handler
+    $defaults['js.handler'] = function($src, $async = false) {
+
+      $kirby = kirby::instance();
+
+      if(is_array($src)) {
+        $js = array();
+        foreach($src as $s) $js[] = call($kirby->option('js.handler'), $s);
+        return implode(PHP_EOL, $js) . PHP_EOL;
+      }
+
+      // auto template css files
+      if($src == '@auto') {
+
+        $file = $kirby->site()->page()->template() . '.js';
+        $root = $kirby->roots()->autojs() . DS . $file;
+        $src  = $kirby->urls()->autojs() . '/' . $file;
+
+        if(!file_exists($root)) return false;
+
+      }
+
+      return html::tag('script', '', array(
+        'src'   => url($src),
+        'async' => $async
+      ));
+
+    };
+
+    return $defaults;
+
   }
 
   public function option($key, $default = null) {
@@ -346,11 +442,6 @@ class Kirby extends Obj {
 
     // install additional kirby tags
     kirbytext::install($this->roots->tags());
-
-    // install the smartypants class if enabled
-    if($this->options['smartypants']) {
-      include_once(__DIR__ . DS . 'vendors' . DS . 'smartypants.php');
-    }
 
   }
 
