@@ -459,7 +459,7 @@ class Kirby extends Obj {
     foreach($files as $file) {
       if(f::extension($file) != 'php') continue;
       $name      = f::name($file);
-      $classname = $name . 'page';
+      $classname = str_replace(array('.', '-', '_'), '', $name . 'page');
       $load[$classname] = $root . DS . $file;
 
       // register the model
