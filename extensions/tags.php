@@ -114,6 +114,8 @@ kirbytext::$tags['image'] = array(
         $href = $url;
       } else if($file and $link == $file->filename()) {
         $href = $file->url();
+      } else if($tag->file($link)) {
+        $href = $tag->file($link)->url();
       } else {
         $href = $link;
       }
