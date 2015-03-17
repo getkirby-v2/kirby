@@ -25,15 +25,19 @@ abstract class RolesAbstract extends Collection {
     if(empty($roles)) {
       $roles = array(
         array(
-          'id'      => 'admin',
-          'name'    => 'Admin',
-          'default' => true,
-          'panel'   => true
+          'id'          => 'admin',
+          'name'        => 'Admin',
+          'default'     => true
         ),
         array(
-          'id'      => 'editor',
-          'name'    => 'Editor',
-          'panel'   => true
+          'id'          => 'editor',
+          'name'        => 'Editor',
+          'permissions' => array(
+            'site.update'  => false,
+            'user.add'     => false,
+            'user.edit'    => false,
+            'user.delete'  => false
+            )
         )
       );
     }
