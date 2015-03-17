@@ -75,7 +75,7 @@ abstract class RoleAbstract {
   }
 
   public function hasPermission($target) {
-    if($data['id'] == 'admin')
+    if($this->id == 'admin')
       return true;
     else
       return (isset($this->permissions[$target]) and $this->permissions[$target] === true) ? true : false;
