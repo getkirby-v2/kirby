@@ -29,7 +29,8 @@ abstract class RoleAbstract {
       'file.delete'    => true,
       'user.add'       => true,
       'user.edit'      => true,
-      'user.delete'    => true
+      'user.role'      => true,
+      'user.delete'    => true,
     );
 
   public $default = false;

@@ -33,10 +33,22 @@ abstract class RolesAbstract extends Collection {
           'id'          => 'editor',
           'name'        => 'Editor',
           'permissions' => array(
-            'site.update'  => false,
-            'user.add'     => false,
-            'user.edit'    => false,
-            'user.delete'  => false
+            'panel.access'   => true,
+            'site.update'    => false,
+            'page.create'    => true,
+            'page.update'    => true,
+            'page.changeurl' => true,
+            'page.sort'      => true,
+            'page.hide'      => true,
+            'page.delete'    => true,
+            'file.upload'    => true,
+            'file.replace'   => true,
+            'file.update'    => true,
+            'file.delete'    => true,
+            'user.add'       => false,
+            'user.edit'      => false,
+            'user.role'      => false,
+            'user.delete'    => false
             )
         )
       );
