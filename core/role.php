@@ -56,9 +56,6 @@ abstract class RoleAbstract {
     // fallback permissions support for old 'panel' role variable
     $this->permissions['panel.access'] = (isset($data['panel']) and $data['panel'] === false) ? false : $this->permissions['panel.access'];
 
-    // make sure to set some important admin defaults
-    if($data['id'] == 'admin') $this->permissions['panel.access'] = true;
-
     // is this role the default role?
     $this->default = (isset($data['default']) and $data['default'] === true) ? true : false;
 
@@ -78,7 +75,10 @@ abstract class RoleAbstract {
   }
 
   public function hasPermission($target) {
-    return (isset($this->permissions[$target]) and $this->permissions[$target] === true) ? true : false;
+    if($data['id'] == 'admin')
+      return true;
+    else
+      return (isset($this->permissions[$target]) and $this->permissions[$target] === true) ? true : false;
   }
 
   public function isDefault() {
