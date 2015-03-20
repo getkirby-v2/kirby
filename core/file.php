@@ -135,6 +135,16 @@ abstract class FileAbstract extends Media {
   }
 
   /**
+   * Custom modified method for files
+   * 
+   * @param string $format
+   * @return string
+   */
+  public function modified($format = null, $handler = null) {
+    return parent::modified($format, $handler ? $handler : $this->kirby->options['date.handler']);
+  }
+
+  /**
    * Magic getter for all meta fields
    *
    * @return Field
