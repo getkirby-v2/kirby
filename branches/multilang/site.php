@@ -79,11 +79,14 @@ class Site extends SiteAbstract {
 
   /**
    * Returns the current language
+   * or any other language by language code
    *
+   * @param string $code
    * @return Language
    */
-  public function language() {
-    return $this->language;
+  public function language($code = null) {
+    if(is_null($code)) return $this->language;
+    return $this->languages()->find($code);
   }
 
   /**

@@ -45,6 +45,15 @@ abstract class SiteAbstract extends Page {
   }
 
   /**
+   * The id is an empty string in case of the site object
+   *
+   * @return string
+   */
+  public function id() {
+    return '';
+  }
+
+  /**
    * The base diruri is bascially just an empty string
    *
    * @return string

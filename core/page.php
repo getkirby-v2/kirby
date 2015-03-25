@@ -245,7 +245,12 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isCachable() {
-    return !in_array($this->uri(), kirby()->option('cache.ignore'));
+    foreach($this->kirby->option('cache.ignore') as $pattern) {
+      if(fnmatch($pattern, $this->uri()) === true) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -492,7 +497,11 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function nextVisible($sort = false, $direction = 'asc') {
-    return $this->_next($this->parent->children(), $sort, $direction, 'visible');
+    if(!$this->parent) {
+      return null;
+    } else {
+      return $this->_next($this->parent->children(), $sort, $direction, 'visible');      
+    }
   }
 
   /**
@@ -514,7 +523,11 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function nextInvisible($sort = false, $direction = 'asc') {
-    return $this->_next($this->parent->children(), $sort, $direction, 'invisible');
+    if(!$this->parent) {
+      return null;
+    } else {
+      return $this->_next($this->parent->children(), $sort, $direction, 'invisible');
+    }
   }
 
   /**
@@ -556,7 +569,11 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function prevVisible($sort = false, $direction = 'asc') {
-    return $this->_prev($this->parent->children(), $sort, $direction, 'visible');
+    if(!$this->parent) {
+      return null;
+    } else {
+      return $this->_prev($this->parent->children(), $sort, $direction, 'visible');
+    }
   }
 
   /**
@@ -578,7 +595,11 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   public function prevInvisible($sort = false, $direction = 'asc') {
-    return $this->_prev($this->parent->children(), $sort, $direction, 'invisible');
+    if(!$this->parent) {
+      return null;
+    } else {
+      return $this->_prev($this->parent->children(), $sort, $direction, 'invisible');
+    }
   }
 
   /**
@@ -697,9 +718,17 @@ abstract class PageAbstract {
    * @return string
    */
   public function date($format = null, $field = 'date') {
-    $value = strtotime($this->content()->$field());
-    if(!$value) return false;
-    return $format ? date($format, $value) : $value;
+
+    if($timestamp = strtotime($this->content()->$field())) {
+
+      if(is_null($format)) {
+        return $timestamp;
+      } else {
+        return $this->kirby->options['date.handler']($format, $timestamp);
+      }
+
+    }
+
   }
 
   /**
@@ -729,14 +758,14 @@ abstract class PageAbstract {
    * Alternative for $this->equals()
    */
   public function is(Page $page) {
-    return $this == $page;
+    return $this->id() == $page->id();
   }
 
   /**
    * Alternative for $this->is()
    */
   public function equals(Page $page) {
-    return $this == $page;
+    return $this->is($page);
   }
 
   /**
@@ -754,7 +783,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isActive() {
-    return $this->site->page() == $this;
+    return $this->site->page()->is($this);
   }
 
   /**
@@ -883,8 +912,8 @@ abstract class PageAbstract {
    *
    * @return int
    */
-  public function modified($format = null) {
-    return f::modified($this->root, $format);
+  public function modified($format = null, $handler = null) {
+    return f::modified($this->root, $format, $handler ? $handler : $this->kirby->options['date.handler']);
   }
 
   /**

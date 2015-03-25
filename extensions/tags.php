@@ -72,7 +72,8 @@ kirbytext::$tags['image'] = array(
     'link',
     'target',
     'popup',
-    'rel'
+    'rel',
+    'srcset'
   ),
   'html' => function($tag) {
 
@@ -82,6 +83,7 @@ kirbytext::$tags['image'] = array(
     $link    = $tag->attr('link');
     $caption = $tag->attr('caption');
     $file    = $tag->file($url);
+    $srcset  = $tag->attr('srcset');
 
     // use the file url if available and otherwise the given url
     $url = $file ? $file->url() : url($url);
@@ -102,6 +104,29 @@ kirbytext::$tags['image'] = array(
 
     }
 
+    // srcset builder
+    if ( ! empty( $srcset )) {
+      $sources = array();
+
+      // get dirname from src attribute value 
+      // we append this to the relatively referenced source later
+      $dir = dirname( $file->url() ) . '/';
+
+      foreach ( explode(',', $srcset ) as $source ) {
+        // the filename might have whitespace. Remove it.
+        $source = trim($source); 
+
+        // we only want filename and extension
+        $filename = substr( $source , 0, strpos($source, ' '));
+
+        // check if the reference source actually exists as a file
+        if ( $tag->file( $filename ) ) {
+          $sources[] = $dir . $source;
+        }
+      }
+      $srcset = implode(', ', $sources);
+    }
+
     if(empty($alt)) $alt = pathinfo($url, PATHINFO_FILENAME);
 
     // link builder
@@ -114,6 +139,8 @@ kirbytext::$tags['image'] = array(
         $href = $url;
       } else if($file and $link == $file->filename()) {
         $href = $file->url();
+      } else if($tag->file($link)) {
+        $href = $tag->file($link)->url();
       } else {
         $href = $link;
       }
@@ -128,13 +155,14 @@ kirbytext::$tags['image'] = array(
     };
 
     // image builder
-    $_image = function($class) use($tag, $url, $alt, $title) {
+    $_image = function($class) use($tag, $url, $alt, $title, $srcset) {
       return html::img($url, array(
         'width'  => $tag->attr('width'),
         'height' => $tag->attr('height'),
         'class'  => $class,
         'title'  => $title,
-        'alt'    => $alt
+        'alt'    => $alt,
+        'srcset' => $srcset
       ));
     };
 
@@ -171,9 +199,9 @@ kirbytext::$tags['link'] = array(
     $text = $tag->attr('text');
 
     if(empty($text)) {
-      $text = escape::attr($link);
+      $text = escape::attr($link, true);
     } else if(str::isURL($text)) {
-      $text = escape::attr($text);
+      $text = escape::attr($text, true);
     }
 
     return html::a($link, $text, array(
@@ -245,14 +273,23 @@ kirbytext::$tags['youtube'] = array(
   'attr' => array(
     'width',
     'height',
-    'class'
+    'class',
+    'caption'
   ),
   'html' => function($tag) {
+
+    $caption = $tag->attr('caption');
+
+    if(!empty($caption)) {
+      $figcaption = '<figcaption>' . escape::html($caption) . '</figcaption>';
+    } else {
+      $figcaption = null;
+    }
 
     return '<figure class="' . $tag->attr('class', kirby()->option('kirbytext.video.class', 'video')) . '">' . embed::youtube($tag->attr('youtube'), array(
       'width'  => $tag->attr('width',  kirby()->option('kirbytext.video.width')),
       'height' => $tag->attr('height', kirby()->option('kirbytext.video.height')),
-    )) . '</figure>';
+    )) . $figcaption . '</figure>';
 
   }
 );
@@ -261,14 +298,23 @@ kirbytext::$tags['vimeo'] = array(
   'attr' => array(
     'width',
     'height',
-    'class'
+    'class',
+    'caption'
   ),
   'html' => function($tag) {
+
+    $caption = $tag->attr('caption');
+
+    if(!empty($caption)) {
+      $figcaption = '<figcaption>' . escape::html($caption) . '</figcaption>';
+    } else {
+      $figcaption = null;
+    }
 
     return '<figure class="' . $tag->attr('class', kirby()->option('kirbytext.video.class', 'video')) . '">' . embed::vimeo($tag->attr('vimeo'), array(
       'width'  => $tag->attr('width',  kirby()->option('kirbytext.video.width')),
       'height' => $tag->attr('height', kirby()->option('kirbytext.video.height')),
-    )) . '</figure>';
+    )) . $figcaption . '</figure>';
 
   }
 );

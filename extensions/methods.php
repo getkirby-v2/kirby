@@ -92,8 +92,8 @@ field::$methods['widont'] = function($field) {
  * @param integer $chars The desired excerpt length
  * @return string
  */
-field::$methods['excerpt'] = function($field, $chars = 140) {
-  return excerpt($field->value, $chars);
+field::$methods['excerpt'] = function($field, $chars = 140, $mode = 'chars') {
+  return excerpt($field, $chars, $mode);
 };
 
 /**
