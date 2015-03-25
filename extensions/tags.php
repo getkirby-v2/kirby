@@ -72,7 +72,8 @@ kirbytext::$tags['image'] = array(
     'link',
     'target',
     'popup',
-    'rel'
+    'rel',
+    'srcset'
   ),
   'html' => function($tag) {
 
@@ -82,6 +83,7 @@ kirbytext::$tags['image'] = array(
     $link    = $tag->attr('link');
     $caption = $tag->attr('caption');
     $file    = $tag->file($url);
+    $srcset  = $tag->attr('srcset');
 
     // use the file url if available and otherwise the given url
     $url = $file ? $file->url() : url($url);
@@ -100,6 +102,29 @@ kirbytext::$tags['image'] = array(
         $title = $file->title();
       }
 
+    }
+
+    // srcset builder
+    if ( ! empty( $srcset )) {
+      $sources = array();
+
+      // get dirname from src attribute value 
+      // we append this to the relatively referenced source later
+      $dir = dirname( $file->url() ) . '/';
+
+      foreach ( explode(',', $srcset ) as $source ) {
+        // the filename might have whitespace. Remove it.
+        $source = trim($source); 
+
+        // we only want filename and extension
+        $filename = substr( $source , 0, strpos($source, ' '));
+
+        // check if the reference source actually exists as a file
+        if ( $tag->file( $filename ) ) {
+          $sources[] = $dir . $source;
+        }
+      }
+      $srcset = implode(', ', $sources);
     }
 
     if(empty($alt)) $alt = pathinfo($url, PATHINFO_FILENAME);
@@ -130,13 +155,14 @@ kirbytext::$tags['image'] = array(
     };
 
     // image builder
-    $_image = function($class) use($tag, $url, $alt, $title) {
+    $_image = function($class) use($tag, $url, $alt, $title, $srcset) {
       return html::img($url, array(
         'width'  => $tag->attr('width'),
         'height' => $tag->attr('height'),
         'class'  => $class,
         'title'  => $title,
-        'alt'    => $alt
+        'alt'    => $alt,
+        'srcset' => $srcset
       ));
     };
 
