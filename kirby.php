@@ -129,10 +129,17 @@ class Kirby extends Obj {
       if($url == '@auto') {
 
         $file = $kirby->site()->page()->template() . '.css';
-        $root = $kirby->roots()->autocss() . DS . $file;
-        $url  = $kirby->urls()->autocss() . '/' . $file;
+        $fileMinified = $kirby->site()->page()->template() . '.min.css';
+        $root = $kirby->roots()->autocss() . DS;
+        $url  = $kirby->urls()->autocss() . '/';
 
-        if(!file_exists($root)) return false;
+        if(file_exists($root . $fileMinified)) {
+            $url = $url . $fileMinified;
+        } else if(file_exists($root . $file)) {
+            $url = $url . $file;
+        } else {
+            return false;
+        }
 
       }
 
@@ -155,14 +162,21 @@ class Kirby extends Obj {
         return implode(PHP_EOL, $js) . PHP_EOL;
       }
 
-      // auto template css files
+      // auto template js files
       if($src == '@auto') {
 
         $file = $kirby->site()->page()->template() . '.js';
-        $root = $kirby->roots()->autojs() . DS . $file;
-        $src  = $kirby->urls()->autojs() . '/' . $file;
+          $fileMinified = $kirby->site()->page()->template() . '.min.js';
+          $root = $kirby->roots()->autojs() . DS;
+          $src  = $kirby->urls()->autojs() . '/';
 
-        if(!file_exists($root)) return false;
+          if(file_exists($root . $fileMinified)) {
+              $src = $src . $fileMinified;
+          } else if(file_exists($root . $file)) {
+              $src = $src . $file;
+          } else {
+              return false;
+          }
 
       }
 
