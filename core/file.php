@@ -243,7 +243,7 @@ abstract class FileAbstract extends Media {
    * @return string
    */
   public function __toString() {
-    return $this->root;
+    return (string)$this->root;
   }
 
 }

@@ -1322,7 +1322,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function __toString() {
-    return $this->id();
+    return (string)$this->id();
   }
 
 }

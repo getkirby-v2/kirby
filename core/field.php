@@ -33,7 +33,7 @@ abstract class FieldAbstract {
     return $this->value;
   }
   public function __toString() {
-    return $this->value;
+    return (string)$this->value;
   }
   public function toString() {
     return $this->value;

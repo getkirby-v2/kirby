@@ -351,7 +351,7 @@ abstract class UserAbstract {
   }
 
   public function __toString() {
-    return $this->username;
+    return (string)$this->username;
   }
 
 }
