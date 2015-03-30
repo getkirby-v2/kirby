@@ -596,6 +596,9 @@ class Kirby extends Obj {
     // send all headers for the page
     if($headers) $page->headers();
 
+    // configure pagination urls
+    pagination::$defaults['url'] = $page->url();
+
     // cache the result if possible
     if($this->options['cache'] and $page->isCachable()) {
 
