@@ -506,7 +506,13 @@ class Kirby extends Obj {
   public function localize() {
 
     // set the local for the specific language
-    setlocale(LC_ALL, $this->site()->locale());
+    if(is_array($this->site()->locale())) {
+      foreach($this->site()->locale() as $key => $value) {
+        setlocale($key, $value);        
+      }
+    } else {
+      setlocale(LC_ALL, $this->site()->locale());
+    }
 
     // additional language variables for multilang sites
     if($this->site()->multilang()) {
