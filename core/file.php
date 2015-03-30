@@ -216,6 +216,28 @@ abstract class FileAbstract extends Media {
   }
 
   /**
+   * Converts the entire file object into 
+   * a plain PHP array
+   * 
+   * @param closure $callback Filter callback
+   * @return array
+   */
+  public function toArray($callback = null) {
+
+    $data = parent::toArray();
+
+    // add the meta content
+    $data['meta'] = $this->meta()->toArray();
+
+    if(is_null($callback)) {
+      return $data;
+    } else {
+      return array_map($callback, $data);
+    }
+
+  }
+
+  /**
    * Makes it possible to echo the entire object
    *
    * @return string

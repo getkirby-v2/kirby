@@ -60,4 +60,34 @@ abstract class FilesAbstract extends Collection {
 
   }
 
+  /**
+   * Converts the files collection
+   * into a plain array
+   * 
+   * @param closure $callback Filter callback for each item
+   * @return array
+   */
+  public function toArray($callback = null) {
+
+    $data = array();
+
+    foreach($this as $file) {
+      $data[] = $file->toArray($callback);
+    }
+
+    return $data;
+
+  }
+
+  /**
+   * Converts the files collection
+   * into a json string
+   * 
+   * @param closure $callback Filter callback for each item
+   * @return string
+   */
+  public function toJson($callback = null) {
+    return json_encode($this->toArray($callback));
+  }
+
 }

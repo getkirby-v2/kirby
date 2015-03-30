@@ -1267,6 +1267,56 @@ abstract class PageAbstract {
   }
 
   /**
+   * Converts the entire page object into 
+   * a plain PHP array
+   * 
+   * @param closure $callback Filter callback
+   * @return array
+   */
+  public function toArray($callback = null) {
+
+    $data = array(
+      'id'               => $this->id(),
+      'title'            => $this->title()->toString(),
+      'parent'           => $this->parent()->uri(),
+      'dirname'          => $this->dirname(),
+      'diruri'           => $this->diruri(),
+      'url'              => $this->url(),
+      'contentUrl'       => $this->contentUrl(),
+      'tinyUrl'          => $this->tinyUrl(),
+      'depth'            => $this->depth(),
+      'uri'              => $this->uri(),
+      'root'             => $this->root(),
+      'uid'              => $this->uid(),
+      'slug'             => $this->slug(),
+      'num'              => $this->num(),
+      'hash'             => $this->hash(),
+      'modified'         => $this->modified(),
+      'template'         => $this->template(),
+      'intendedTemplate' => $this->intendedTemplate(),
+      'content'          => $this->content()->toArray(),
+    );
+
+    if(is_null($callback)) {
+      return $data;
+    } else {
+      return array_map($callback, $data);
+    }
+
+  }
+
+  /**
+   * Converts the entire page array into 
+   * a json string
+   * 
+   * @param closure $callback Filter callback
+   * @return string
+   */
+  public function toJson($callback = null) {
+    return json_encode($this->toArray($callback));
+  }
+
+  /**
    * Makes it possible to echo the entire object
    *
    * @return string
