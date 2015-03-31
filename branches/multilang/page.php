@@ -35,6 +35,27 @@ class Page extends PageAbstract {
   }
 
   /**
+   * Returns the URL key from the content file
+   * if available and otherwise returns the page UID
+   * 
+   * @param string $lang
+   * @return string
+   */
+  public function urlKey($lang = null) {
+
+    if($content = $this->content($lang)) {
+      // search for a translated url_key in that language
+      if($key = (string)a::get((array)$content->data(), 'url_key')) {
+        // if available, use the translated url key as slug
+        return $key;
+      }
+    } 
+
+    return $this->uid();
+
+  }
+
+  /**
    * Returns the slug for the page
    * The slug is the last part of the URL path
    * For multilang sites this can be translated with a URL-Key field
@@ -60,11 +81,8 @@ class Page extends PageAbstract {
         return $this->cache['slug'] = $this->uid();
       }
 
-      // geth the translated url key if available
-      $key = (string)a::get((array)$this->content()->data(), 'url_key');
-
-      // return the translated slug or otherwise the uid
-      return (empty($key)) ? $this->uid() : $key;
+      // get the translated url key 
+      return $this->urlKey();
 
     } else {
 
@@ -79,17 +97,8 @@ class Page extends PageAbstract {
         return $this->uid();
       }
 
-      // search for content in the specified language
-      if($content = $this->content($lang)) {
-        // search for a translated url_key in that language
-        if($slug = a::get((array)$content->data(), 'url_key')) {
-          // if available, use the translated url key as slug
-          return str::slug($slug);
-        }
-      }
-
-      // use the uid if no translation could be found
-      return $this->uid();
+      // get the translated url key 
+      return $this->urlKey($lang);
 
     }
 
