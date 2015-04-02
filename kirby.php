@@ -603,7 +603,10 @@ class Kirby extends Obj {
     if($headers) $page->headers();
 
     // configure pagination urls
-    pagination::$defaults['url'] = $page->url();
+    $query  = (string)$this->request()->query();
+    $params = (string)$this->request()->params() . r($query, '?') . $query;
+
+    pagination::$defaults['url'] = $page->url() . r($params, '/') . $params;
 
     // cache the result if possible
     if($this->options['cache'] and $page->isCachable()) {
