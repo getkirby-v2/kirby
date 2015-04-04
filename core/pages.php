@@ -241,15 +241,11 @@ abstract class PagesAbstract extends Collection {
    * @return array
    */
   public function toArray($callback = null) {
-
     $data = array();
-
     foreach($this as $page) {
-      $data[] = $page->toArray($callback);
+      $data[] = is_string($page) ? $page : $page->toArray($callback);
     }
-
     return $data;
-
   }
 
   /**
