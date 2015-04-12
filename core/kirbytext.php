@@ -44,7 +44,7 @@ abstract class KirbytextAbstract {
     }
 
     // tagsify
-    $text = preg_replace_callback('!(?=[^\]])\([a-z0-9]+:.*?\)!is', array($this, 'tag'), $text);
+    $text = preg_replace_callback('!(?=[^\]])\([a-z0-9_]+:.*?\)!is', array($this, 'tag'), $text);
 
     // smartypantsify
     if(kirby()->option('smartypants')) {
