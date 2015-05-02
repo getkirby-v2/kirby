@@ -72,6 +72,15 @@ abstract class SiteAbstract extends Page {
   }
 
   /**
+   * Returns the full URL for the content folder
+   * 
+   * @return string
+   */
+  public function contentUrl() {
+    return $this->kirby()->urls()->content();
+  }
+
+  /**
    * Checks if this object is the main site
    *
    * @return boolean
