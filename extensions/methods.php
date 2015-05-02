@@ -154,11 +154,29 @@ field::$methods['empty'] = field::$methods['isEmpty'] = function($field) {
 };
 
 /**
+ * Checks if the field value is not empty
+ * @param Field $field The calling Kirby Field instance
+ * @return boolean
+ */
+field::$methods['isNotEmpty'] = function($field) {
+  return !$field->isEmpty();
+};
+
+/**
+ * Returns a page object from a uri in a field
+ * @param Field $field The calling Kirby Field instance
+ * @return Collection
+ */
+field::$methods['toPage'] = function($field) {
+  return page($field->value);
+};
+
+/**
  * Returns all page objects from a yaml list in a field
  * @param Field $field The calling Kirby Field instance
  * @return Collection
  */
-field::$methods['pages'] = function($field) {
+field::$methods['pages'] = field::$methods['toPages'] = function($field) {
 
   $related = array();
 
@@ -169,6 +187,15 @@ field::$methods['pages'] = function($field) {
 
   return new Collection($related);
 
+};
+
+/**
+ * Returns a file object from a filename in a field
+ * @param Field $field The calling Kirby Field instance
+ * @return Collection
+ */
+field::$methods['toFile'] = function($field) {
+  return $field->page()->file($field->value);
 };
 
 /**
@@ -192,9 +219,18 @@ field::$methods['or'] = function($field, $fallback = null) {
  * @param boolean $default Default value returned if field is empty
  * @return boolean
  */
-field::$methods['bool'] = function($field, $default = false) {
+field::$methods['bool'] = field::$methods['isTrue'] = function($field, $default = false) {
   $val = $field->empty() ? $default : $field->value;
   return filter_var($val, FILTER_VALIDATE_BOOLEAN);
+};
+
+/**
+ * Checks if the field content is false
+ * @param Field $field The calling Kirby Field instance 
+ * @return boolean
+ */
+field::$methods['isFalse'] = function($field) {
+  return !$field->bool();
 };
 
 /**
@@ -208,3 +244,5 @@ field::$methods['int'] = function($field, $default = 0) {
   $val = $field->empty() ? $default : $field->value;
   return intval($val);
 }; 
+
+
