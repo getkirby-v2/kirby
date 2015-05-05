@@ -169,7 +169,12 @@ kirbytext::$tags['link'] = array(
   ),
   'html' => function($tag) {
 
-    $link = url($tag->attr('link'));
+    if(kirby()->site()->multilang() and $page = kirby()->site()->page($tag->attr('link'))) {
+      $link = $page->url();
+    } else {
+      $link = url($tag->attr('link'));
+    }
+
     $text = $tag->attr('text');
 
     if(empty($text)) {
