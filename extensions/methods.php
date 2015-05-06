@@ -245,4 +245,6 @@ field::$methods['int'] = function($field, $default = 0) {
   return intval($val);
 }; 
 
-
+field::$methods['toStructure'] = field::$methods['structure'] = function($field) {
+  return structure($field->yaml(), $field->page());
+};

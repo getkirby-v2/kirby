@@ -248,3 +248,32 @@ function gist($url, $file = null) {
 function thisUrl() {
   return url::current();
 }
+
+/**
+ * Give this any kind of array 
+ * to get some kirby style structure
+ * 
+ * @param mixed $data
+ * @param mixed $page
+ * @param mixed $key
+ * @return mixed
+ */
+function structure($data, $page = null, $key = null) {
+
+  if(is_null($page)) {
+    $page = page();
+  }
+
+  if(is_array($data)) {
+    $result = new Collection;
+    foreach($data as $key => $value) {
+      $result->append($key, structure($value, $page, $key));
+    }
+    return $result;
+  } else if(is_a($data, 'Field')) {
+    return $data;
+  } else {
+    return new Field($page, $key, $data);
+  } 
+
+};
