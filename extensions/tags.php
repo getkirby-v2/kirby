@@ -164,12 +164,13 @@ kirbytext::$tags['link'] = array(
     'class',
     'title',
     'rel',
+    'lang',
     'target',
     'popup'
   ),
   'html' => function($tag) {
 
-    $link = url($tag->attr('link'));
+    $link = url($tag->attr('link'), $tag->attr('lang'));
     $text = $tag->attr('text');
 
     if(empty($text)) {
