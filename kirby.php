@@ -763,6 +763,20 @@ class Kirby extends Obj {
 
   }
 
+  /**
+   * Trigger a hook
+   * 
+   * @param string $hook The name of the hook
+   * @param mixed $args Additional arguments for the hook
+   * @return mixed
+   */
+  public function trigger($hook, $args = null) {
+    $hooks = (array)$this->option('hooks');
+    if(isset($hooks[$hook])) {
+      return call($hooks[$hook], $args);
+    }
+  }
+
   static public function start() {
     return kirby()->launch();
   }
