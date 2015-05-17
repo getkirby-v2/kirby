@@ -218,7 +218,7 @@ class Kirby extends Obj {
 
     // connect the url class with its handlers
     url::$home = $this->urls()->index();
-    url::$to   = $this->option('url.to', function($url = '') {
+    url::$to   = $this->option('url.to', function($url = '', $lang = null) {
 
       if(url::isAbsolute($url)) return $url;
 
@@ -230,9 +230,14 @@ class Kirby extends Obj {
         case '.':
           return page()->url() . '/' . $url;
           break;
-        default:
-          // don't convert absolute urls
-          return url::makeAbsolute($url);
+        default:                            
+          if($page = page($url)) {
+            // use the "official" page url
+            return $page->url($lang);
+          } else {
+            // don't convert absolute urls
+            return url::makeAbsolute($url);
+          }
           break;
       }
 
