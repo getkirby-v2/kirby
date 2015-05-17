@@ -245,4 +245,20 @@ field::$methods['int'] = function($field, $default = 0) {
   return intval($val);
 }; 
 
+/**
+ * 
+ */
+field::$methods['link'] = function($field, $attr1 = array(), $attr2 = array()) {
+  $a = new Brick('a', $field->value());
+    
+  if(is_string($attr1)) {
+    $a->attr('href', url($attr1));
+    $a->attr($attr2);    
+  } else {
+    $a->attr('href', $field->page()->url());
+    $a->attr($attr1);    
+  }
 
+  return $a;
+
+};
