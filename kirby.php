@@ -8,6 +8,7 @@ class Kirby extends Obj {
 
   static public $version = '2.1.0';
   static public $instance;
+  static public $hooks = array();
 
   public $roots;
   public $urls;
@@ -761,6 +762,41 @@ class Kirby extends Obj {
 
     return $this->response;
 
+  }
+
+  /**
+   * Register a new hook
+   * 
+   * @param string $hook The name of the hook
+   * @param clojure $callback
+   */
+  public function hook($hook, $callback) {
+
+    if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
+      static::$hooks[$hook][] = $callback;
+    } else {
+      static::$hooks[$hook] = array($callback);
+    }
+
+  }
+
+  /**
+   * Trigger a hook
+   * 
+   * @param string $hook The name of the hook
+   * @param mixed $args Additional arguments for the hook
+   * @return mixed
+   */
+  public function trigger($hook, $args = null) {
+    if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
+      foreach(static::$hooks[$hook] as $callback) {
+        try {
+          call($callback, $args);        
+        } catch(Exception $e) {
+          // caught callback error
+        }
+      }
+    }
   }
 
   static public function start() {
