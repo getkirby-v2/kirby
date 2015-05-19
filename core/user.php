@@ -136,41 +136,52 @@ abstract class UserAbstract {
     return file_exists($this->file());
   }
 
+  public function generateKey() {
+    return str::random(64);
+  }
+
+  public function generateSecret($key) {
+    return sha1($this->username() . $key);
+  }
+
   public function login($password) {
+
+    static::logout();
+
     if(!password::match($password, $this->password)) return false;
 
-    $token = $this->generateToken();
-    $key   = $this->generateKey($token);
+    $key    = $this->generateKey();
+    $secret = $this->generateSecret($key);
 
-    try {
-      $this->update(array(
-        'token' => $token
-      ));
-    } catch(Exception $e) {
-      throw new Exception('The authentication token could not be stored.');
-    }
+    // http only cookie
+    cookie::set('kirby', $key, 0, '/', null, false, true);
 
-    cookie::set('key', $key);
+    s::set('auth.created', time());
+    s::set('auth.updated', time());
+    s::set('auth.key', $key);
+    s::set('auth.secret', $secret);
+    s::set('auth.username', $this->username());
+    s::set('auth.ip', visitor::ip());
+    s::set('auth.ua', visitor::ua());
+
     return true;
 
   }
 
-  public function logout() {
+  static public function logout() {
 
-    if($this->isCurrent()) {
-      cookie::remove('key');
-    }
+    session_regenerate_id();
 
-    $this->update(array('token' => null));
+    s::remove('auth.created');
+    s::remove('auth.updated');
+    s::remove('auth.key');
+    s::remove('auth.secret');
+    s::remove('auth.username');
+    s::remove('auth.ip');
+    s::remove('auth.ua');
+    
+    cookie::remove('key');
 
-  }
-
-  public function generateToken() {
-    return sha1($this->username() . str::random(32) . time());
-  }
-
-  public function generateKey($token) {
-    return sha1($this->username()) . '|' . time() . '|' . $token . '|' . base64_encode($this->username());
   }
 
   public function is($user) {
@@ -306,37 +317,41 @@ abstract class UserAbstract {
 
   static public function current() {
 
-    $key = cookie::get('key');
+    $cookey   = cookie::get('kirby'); 
+    $username = s::get('auth.username'); 
 
-    if(!$key) return false;
+    if(empty($cookey) or $cookey !== s::get('auth.key')) {
+      static::logout();
+      return false;
+    }
 
-    $parts = str::split($key, '|');
+    if(s::get('auth.secret') !== sha1($username . $cookey)) {
+      static::logout();
+      return false;
+    }
 
-    // make sure all three parts are there
-    if(count($parts) != 4) return false;
+    if(s::get('auth.ua') !== visitor::ua()) {
+      static::logout();
+      return false;
+    }
 
-    $hash     = $parts[0];
-    $time     = $parts[1];
-    $token    = $parts[2];
-    $username = base64_decode($parts[3]);
-
-    // keep logged in for one week
-    if($time < time() - (60 * 60 * 24 * 7)) return false;
+    // keep logged in for one week max.
+    if(s::get('auth.created') < time() - (60 * 60 * 24 * 7)) {
+      static::logout();
+      return false;
+    }
 
     // find the logged in user by token
-    $user = site()->user($username);
-
-    if(!$user) return false;
-
-    // compare the token and the hash as a last check
-    if($user->token() != $token or sha1($user->username()) != $hash) return false;
-
-    return $user;
+    if($user = site()->user($username)) {
+      return $user;
+    } else {
+      return false;
+    }
 
   }
 
   public function __toString() {
-    return $this->username;
+    return (string)$this->username;
   }
 
 }

@@ -20,32 +20,8 @@ function snippet($file, $data = array(), $return = false) {
  * @param string $media
  * @return string
  */
-function css($url, $media = null) {
-
-  if(is_array($url)) {
-    $css = array();
-    foreach($url as $u) $css[] = css($u);
-    return implode(PHP_EOL, $css) . PHP_EOL;
-  }
-
-  // auto template css files
-  if($url == '@auto') {
-
-    $kirby = kirby::instance();
-    $file  = $kirby->site()->page()->template() . '.css';
-    $root  = $kirby->roots()->autocss() . DS . $file;
-    $url   = $kirby->urls()->autocss() . '/' . $file;
-
-    if(!file_exists($root)) return false;
-
-  }
-
-  return html::tag('link', null, array(
-    'rel'   => 'stylesheet',
-    'href'  => url($url),
-    'media' => $media
-  ));
-
+function css() {
+  return call(kirby::instance()->option('css.handler'), func_get_args());
 }
 
 /**
@@ -56,30 +32,7 @@ function css($url, $media = null) {
  * @return string
  */
 function js($src, $async = false) {
-
-  if(is_array($src)) {
-    $js = array();
-    foreach($src as $s) $js[] = js($s);
-    return implode(PHP_EOL, $js) . PHP_EOL;
-  }
-
-  // auto template css files
-  if($src == '@auto') {
-
-    $kirby = kirby::instance();
-    $file  = $kirby->site()->page()->template() . '.js';
-    $root  = $kirby->roots()->autojs() . DS . $file;
-    $src   = $kirby->urls()->autojs() . '/' . $file;
-
-    if(!file_exists($root)) return false;
-
-  }
-
-  return html::tag('script', '', array(
-    'src'   => url($src),
-    'async' => $async
-  ));
-
+  return call(kirby::instance()->option('js.handler'), func_get_args());
 }
 
 /**
@@ -89,20 +42,17 @@ function js($src, $async = false) {
  * @return string
  */
 function markdown($text) {
+  return call(kirby::instance()->option('markdown.parser'), $text);
+}
 
-  $kirby = kirby::instance();
-
-  // markdown
-  $parsedown = $kirby->options['markdown.extra'] ? new ParsedownExtra() : new Parsedown();
-
-  // markdown auto-breaks
-  if($kirby->options['markdown.breaks']) {
-    $parsedown->setBreaksEnabled(true);
-  }
-
-  // parse it, baby!
-  return $parsedown->text($text);
-
+/**
+ * Global smartypants parser shortcut
+ *
+ * @param string $text
+ * @return string
+ */
+function smartypants($text) {
+  return call(kirby::instance()->option('smartypants.parser'), $text);
 }
 
 /**
@@ -159,8 +109,22 @@ function pages($data = array()) {
  * @param array $params an array of options for kirbytext: array('markdown' => true, 'smartypants' => true)
  * @return string The shortened text
  */
-function excerpt($text, $length = 140) {
-  return str::excerpt(kirbytext($text), $length);
+function excerpt($text, $length = 140, $mode = 'chars') {
+
+  if(strtolower($mode) == 'words') {
+    $text = str::excerpt(kirbytext($text), 0);    
+
+    if(str_word_count($text, 0) > $length) {
+      $words = str_word_count($text, 2);
+      $pos   = array_keys($words);
+      $text  = str::substr($text, 0, $pos[$length]) . '...';
+    }
+    return $text;
+
+  } else {
+    return str::excerpt(kirbytext($text), $length);    
+  }
+
 }
 
 /**
@@ -284,3 +248,33 @@ function gist($url, $file = null) {
 function thisUrl() {
   return url::current();
 }
+
+/**
+ * Give this any kind of array 
+ * to get some kirby style structure
+ * 
+ * @param mixed $data
+ * @param mixed $page
+ * @param mixed $key
+ * @return mixed
+ */
+function structure($data, $page = null, $key = null) {
+
+  if(is_null($page)) {
+    $page = page();
+  }
+
+  if(is_array($data)) {
+    $result = new Structure();
+    $result->page = $page;
+    foreach($data as $key => $value) {
+      $result->append($key, structure($value, $page, $key));
+    }
+    return $result;
+  } else if(is_a($data, 'Field')) {
+    return $data;
+  } else {
+    return new Field($page, $key, $data);
+  } 
+
+};

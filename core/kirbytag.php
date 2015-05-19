@@ -108,6 +108,20 @@ abstract class KirbytagAbstract {
     // skip urls without extensions
     if(!preg_match('!\.[a-z0-9]+$!i',$url)) return false;
 
+    // relative url
+    if(str::contains($url, '/')) {
+
+      $path     = dirname($url);
+      $filename = basename($url);
+
+      if($page = page($path) and $file = $page->file($filename)) {
+        return $file;
+      } else {
+        return false;
+      }
+
+    }
+
     // try to get all files for the current page
     $files = $this->files();
 

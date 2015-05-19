@@ -27,6 +27,27 @@ class FileTest extends KirbyTestCase {
 
   }
 
+  public function testModified() {
+
+    $page = $this->siteInstance()->page('tests/file-extension-case-test');
+    $file = $page->file('a.json');
+
+    $modified = f::modified($file->root());
+
+    $this->assertEquals($modified, $file->modified());
+    $this->assertEquals(date('Y-m-d', $modified), $file->modified('Y-m-d'));
+
+    // switch the date handler
+    $kirby = $this->kirbyInstance(array('date.handler' => 'strftime'));
+    $site  = $this->siteInstance($kirby);
+    $page  = $site->page('tests/file-extension-case-test');
+    $file  = $page->file('a.json');
+
+    $this->assertEquals($modified, $file->modified());
+    $this->assertEquals(strftime('%Y-%m-%d', $modified), $file->modified('%Y-%m-%d'));
+
+  }
+
   /**
    * Test if files are being found regardles of 
    * the extension format (upper|lowercase)

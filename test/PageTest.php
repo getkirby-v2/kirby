@@ -49,6 +49,36 @@ class PageTest extends KirbyTestCase {
     $this->assertEquals('2012-12-12', $page->date('Y-m-d', 'date'));
     $this->assertEquals('2012-12-12', $page->date('Y-m-d', 'created'));
 
+    // switch the date handler
+    $kirby = $this->kirbyInstance(array('date.handler' => 'strftime'));
+    $site  = $this->siteInstance($kirby);
+    $page  = new Page($site, '1-a');
+
+    $this->assertEquals(1355270400, $page->date());
+    $this->assertEquals('2012-12-12', $page->date('%Y-%m-%d'));
+    $this->assertEquals('2012-12-12', $page->date('%Y-%m-%d', 'date'));
+    $this->assertEquals('2012-12-12', $page->date('%Y-%m-%d', 'created'));
+  
+  }
+
+  public function testModified() {
+
+    $site = $this->siteInstance();
+    $page = new Page($site, '1-a');
+
+    $modified = f::modified($page->root());
+
+    $this->assertEquals($modified, $page->modified());
+    $this->assertEquals(date('Y-m-d', $modified), $page->modified('Y-m-d'));
+
+    // switch the date handler
+    $kirby = $this->kirbyInstance(array('date.handler' => 'strftime'));
+    $site  = $this->siteInstance($kirby);
+    $page  = new Page($site, '1-a');
+
+    $this->assertEquals($modified, $page->modified());
+    $this->assertEquals(strftime('%Y-%m-%d', $modified), $page->modified('%Y-%m-%d'));
+
   }
 
   public function testEmptyField() {

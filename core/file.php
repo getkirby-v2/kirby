@@ -135,6 +135,16 @@ abstract class FileAbstract extends Media {
   }
 
   /**
+   * Custom modified method for files
+   * 
+   * @param string $format
+   * @return string
+   */
+  public function modified($format = null, $handler = null) {
+    return parent::modified($format, $handler ? $handler : $this->kirby->options['date.handler']);
+  }
+
+  /**
    * Magic getter for all meta fields
    *
    * @return Field
@@ -206,12 +216,34 @@ abstract class FileAbstract extends Media {
   }
 
   /**
+   * Converts the entire file object into 
+   * a plain PHP array
+   * 
+   * @param closure $callback Filter callback
+   * @return array
+   */
+  public function toArray($callback = null) {
+
+    $data = parent::toArray();
+
+    // add the meta content
+    $data['meta'] = $this->meta()->toArray();
+
+    if(is_null($callback)) {
+      return $data;
+    } else {
+      return array_map($callback, $data);
+    }
+
+  }
+
+  /**
    * Makes it possible to echo the entire object
    *
    * @return string
    */
   public function __toString() {
-    return $this->root;
+    return (string)$this->root;
   }
 
 }

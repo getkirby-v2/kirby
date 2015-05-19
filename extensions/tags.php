@@ -114,6 +114,8 @@ kirbytext::$tags['image'] = array(
         $href = $url;
       } else if($file and $link == $file->filename()) {
         $href = $file->url();
+      } else if($tag->file($link)) {
+        $href = $tag->file($link)->url();
       } else {
         $href = $link;
       }
@@ -162,18 +164,19 @@ kirbytext::$tags['link'] = array(
     'class',
     'title',
     'rel',
+    'lang',
     'target',
     'popup'
   ),
   'html' => function($tag) {
 
-    $link = url($tag->attr('link'));
+    $link = url($tag->attr('link'), $tag->attr('lang'));
     $text = $tag->attr('text');
 
     if(empty($text)) {
-      $text = escape::attr($link);
+      $text = escape::attr($link, true);
     } else if(str::isURL($text)) {
-      $text = escape::attr($text);
+      $text = escape::attr($text, true);
     }
 
     return html::a($link, $text, array(
@@ -245,14 +248,23 @@ kirbytext::$tags['youtube'] = array(
   'attr' => array(
     'width',
     'height',
-    'class'
+    'class',
+    'caption'
   ),
   'html' => function($tag) {
+
+    $caption = $tag->attr('caption');
+
+    if(!empty($caption)) {
+      $figcaption = '<figcaption>' . escape::html($caption) . '</figcaption>';
+    } else {
+      $figcaption = null;
+    }
 
     return '<figure class="' . $tag->attr('class', kirby()->option('kirbytext.video.class', 'video')) . '">' . embed::youtube($tag->attr('youtube'), array(
       'width'  => $tag->attr('width',  kirby()->option('kirbytext.video.width')),
       'height' => $tag->attr('height', kirby()->option('kirbytext.video.height')),
-    )) . '</figure>';
+    )) . $figcaption . '</figure>';
 
   }
 );
@@ -261,14 +273,23 @@ kirbytext::$tags['vimeo'] = array(
   'attr' => array(
     'width',
     'height',
-    'class'
+    'class',
+    'caption'
   ),
   'html' => function($tag) {
+
+    $caption = $tag->attr('caption');
+
+    if(!empty($caption)) {
+      $figcaption = '<figcaption>' . escape::html($caption) . '</figcaption>';
+    } else {
+      $figcaption = null;
+    }
 
     return '<figure class="' . $tag->attr('class', kirby()->option('kirbytext.video.class', 'video')) . '">' . embed::vimeo($tag->attr('vimeo'), array(
       'width'  => $tag->attr('width',  kirby()->option('kirbytext.video.width')),
       'height' => $tag->attr('height', kirby()->option('kirbytext.video.height')),
-    )) . '</figure>';
+    )) . $figcaption . '</figure>';
 
   }
 );

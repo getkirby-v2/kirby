@@ -39,10 +39,14 @@ load(array(
 
   // lib
   'pageextension'          => __DIR__ . DS . 'lib' . DS . 'pageextension.php',
+  'structure'              => __DIR__ . DS . 'lib' . DS . 'structure.php',
 
-  // vendors
+  // parsedown
   'parsedown'              => __DIR__ . DS . 'vendors' . DS . 'parsedown.php',
-  'parsedownextra'         => __DIR__ . DS . 'vendors' . DS . 'parsedownextra.php'
+  'parsedownextra'         => __DIR__ . DS . 'vendors' . DS . 'parsedownextra.php',
+
+  // smartypants
+  'smartypantstypographer_parser' => __DIR__ . DS . 'vendors' . DS . 'smartypants.php',
 
 ));
 

@@ -6,8 +6,9 @@ use Kirby\Request;
 
 class Kirby extends Obj {
 
-  static public $version = '2.0.6';
+  static public $version = '2.1.0';
   static public $instance;
+  static public $hooks = array();
 
   public $roots;
   public $urls;
@@ -44,39 +45,137 @@ class Kirby extends Obj {
   }
 
   public function defaults() {
-    return array(
-      'url'                    => false,
-      'timezone'               => 'UTC',
-      'license'                => null,
-      'rewrite'                => true,
-      'error'                  => 'error',
-      'home'                   => 'home',
-      'locale'                 => 'en_US.UTF8',
-      'routes'                 => array(),
-      'headers'                => array(),
-      'languages'              => array(),
-      'roles'                  => array(),
-      'cache'                  => false,
-      'debug'                  => 'env',
-      'ssl'                    => false,
-      'cache.driver'           => 'file',
-      'cache.options'          => array(),
-      'cache.ignore'           => array(),
-      'cache.autoupdate'       => true,
-      'tinyurl.enabled'        => true,
-      'tinyurl.folder'         => 'x',
-      'markdown.extra'         => false,
-      'markdown.breaks'        => true,
-      'smartypants'            => false,
-      'kirbytext.video.class'  => 'video',
-      'kirbytext.video.width'  => false,
-      'kirbytext.video.height' => false,
-      'kirbytext.image.figure' => true,
-      'content.file.extension' => 'txt',
-      'content.file.ignore'    => array(),
-      'thumbs.driver'          => 'gd',
-      'thumbs.filename'        => '{safeName}-{hash}.{extension}',
+
+    $defaults = array(
+      'url'                           => false,
+      'timezone'                      => 'UTC',
+      'license'                       => null,
+      'rewrite'                       => true,
+      'error'                         => 'error',
+      'home'                          => 'home',
+      'locale'                        => 'en_US.UTF8',
+      'routes'                        => array(),
+      'headers'                       => array(),
+      'languages'                     => array(),
+      'roles'                         => array(),
+      'cache'                         => false,
+      'debug'                         => 'env',
+      'ssl'                           => false,
+      'cache.driver'                  => 'file',
+      'cache.options'                 => array(),
+      'cache.ignore'                  => array(),
+      'cache.autoupdate'              => true,
+      'date.handler'                  => 'date',
+      'tinyurl.enabled'               => true,
+      'tinyurl.folder'                => 'x',
+      'markdown'                      => true,
+      'markdown.extra'                => false,
+      'markdown.breaks'               => true,
+      'smartypants'                   => false,
+      'smartypants.attr'              => 1,
+      'smartypants.doublequote.open'  => '&#8220;',
+      'smartypants.doublequote.close' => '&#8221;',
+      'smartypants.space.emdash'      => ' ',
+      'smartypants.space.endash'      => ' ',
+      'smartypants.space.colon'       => '&#160;',
+      'smartypants.space.semicolon'   => '&#160;',
+      'smartypants.space.marks'       => '&#160;',
+      'smartypants.space.frenchquote' => '&#160;',
+      'smartypants.space.thousand'    => '&#160;',
+      'smartypants.space.unit'        => '&#160;',
+      'smartypants.skip'              => 'pre|code|kbd|script|style|math',
+      'kirbytext.video.class'         => 'video',
+      'kirbytext.video.width'         => false,
+      'kirbytext.video.height'        => false,
+      'kirbytext.image.figure'        => true,
+      'content.file.extension'        => 'txt',
+      'content.file.ignore'           => array(),
+      'thumbs.driver'                 => 'gd',
+      'thumbs.filename'               => '{safeName}-{hash}.{extension}',
+      'thumbs.destination'            => false,
     );
+
+    // default markdown parser callback
+    $defaults['markdown.parser'] = function($text) {
+
+      // initialize the right markdown class
+      $parsedown = kirby::instance()->option('markdown.extra') ? new ParsedownExtra() : new Parsedown();
+
+      // set markdown auto-breaks
+      $parsedown->setBreaksEnabled(kirby::instance()->option('markdown.breaks'));
+
+      // parse it!
+      return $parsedown->text($text);
+
+    };
+
+    // default smartypants parser callback
+    $defaults['smartypants.parser'] = function($text) {
+      $parser = new SmartyPantsTypographer_Parser(kirby::instance()->option('smartypants.attr', 1));
+      return $parser->transform($text);
+    };
+
+    // css handler
+    $defaults['css.handler'] = function($url, $media = null) {
+
+      $kirby = kirby::instance();
+
+      if(is_array($url)) {
+        $css = array();
+        foreach($url as $u) $css[] = call($kirby->option('css.handler'), $u);
+        return implode(PHP_EOL, $css) . PHP_EOL;
+      }
+
+      // auto template css files
+      if($url == '@auto') {
+
+        $file = $kirby->site()->page()->template() . '.css';
+        $root = $kirby->roots()->autocss() . DS . $file;
+        $url  = $kirby->urls()->autocss() . '/' . $file;
+
+        if(!file_exists($root)) return false;
+
+      }
+
+      return html::tag('link', null, array(
+        'rel'   => 'stylesheet',
+        'href'  => url($url),
+        'media' => $media
+      ));
+
+    };
+
+    // js handler
+    $defaults['js.handler'] = function($src, $async = false) {
+
+      $kirby = kirby::instance();
+
+      if(is_array($src)) {
+        $js = array();
+        foreach($src as $s) $js[] = call($kirby->option('js.handler'), $s);
+        return implode(PHP_EOL, $js) . PHP_EOL;
+      }
+
+      // auto template css files
+      if($src == '@auto') {
+
+        $file = $kirby->site()->page()->template() . '.js';
+        $root = $kirby->roots()->autojs() . DS . $file;
+        $src  = $kirby->urls()->autojs() . '/' . $file;
+
+        if(!file_exists($root)) return false;
+
+      }
+
+      return html::tag('script', '', array(
+        'src'   => url($src),
+        'async' => $async
+      ));
+
+    };
+
+    return $defaults;
+
   }
 
   public function option($key, $default = null) {
@@ -120,7 +219,7 @@ class Kirby extends Obj {
 
     // connect the url class with its handlers
     url::$home = $this->urls()->index();
-    url::$to   = $this->option('url.to', function($url = '') {
+    url::$to   = $this->option('url.to', function($url = '', $lang = null) {
 
       if(url::isAbsolute($url)) return $url;
 
@@ -132,19 +231,25 @@ class Kirby extends Obj {
         case '.':
           return page()->url() . '/' . $url;
           break;
-        default:
-          // don't convert absolute urls
-          return url::makeAbsolute($url);
+        default:                            
+          if($page = page($url)) {
+            // use the "official" page url
+            return $page->url($lang);
+          } else {
+            // don't convert absolute urls
+            return url::makeAbsolute($url);
+          }
           break;
       }
 
     });
 
     // setup the thumbnail generator
-    thumb::$defaults['root']     = $this->roots->thumbs();
-    thumb::$defaults['url']      = $this->urls->thumbs();
-    thumb::$defaults['driver']   = $this->option('thumbs.driver');
-    thumb::$defaults['filename'] = $this->option('thumbs.filename');
+    thumb::$defaults['root']        = $this->roots->thumbs();
+    thumb::$defaults['url']         = $this->urls->thumbs();
+    thumb::$defaults['driver']      = $this->option('thumbs.driver');
+    thumb::$defaults['filename']    = $this->option('thumbs.filename');
+    thumb::$defaults['destination'] = $this->option('thumbs.destination');
 
     // simple error handling
     if($this->options['debug'] === true) {
@@ -199,7 +304,9 @@ class Kirby extends Obj {
           if($kirby->option('language.detect')) {
 
             if(s::get('language') and $language = $kirby->site()->sessionLanguage()) {
-              // $language is already set
+              // $language is already set but the user wants to 
+              // select the default language
+              $language = $kirby->site()->defaultLanguage();
             } else {
               // detect the user language
               $language = $kirby->site()->detectedLanguage();
@@ -227,10 +334,15 @@ class Kirby extends Obj {
     if($this->options['tinyurl.enabled']) {
       $routes['tinyurl'] = array(
         'pattern' => $this->options['tinyurl.folder'] . '/(:any)/(:any?)',
-        'action'  => function($hash, $lang = null) use($site) {
-          $page = $site->index()->findBy('hash', $hash);
-          if(!$page) return $site->errorPage();
-          go($page->url($lang));
+        'action'  => function($hash, $lang = null) use($site) {          
+          // make sure the language is set
+          $site->visit('/', $lang);
+          // find the page by it's tiny hash
+          if($page = $site->index()->findBy('hash', $hash)) {
+            go($page->url($lang));            
+          } else {
+            return $site->errorPage();            
+          }
         }
       );
     }
@@ -315,7 +427,7 @@ class Kirby extends Obj {
    */
   public function plugin($name, $mode = 'dir') {
 
-    if(isset($this->plugins[$name])) return true;
+    if(isset($this->plugins[$name])) return $this->plugins[$name];
 
     if($mode == 'dir') {
       $file = $this->roots->plugins() . DS . $name . DS . $name . '.php';
@@ -325,6 +437,7 @@ class Kirby extends Obj {
 
     if(file_exists($file)) return $this->plugins[$name] = include_once($file);
 
+    return false;
   }
 
   /**
@@ -338,11 +451,6 @@ class Kirby extends Obj {
 
     // install additional kirby tags
     kirbytext::install($this->roots->tags());
-
-    // install the smartypants class if enabled
-    if($this->options['smartypants']) {
-      include_once(__DIR__ . DS . 'vendors' . DS . 'smartypants.php');
-    }
 
   }
 
@@ -360,7 +468,7 @@ class Kirby extends Obj {
     foreach($files as $file) {
       if(f::extension($file) != 'php') continue;
       $name      = f::name($file);
-      $classname = $name . 'page';
+      $classname = str_replace(array('.', '-', '_'), '', $name . 'page');
       $load[$classname] = $root . DS . $file;
 
       // register the model
@@ -404,7 +512,13 @@ class Kirby extends Obj {
   public function localize() {
 
     // set the local for the specific language
-    setlocale(LC_ALL, $this->site()->locale());
+    if(is_array($this->site()->locale())) {
+      foreach($this->site()->locale() as $key => $value) {
+        setlocale($key, $value);        
+      }
+    } else {
+      setlocale(LC_ALL, $this->site()->locale());
+    }
 
     // additional language variables for multilang sites
     if($this->site()->multilang()) {
@@ -493,6 +607,12 @@ class Kirby extends Obj {
 
     // send all headers for the page
     if($headers) $page->headers();
+
+    // configure pagination urls
+    $query  = (string)$this->request()->query();
+    $params = (string)$this->request()->params() . r($query, '?') . $query;
+
+    pagination::$defaults['url'] = $page->url() . r($params, '/') . $params;
 
     // cache the result if possible
     if($this->options['cache'] and $page->isCachable()) {
@@ -642,6 +762,41 @@ class Kirby extends Obj {
 
     return $this->response;
 
+  }
+
+  /**
+   * Register a new hook
+   * 
+   * @param string $hook The name of the hook
+   * @param clojure $callback
+   */
+  public function hook($hook, $callback) {
+
+    if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
+      static::$hooks[$hook][] = $callback;
+    } else {
+      static::$hooks[$hook] = array($callback);
+    }
+
+  }
+
+  /**
+   * Trigger a hook
+   * 
+   * @param string $hook The name of the hook
+   * @param mixed $args Additional arguments for the hook
+   * @return mixed
+   */
+  public function trigger($hook, $args = null) {
+    if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
+      foreach(static::$hooks[$hook] as $callback) {
+        try {
+          call($callback, $args);        
+        } catch(Exception $e) {
+          // caught callback error
+        }
+      }
+    }
   }
 
   static public function start() {

@@ -233,4 +233,30 @@ abstract class PagesAbstract extends Collection {
 
   }
 
+  /**
+   * Converts the pages collection
+   * into a plain array
+   * 
+   * @param closure $callback Filter callback for each item
+   * @return array
+   */
+  public function toArray($callback = null) {
+    $data = array();
+    foreach($this as $page) {
+      $data[] = is_string($page) ? $page : $page->toArray($callback);
+    }
+    return $data;
+  }
+
+  /**
+   * Converts the pages collection
+   * into a json string
+   * 
+   * @param closure $callback Filter callback for each item
+   * @return string
+   */
+  public function toJson($callback = null) {
+    return json_encode($this->toArray($callback));
+  }
+
 }
