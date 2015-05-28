@@ -67,36 +67,63 @@ abstract class UserAbstract {
     return $this->__get($key);
   }
 
-  public function role() {
-
-    $roles = kirby::instance()->site()->roles();
-    $data  = $this->data();
+  public function roles() {
+    $roles    = kirby::instance()->site()->roles();  // pre-defined roles
+    $data     = $this->data();                       // user data
+    $default  = $roles->findDefault();
 
     if(empty($data['role'])) {
       // apply the default role, if no role is stored for the user
-      $data['role'] = $roles->findDefault()->id();
+      $data['role'] = $default->id();
     }
 
-    // return the role by id
-    if($role = $roles->get($data['role'])) {
-      return $role;
+    // single role
+    if(!is_array($data['role'])) {
+        return array($roles->get($data['role'], $default));
+
+    // multiple roles
     } else {
-      return $roles->findDefault();
+      $return = array_map(function($role) use ($roles, $default) {
+        return $roles->get($role, $default);
+      }, $data['role']);
+      return array_unique($return);
+    }
+
+  }
+
+  // legacy function for versions >2.2
+  public function role() {
+    $roles  = $this->roles();
+    $admin  = kirby::instance()->site()->roles()->get('admin');
+
+    if(in_array($admin, $roles)) {
+      return $admin;
+    } else {
+      return a::first($roles);
     }
 
   }
 
   public function hasRole() {
-    $roles = func_get_args();
-    return in_array($this->role()->id(), $roles);
+    $role   = func_get_args();
+    $roles  = $this->roles();
+
+    return count(array_intersect($role, $roles)) > 0;
   }
 
   public function hasPanelAccess() {
-    return $this->role()->hasPanelAccess();
+    $roles      = $this->roles();
+    $permission = false;
+
+    foreach($roles as $role) {
+      if($role->hasPanelAccess()) $permission = true;
+    }
+
+    return $permission;
   }
 
   public function isAdmin() {
-    return $this->role()->id() == 'admin';
+    return $this->hasRole('admin');
   }
 
   public function avatar() {
@@ -179,7 +206,7 @@ abstract class UserAbstract {
     s::remove('auth.username');
     s::remove('auth.ip');
     s::remove('auth.ua');
-    
+
     cookie::remove('key');
 
   }
@@ -317,8 +344,8 @@ abstract class UserAbstract {
 
   static public function current() {
 
-    $cookey   = cookie::get('kirby'); 
-    $username = s::get('auth.username'); 
+    $cookey   = cookie::get('kirby');
+    $username = s::get('auth.username');
 
     if(empty($cookey) or $cookey !== s::get('auth.key')) {
       static::logout();
