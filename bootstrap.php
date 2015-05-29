@@ -39,6 +39,7 @@ load(array(
 
   // lib
   'pageextension'          => __DIR__ . DS . 'lib' . DS . 'pageextension.php',
+  'structure'              => __DIR__ . DS . 'lib' . DS . 'structure.php',
 
   // parsedown
   'parsedown'              => __DIR__ . DS . 'vendors' . DS . 'parsedown.php',

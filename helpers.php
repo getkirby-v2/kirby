@@ -265,7 +265,8 @@ function structure($data, $page = null, $key = null) {
   }
 
   if(is_array($data)) {
-    $result = new Collection;
+    $result = new Structure();
+    $result->page = $page;
     foreach($data as $key => $value) {
       $result->append($key, structure($value, $page, $key));
     }
