@@ -1299,8 +1299,8 @@ abstract class PageAbstract {
 
     if(is_null($callback)) {
       return $data;
-    } else {
-      return array_map($callback, $data);
+    } else if(is_callable($callback)) {
+      return $callback($this);
     }
 
   }
