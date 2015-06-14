@@ -768,7 +768,7 @@ class Kirby extends Obj {
    * Register a new hook
    * 
    * @param string $hook The name of the hook
-   * @param clojure $callback
+   * @param closure $callback
    */
   public function hook($hook, $callback) {
 
