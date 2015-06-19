@@ -9,6 +9,7 @@ class Kirby extends Obj {
   static public $version = '2.1.0';
   static public $instance;
   static public $hooks = array();
+  static public $futureHooks = array();
 
   public $roots;
   public $urls;
@@ -772,10 +773,23 @@ class Kirby extends Obj {
    */
   public function hook($hook, $callback) {
 
+    // store callback
     if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
       static::$hooks[$hook][] = $callback;
     } else {
       static::$hooks[$hook] = array($callback);
+    }
+    
+    // trigger right now if hook has been triggered with $future=true before
+    if(isset(static::$futureHooks[$hook]) and is_array(static::$futureHooks[$hook])) {
+      // there might be multiple triggers already
+      foreach(static::$futureHooks[$hook] as $args) {
+        try {
+          call($callback, $args);        
+        } catch(Exception $e) {
+          // caught callback error
+        }
+      }
     }
 
   }
@@ -785,9 +799,11 @@ class Kirby extends Obj {
    * 
    * @param string $hook The name of the hook
    * @param mixed $args Additional arguments for the hook
+   * @param boolean $future Whether to instantly trigger every hook that gets registered afterwards
    * @return mixed
    */
-  public function trigger($hook, $args = null) {
+  public function trigger($hook, $args = null, $future = false) {
+    // trigger currently existing hooks
     if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
       foreach(static::$hooks[$hook] as $callback) {
         try {
@@ -795,6 +811,16 @@ class Kirby extends Obj {
         } catch(Exception $e) {
           // caught callback error
         }
+      }
+    }
+    
+    // trigger newly registered hooks in the future
+    if($future) {
+      // save the current trigger args for later
+      if(isset(static::$futureHooks[$hook]) and is_array(static::$futureHooks[$hook])) {
+        static::$futureHooks[$hook][] = $args;
+      } else {
+        static::$futureHooks[$hook] = array($args);
       }
     }
   }
