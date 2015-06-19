@@ -305,6 +305,9 @@ abstract class PageAbstract {
 
     foreach($items as $item) {
 
+      // skip any invisible files and folders
+      if(substr($item, 0, 1) === '.') continue;
+
       $root = $this->root . DS . $item;
 
       if(is_dir($root)) {
