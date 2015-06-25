@@ -39,7 +39,7 @@ abstract class ChildrenAbstract extends Pages {
    */
   public function create($uid, $template, $data = array()) {
     $num = array_filter($this->page()->children()->pluck('num'));
-    $num = 1 + (int) array_pop($num) . '_';
+    $num = 1 + (int) array_pop($num) . '-';
     return page::create($this->page->id() . '/' . $num . $uid, $template, $data);
   }
 
