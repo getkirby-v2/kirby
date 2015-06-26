@@ -263,3 +263,7 @@ field::$methods['link'] = function($field, $attr1 = array(), $attr2 = array()) {
   return $a;
 
 };
+
+field::$methods['toUrl'] = field::$methods['url'] = function($field) {
+  return url($field->value());
+};
