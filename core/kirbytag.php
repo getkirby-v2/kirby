@@ -134,7 +134,7 @@ abstract class KirbytagAbstract {
   }
 
   /**
-   * Returns a specific attribute bey key or all attributes 
+   * Returns a specific attribute by key or all attributes 
    * by passing no key at all.
    * 
    * @param mixed $key
