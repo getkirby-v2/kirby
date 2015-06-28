@@ -44,7 +44,7 @@ abstract class KirbytextAbstract {
     }
 
     // tagsify
-    $text = preg_replace_callback('!(?=[^\]])\([a-z0-9_-]+:.*?\)!is', array($this, 'tag'), $text);
+    $text = $this->parseTags(array($this, 'tag'), $text);
 
     // markdownify
     if(kirby()->option('markdown')) {
@@ -64,6 +64,104 @@ abstract class KirbytextAbstract {
 
     return $text;
 
+  }
+
+  public function parseTags($callback, $input) {
+
+    $res = "";
+
+    $stateNormal = 'normal';
+    $stateInParentheses = 'inparentheses';
+    $stateInTag = 'intag';
+
+    $state = $stateNormal;
+    $sub = "";
+    $openingBracketsCount = 0;
+
+    for ($i = 0; $i < strlen($input); $i++) {
+
+      switch($state) {
+        case $stateNormal:
+
+          // if we find an opening bracket, the we go to the `InParentheses` state
+          if ($input[$i] == "(") {
+            $state = $stateInParentheses;
+            $sub .= $input[$i];
+            break;
+          }
+
+          $res .= $input[$i];
+          break;
+
+        case $stateInParentheses:
+
+          // if we see another opening bracket, then we start all over again in the `InParentheses` state
+          if ($input[$i] == '(') {
+            $res .= $sub;
+            $sub = $input[$i];
+            break;
+          }
+
+          // if we see a colon, then we are in a tag for sure, so we can start counting opening/closing brackets
+          if ($input[$i] == ':') {
+            $state = $stateInTag;
+            $sub .= $input[$i];
+            break;
+          }
+
+          // if we have an other char than a-zA-Z0-9-_ then we go to normal state
+          if ($this->isAZ09($input[$i]) == false) {
+            $state = $stateNormal;
+            $res .= $sub . $input[$i];
+            $sub = '';
+            break;
+          }
+
+          $sub .= $input[$i];
+          break;
+
+        case $stateInTag:
+
+          $sub .= $input[$i];
+
+          if ($input[$i] == '(') {
+            $openingBracketsCount++;
+          } else if ($input[$i] == ')') {
+            $openingBracketsCount--;
+          }
+
+          // last closing bracket, so the tag is complete
+          if ($openingBracketsCount == -1) {
+
+            $temp = call_user_func($callback, array($sub));
+            $res = $res . $temp;
+
+            $sub = '';
+
+            $state = $stateNormal;
+            $openingBracketsCount = 0;
+
+            break;
+          }
+
+          break;
+      }
+    }
+
+    return $res;
+  }
+
+  public function isAZ09($char) {
+    if ($char >= '0' && $char <= '9'
+        || $char >= 'A' && $char <= 'Z'
+        || $char >= 'a' && $char <= 'z'
+        || $char == '-'
+        || $char == '_') {
+
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public function tag($input) {
