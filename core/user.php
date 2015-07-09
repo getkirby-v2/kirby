@@ -317,6 +317,8 @@ abstract class UserAbstract {
 
   static public function current() {
 
+    $timeout  = kirby::instance()->option('session.timeout');
+
     $cookey   = cookie::get('kirby'); 
     $username = s::get('auth.username'); 
 
@@ -335,8 +337,8 @@ abstract class UserAbstract {
       return false;
     }
 
-    // keep logged in for one week max.
-    if(s::get('auth.created') < time() - (60 * 60 * 24 * 7)) {
+    // keep logged in until timeout
+    if(s::get('auth.created') < time() - (60 * $timeout)) {
       static::logout();
       return false;
     }
