@@ -55,7 +55,7 @@ class Site extends SiteAbstract {
       // return the specific language url
       return $this->languages->find($lang)->url();
     } else {
-      return $this->kirby->urls()->index();
+      return parent::url();
     }
   }
 
