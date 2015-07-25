@@ -19,4 +19,23 @@ class Structure extends Collection {
 
   }
 
+  /**
+   * Get formatted date fields
+   *
+   * @param string $format
+   * @param string $field
+   * @return string
+   */
+  public function date($format = null, $field = 'date') {
+
+    if($timestamp = strtotime($this->get($field))) {
+      if(is_null($format)) {
+        return $timestamp;
+      } else {
+        return kirby()->options['date.handler']($format, $timestamp);
+      }
+    }
+
+  }
+
 }
