@@ -170,7 +170,7 @@ abstract class UserAbstract {
 
   static public function logout() {
 
-    session_regenerate_id();
+    s::regenerateId();
 
     s::remove('auth.created');
     s::remove('auth.updated');
@@ -263,6 +263,9 @@ abstract class UserAbstract {
     // all usernames must be lowercase
     $data['username'] = str::slug(a::get($data, 'username'));
 
+    // convert all keys to lowercase
+    $data = array_change_key_case($data, CASE_LOWER);
+
     // return the cleaned up data
     return $data;
 
@@ -342,7 +345,7 @@ abstract class UserAbstract {
     }
 
     // find the logged in user by token
-    if($user = site()->user($username)) {
+    if($user = new static($username)) {
       return $user;
     } else {
       return false;

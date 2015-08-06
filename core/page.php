@@ -1073,6 +1073,9 @@ abstract class PageAbstract {
       $dir = $uid;
     }
 
+    // make sure to check a fresh page
+    $parent->reset();
+
     if($parent->children()->findBy('uid', $uid)) {
       throw new Exception('The page UID exists');
     }
