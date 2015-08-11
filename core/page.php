@@ -305,6 +305,9 @@ abstract class PageAbstract {
 
     foreach($items as $item) {
 
+      // skip any invisible files and folders
+      if(substr($item, 0, 1) === '.') continue;
+
       $root = $this->root . DS . $item;
 
       if(is_dir($root)) {
@@ -1070,6 +1073,9 @@ abstract class PageAbstract {
       $dir = $uid;
     }
 
+    // make sure to check a fresh page
+    $parent->reset();
+
     if($parent->children()->findBy('uid', $uid)) {
       throw new Exception('The page UID exists');
     }
@@ -1299,8 +1305,8 @@ abstract class PageAbstract {
 
     if(is_null($callback)) {
       return $data;
-    } else {
-      return array_map($callback, $data);
+    } else if(is_callable($callback)) {
+      return $callback($this);
     }
 
   }

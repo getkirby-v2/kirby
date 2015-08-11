@@ -160,8 +160,13 @@ abstract class FileAbstract extends Media {
    */
   public function rename($name) {
 
-    $filename = f::safeName($name) . '.' . $this->extension();
+    $name     = f::safeName($name);
+    $filename = $name . '.' . $this->extension();
     $root     = $this->dir() . DS . $filename;
+
+    if(empty($name)) {
+      throw new Exception('The filename is missing');
+    }
 
     if($root == $this->root()) return $filename;
 
@@ -179,7 +184,11 @@ abstract class FileAbstract extends Media {
       f::move($meta, $this->page->textfile($filename));
     }
 
+    // reset the page cache
+    $this->page->reset();
+
     cache::flush();
+
     return $filename;
 
   }
@@ -195,6 +204,12 @@ abstract class FileAbstract extends Media {
     if(!data::write($this->textfile(), $data, 'kd')) {
       throw new Exception('The file data could not be saved');
     }
+
+    // reset the page cache
+    $this->page->reset();
+
+    // reset the file cache
+    $this->cache = array();
 
     cache::flush();
     return true;
@@ -212,6 +227,32 @@ abstract class FileAbstract extends Media {
 
     cache::flush();
     return true;
+
+  }
+
+  public function resize($width, $height = null, $quality = null) {
+
+    if($this->type() != 'image') return $this;
+
+    $params = array('width' => $width);
+
+    if($height)  $params['height']  = $height;
+    if($quality) $params['quality'] = $quality;
+
+    return thumb($this, $params);
+
+  }
+
+  public function crop($width, $height = null, $quality = null) {
+
+    if($this->type() != 'image') return $this;
+
+    $params = array('width' => $width, 'crop' => true);
+
+    if($height)  $params['height']  = $height;
+    if($quality) $params['quality'] = $quality;
+
+    return thumb($this, $params);
 
   }
 

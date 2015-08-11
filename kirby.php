@@ -6,7 +6,7 @@ use Kirby\Request;
 
 class Kirby extends Obj {
 
-  static public $version = '2.1.0';
+  static public $version = '2.1.1';
   static public $instance;
   static public $hooks = array();
 
@@ -511,19 +511,25 @@ class Kirby extends Obj {
 
   public function localize() {
 
+    $site = $this->site();
+
+    if($site->multilang() and !$site->language()) {
+      $site->language = $site->languages()->findDefault();
+    }    
+
     // set the local for the specific language
-    if(is_array($this->site()->locale())) {
-      foreach($this->site()->locale() as $key => $value) {
+    if(is_array($site->locale())) {
+      foreach($site->locale() as $key => $value) {
         setlocale($key, $value);        
       }
     } else {
-      setlocale(LC_ALL, $this->site()->locale());
+      setlocale(LC_ALL, $site->locale());
     }
 
     // additional language variables for multilang sites
-    if($this->site()->multilang()) {
+    if($site->multilang()) {
       // path for the language file
-      $file = $this->roots()->languages() . DS . $this->site()->language()->code() . '.php';
+      $file = $this->roots()->languages() . DS . $site->language()->code() . '.php';
       // load the file if it exists
       if(file_exists($file)) include_once($file);
     }
@@ -768,7 +774,7 @@ class Kirby extends Obj {
    * Register a new hook
    * 
    * @param string $hook The name of the hook
-   * @param clojure $callback
+   * @param closure $callback
    */
   public function hook($hook, $callback) {
 

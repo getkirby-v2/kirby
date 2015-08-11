@@ -17,7 +17,7 @@ abstract class UserAbstract {
 
   public function __construct($username) {
 
-    $this->username = str::lower($username);
+    $this->username = str::slug(basename($username));
 
     // check if the account file exists
     if(!file_exists($this->file())) {
@@ -170,7 +170,7 @@ abstract class UserAbstract {
 
   static public function logout() {
 
-    session_regenerate_id();
+    s::regenerateId();
 
     s::remove('auth.created');
     s::remove('auth.updated');
@@ -263,6 +263,9 @@ abstract class UserAbstract {
     // all usernames must be lowercase
     $data['username'] = str::slug(a::get($data, 'username'));
 
+    // convert all keys to lowercase
+    $data = array_change_key_case($data, CASE_LOWER);
+
     // return the cleaned up data
     return $data;
 
@@ -342,9 +345,10 @@ abstract class UserAbstract {
     }
 
     // find the logged in user by token
-    if($user = site()->user($username)) {
+    try {
+      $user = new static($username);
       return $user;
-    } else {
+    } catch(Exception $e) {
       return false;
     }
 
