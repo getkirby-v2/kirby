@@ -17,7 +17,7 @@ abstract class UserAbstract {
 
   public function __construct($username) {
 
-    $this->username = str::lower($username);
+    $this->username = str::slug(basename($username));
 
     // check if the account file exists
     if(!file_exists($this->file())) {
@@ -345,9 +345,10 @@ abstract class UserAbstract {
     }
 
     // find the logged in user by token
-    if($user = new static($username)) {
+    try {
+      $user = new static($username);
       return $user;
-    } else {
+    } catch(Exception $e) {
       return false;
     }
 
