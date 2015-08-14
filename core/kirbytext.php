@@ -44,7 +44,7 @@ abstract class KirbytextAbstract {
     }
 
     // tagsify
-    $text = preg_replace_callback('!(?=[^\]])\([a-z0-9_-]+:.*?\)!is', array($this, 'tag'), $text);
+    $text = preg_replace_callback('/(?=[^\\]])\\([a-z0-9_-]+:.*?(?<!\\\\)\\)/is', array($this, 'tag'), $text);
 
     // markdownify
     if(kirby()->option('markdown')) {
@@ -67,6 +67,9 @@ abstract class KirbytextAbstract {
   }
 
   public function tag($input) {
+
+    // strip slashes first
+    $input[0] = stripslashes($input[0]);
 
     // remove the brackets
     $tag  = trim(rtrim(ltrim($input[0], '('), ')'));
