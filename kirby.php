@@ -152,7 +152,7 @@ class Kirby extends Obj {
 
       if(is_array($src)) {
         $js = array();
-        foreach($src as $s) $js[] = call($kirby->option('js.handler'), $s);
+        foreach($src as $s) $js[] = call($kirby->option('js.handler'), $s, $async);
         return implode(PHP_EOL, $js) . PHP_EOL;
       }
 
