@@ -1025,6 +1025,17 @@ abstract class PageAbstract {
   public function headers() {
 
     $template = $this->template();
+    if(isset($this->kirby->options['headers']['*'])) {
+      $headers = $this->kirby->options['headers']['*'];
+
+      if(is_numeric($headers)) {
+        header::status($headers);
+      } else if(is_callable($headers)) {
+        call($headers, $this);
+      }
+
+    }
+
     if(isset($this->kirby->options['headers'][$template])) {
       $headers = $this->kirby->options['headers'][$template];
 
