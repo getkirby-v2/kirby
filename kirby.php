@@ -122,7 +122,7 @@ class Kirby extends Obj {
 
       if(is_array($url)) {
         $css = array();
-        foreach($url as $u) $css[] = call($kirby->option('css.handler'), $u);
+        foreach($url as $u) $css[] = call($kirby->option('css.handler'), array($u, $media));
         return implode(PHP_EOL, $css) . PHP_EOL;
       }
 
@@ -152,7 +152,7 @@ class Kirby extends Obj {
 
       if(is_array($src)) {
         $js = array();
-        foreach($src as $s) $js[] = call($kirby->option('js.handler'), $s);
+        foreach($src as $s) $js[] = call($kirby->option('js.handler'), array($s, $async));
         return implode(PHP_EOL, $js) . PHP_EOL;
       }
 
