@@ -128,6 +128,16 @@ abstract class ContentAbstract {
 
   }
 
+  /**
+   * Checks if a field exists
+   * 
+   * @param string $key
+   * @return boolean
+   */
+  public function has($key) {
+    return isset($this->data[strtolower($key)]);
+  }
+
   public function __call($method, $arguments = null) {
     return $this->get($method, $arguments);
   }
