@@ -91,8 +91,13 @@ abstract class UserAbstract {
     return in_array($this->role()->id(), $roles);
   }
 
+  // support for old 'panel' role permission
   public function hasPanelAccess() {
-    return $this->role()->hasPanelAccess();
+    return $this->role()->hasPermission('panel.access');
+  }
+
+  public function hasPermission($target) {
+    return $this->role()->hasPermission($target);
   }
 
   public function isAdmin() {
