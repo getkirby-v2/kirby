@@ -187,6 +187,12 @@ abstract class FileAbstract extends Media {
     // reset the page cache
     $this->page->reset();
 
+    // reset the basics
+    $this->root     = dirname($this->root) . DS . $filename;
+    $this->filename = $filename;
+    $this->name     = pathinfo($filename, PATHINFO_FILENAME);
+    $this->cache    = array();
+
     cache::flush();
 
     return $filename;
