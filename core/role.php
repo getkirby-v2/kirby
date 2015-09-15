@@ -40,29 +40,26 @@ abstract class RoleAbstract {
     if(!isset($data['id']))   throw new Exception('The role id is missing');
     if(!isset($data['name'])) throw new Exception('The role name is missing');
 
-
     // required data
     $this->id   = $data['id'];
     $this->name = $data['name'];
 
-
-    if (isset($data['permissions']) and is_array($data['permissions'])) {
+    if(isset($data['permissions']) and is_array($data['permissions'])) {
       $this->permissions = a::merge($this->permissions, $data['permissions']);
-    } else if (isset($data['permissions']) and $data['permissions'] === false) {
+    } else if(isset($data['permissions']) and $data['permissions'] === false) {
       $this->permissions = array_fill_keys(array_keys($this->permissions), false);
     } else {
       $this->permissions = $this->permissions;
     }
 
     // fallback permissions support for old 'panel' role variable
-    if (isset($data['panel']) and is_bool($data['panel'] )) {
+    if(isset($data['panel']) and is_bool($data['panel'])) {
       $this->permissions['panel.access'] = $data['panel'];
     }
 
     // is this role the default role?
-    if (isset($data['default'])) {
-      $this->default = ($data['default'] === true) ? true : false;
-
+    if(isset($data['default'])) {
+      $this->default = $data['default'] === true;
     }
 
   }
@@ -83,7 +80,7 @@ abstract class RoleAbstract {
   public function hasPermission($target) {
     if($this->id == 'admin') {
       return true;
-    } elseif (isset($this->permissions[$target]) and $this->permissions[$target] === true) {
+    } else if(isset($this->permissions[$target]) and $this->permissions[$target] === true) {
       return true;
     } else {
       return false;
