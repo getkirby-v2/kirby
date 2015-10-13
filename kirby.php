@@ -93,6 +93,7 @@ class Kirby extends Obj {
       'thumbs.driver'                 => 'gd',
       'thumbs.filename'               => '{safeName}-{hash}.{extension}',
       'thumbs.destination'            => false,
+      'session.timeout'               => (60 * 24 * 7), // one week in minutes
     );
 
     // default markdown parser callback
