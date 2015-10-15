@@ -157,10 +157,11 @@ abstract class FileAbstract extends Media {
    * Renames the file and also its meta info txt
    *
    * @param string $filename
+   * @param boolean $safeName
    */
-  public function rename($name) {
+  public function rename($name, $safeName = true) {
 
-    $name     = f::safeName($name);
+    $name     = $safeName ? f::safeName($name) : $name;
     $filename = $name . '.' . $this->extension();
     $root     = $this->dir() . DS . $filename;
 
