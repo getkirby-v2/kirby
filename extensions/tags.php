@@ -174,9 +174,11 @@ kirbytext::$tags['link'] = array(
     $text = $tag->attr('text');
 
     if(empty($text)) {
-      $text = escape::attr($link, true);
-    } else if(str::isURL($text)) {
-      $text = escape::attr($text, true);
+      $text = $link;
+    } 
+
+    if(str::isURL($text)) {
+      $text = url::short($text);
     }
 
     return html::a($link, $text, array(
