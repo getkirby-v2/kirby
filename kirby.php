@@ -244,6 +244,9 @@ class Kirby extends Obj {
 
     });
 
+    // setup the pagination redirect to the error page
+    pagination::$defaults['redirect'] = $this->option('error');
+
     // setup the thumbnail generator
     thumb::$defaults['root']        = $this->roots->thumbs();
     thumb::$defaults['url']         = $this->urls->thumbs();
