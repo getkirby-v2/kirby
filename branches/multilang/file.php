@@ -112,6 +112,17 @@ class File extends FileAbstract {
 
     }
 
+    // reset the page cache
+    $this->page->reset();
+
+    // reset the basics
+    $this->root     = $root;
+    $this->filename = $filename;
+    $this->name     = $name;
+    $this->cache    = array();
+
+    cache::flush();
+
     return $filename;
 
   }

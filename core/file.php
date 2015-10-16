@@ -24,6 +24,11 @@ abstract class FileAbstract extends Media {
    */
   public function __construct(Files $files, $filename) {
 
+    // normalize the filename if possible
+    if(class_exists('Normalizer')) {
+      $filename = Normalizer::normalize($filename);
+    }
+
     $this->kirby = $files->kirby;
     $this->site  = $files->site;
     $this->page  = $files->page;
@@ -189,9 +194,9 @@ abstract class FileAbstract extends Media {
     $this->page->reset();
 
     // reset the basics
-    $this->root     = dirname($this->root) . DS . $filename;
+    $this->root     = $root;
     $this->filename = $filename;
-    $this->name     = pathinfo($filename, PATHINFO_FILENAME);
+    $this->name     = $name;
     $this->cache    = array();
 
     cache::flush();
