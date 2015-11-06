@@ -730,11 +730,12 @@ abstract class PageAbstract {
     if($timestamp = strtotime($this->content()->$field())) {
 
       if(is_null($format)) {
-        return $timestamp;
+        $value = $timestamp;
       } else {
-        return $this->kirby->options['date.handler']($format, $timestamp);
+        $value = $this->kirby->options['date.handler']($format, $timestamp);
       }
 
+      return new Field($this, $field, $value);
     }
 
   }
