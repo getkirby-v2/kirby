@@ -303,6 +303,11 @@ abstract class PageAbstract {
       'files'    => array(),
     );
 
+    // normalize the filename if possible
+    if($this->kirby->option('content.file.normalize') && class_exists('Normalizer')) {
+      $items = array_map('Normalizer::normalize', $items);
+    }
+
     foreach($items as $item) {
 
       // skip any invisible files and folders

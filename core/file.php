@@ -24,11 +24,6 @@ abstract class FileAbstract extends Media {
    */
   public function __construct(Files $files, $filename) {
 
-    // normalize the filename if possible
-    if(class_exists('Normalizer')) {
-      $filename = Normalizer::normalize($filename);
-    }
-
     $this->kirby = $files->kirby;
     $this->site  = $files->site;
     $this->page  = $files->page;
