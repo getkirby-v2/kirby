@@ -87,8 +87,7 @@ class File extends FileAbstract {
    */
   public function rename($name, $safeName = true) {
 
-    $name     = $safeName ? f::safeName($name) : $name;
-    $filename = $name . '.' . $this->extension();
+    $filename = $this->createNewFilename($name, $safeName);
     $root     = $this->dir() . DS . $filename;
 
     if($root == $this->root()) return $filename;
