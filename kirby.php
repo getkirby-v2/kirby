@@ -90,6 +90,7 @@ class Kirby extends Obj {
       'kirbytext.image.figure'        => true,
       'content.file.extension'        => 'txt',
       'content.file.ignore'           => array(),
+      'content.file.normalize'        => false,
       'thumbs.driver'                 => 'gd',
       'thumbs.filename'               => '{safeName}-{hash}.{extension}',
       'thumbs.destination'            => false,
