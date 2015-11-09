@@ -44,7 +44,9 @@ class PageTest extends KirbyTestCase {
     $site = $this->siteInstance();
     $page = new Page($site, '1-a');
 
-    $this->assertEquals(1355270400, $page->date());
+    $this->assertInstanceOf('Field', $page->date());
+
+    $this->assertEquals('1355270400', $page->date());
     $this->assertEquals('2012-12-12', $page->date('Y-m-d'));
     $this->assertEquals('2012-12-12', $page->date('Y-m-d', 'date'));
     $this->assertEquals('2012-12-12', $page->date('Y-m-d', 'created'));
@@ -54,7 +56,7 @@ class PageTest extends KirbyTestCase {
     $site  = $this->siteInstance($kirby);
     $page  = new Page($site, '1-a');
 
-    $this->assertEquals(1355270400, $page->date());
+    $this->assertEquals('1355270400', $page->date());
     $this->assertEquals('2012-12-12', $page->date('%Y-%m-%d'));
     $this->assertEquals('2012-12-12', $page->date('%Y-%m-%d', 'date'));
     $this->assertEquals('2012-12-12', $page->date('%Y-%m-%d', 'created'));
