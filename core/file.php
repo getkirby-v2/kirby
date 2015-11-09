@@ -154,14 +154,34 @@ abstract class FileAbstract extends Media {
   }
 
   /**
+   * Generates a new filename for a given name
+   * and makes sure to handle badly given extensions correctly
+   * 
+   * @param string $name
+   * @return string
+   */
+  public function createNewFilename($name) {
+
+    $name = f::safeName($name);
+    $ext  = $this->extension();
+
+    // remove possible extensions
+    if(preg_match('!\.[a-z0-9]{2,4}$!i', $name)) {
+      $name = f::name($name);
+    }
+
+    return trim($name . '.' . $ext, '.');
+
+  }
+
+  /**
    * Renames the file and also its meta info txt
    *
    * @param string $filename
    */
   public function rename($name) {
 
-    $name     = f::safeName($name);
-    $filename = $name . '.' . $this->extension();
+    $filename = $this->createNewFilename($name);
     $root     = $this->dir() . DS . $filename;
 
     if(empty($name)) {
