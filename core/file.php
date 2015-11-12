@@ -163,14 +163,14 @@ abstract class FileAbstract extends Media {
   public function createNewFilename($name, $safeName = true) {
 
     $name = basename($safeName ? f::safeName($name) : $name);
-    $ext  = $this->extension();
+    $ext  = f::extension($name);
 
     // remove possible extensions
-    if(preg_match('!\.[a-z0-9]{2,4}$!i', $name)) {
-      $name = f::name($name);
+    if(in_array($ext, f::extensions())) {
+      $name = f::name($name);      
     }
 
-    return trim($name . '.' . $ext, '.');
+    return trim($name . '.' . $this->extension(), '.');
 
   }
 
