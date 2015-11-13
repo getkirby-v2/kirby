@@ -236,12 +236,20 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function isCachable() {
+
+    // The error page should not be cached
+    if($this->isErrorPage()) {
+      return false;
+    }
+
     foreach($this->kirby->option('cache.ignore') as $pattern) {
       if(fnmatch($pattern, $this->uri()) === true) {
         return false;
       }
     }
+
     return true;
+
   }
 
   /**
