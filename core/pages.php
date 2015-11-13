@@ -233,6 +233,20 @@ abstract class PagesAbstract extends Collection {
 
   }
 
+  public function files() {
+    
+    $files = new Collection();
+
+    foreach($this->data as $page) {
+      foreach($page->files() as $file) {
+        $files->append($page->id() . '/' . strtolower($file->filename()), $file);        
+      }
+    }
+
+    return $files;
+
+  }
+
   public function groupBy($field, $i = true) {
 
     $groups = array();
