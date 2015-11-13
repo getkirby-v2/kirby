@@ -261,6 +261,15 @@ abstract class PagesAbstract extends Collection {
 
   }
 
+  public function files() {
+    $files       = new Files($this->first());
+    $files->data = array();
+    foreach($this->data as $key => $item) {
+      $files->data = a::merge($files->data, $item->files()->data);
+    }
+    return $files;
+  }
+
   /**
    * Converts the pages collection
    * into a plain array
