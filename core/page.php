@@ -231,15 +231,6 @@ abstract class PageAbstract {
   }
 
   /**
-   * Returns the cache id
-   *
-   * @return string
-   */
-  public function cacheId() {
-    return sha1($this->id());
-  }
-
-  /**
    * Checks if the page can be cached
    *
    * @return boolean
