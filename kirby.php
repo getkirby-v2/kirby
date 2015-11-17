@@ -310,7 +310,10 @@ class Kirby extends Obj {
             if(s::get('language') and $language = $kirby->site()->sessionLanguage()) {
               // $language is already set but the user wants to 
               // select the default language
-              $language = $kirby->site()->defaultLanguage();
+              $referer = r::referer();
+              if(!empty($referer) && str::startsWith($referer, $this->urls()->index())) {
+                $language = $kirby->site()->defaultLanguage();
+              } 
             } else {
               // detect the user language
               $language = $kirby->site()->detectedLanguage();
