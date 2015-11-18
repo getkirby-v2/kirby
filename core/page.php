@@ -722,19 +722,18 @@ abstract class PageAbstract {
    *
    * @param string $format
    * @param string $field
-   * @return string
+   * @return mixed
    */
   public function date($format = null, $field = 'date') {
 
     if($timestamp = strtotime($this->content()->$field())) {
-
       if(is_null($format)) {
-        $value = $timestamp;
+        return $timestamp;
       } else {
-        $value = $this->kirby->options['date.handler']($format, $timestamp);
+        return $this->kirby->options['date.handler']($format, $timestamp);
       }
-
-      return new Field($this, $field, $value);
+    } else {
+      return false;
     }
 
   }
