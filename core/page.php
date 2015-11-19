@@ -443,6 +443,9 @@ abstract class PageAbstract {
    * @return mixed Page or null
    */
   protected function _next(Children $siblings, $sort = array(), $visibility = false) {
+
+    var_dump($sort);
+
     if($sort) $siblings = call(array($siblings, 'sortBy'), $sort);
     $index = $siblings->indexOf($this);
     if($index === false) return null;
@@ -493,7 +496,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function hasNext() {
-    return $this->next(func_get_args()) != null;
+    return call(array($this, 'next'), func_get_args()) != null;
   }
 
   /**
@@ -519,7 +522,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function hasNextVisible() {
-    return $this->nextVisible(func_get_args()) != null;
+    return call(array($this, 'nextVisible'), func_get_args()) != null;
   }
 
   /**
@@ -545,7 +548,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function hasNextInvisible() {
-    return $this->nextInvisible(func_get_args()) != null;
+    return call(array($this, 'nextInvisible'), func_get_args()) != null;
   }
 
   /**
@@ -565,7 +568,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function hasPrev() {
-    return $this->prev(func_get_args()) != null;
+    return call(array($this, 'prev'), func_get_args()) != null;
   }
 
   /**
@@ -591,7 +594,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function hasPrevVisible() {
-    return $this->prevVisible(func_get_args()) != null;
+    return call(array($this, 'prevVisible'), func_get_args()) != null;
   }
 
   /**
@@ -617,7 +620,7 @@ abstract class PageAbstract {
    * @return boolean
    */
   public function hasPrevInvisible() {
-    return $this->prevInvisible(func_get_args()) != null;
+    return call(array($this, 'prevInvisible'), func_get_args()) != null;
   }
 
   /**
