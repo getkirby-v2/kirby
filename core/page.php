@@ -444,8 +444,6 @@ abstract class PageAbstract {
    */
   protected function _next(Children $siblings, $sort = array(), $visibility = false) {
 
-    var_dump($sort);
-
     if($sort) $siblings = call(array($siblings, 'sortBy'), $sort);
     $index = $siblings->indexOf($this);
     if($index === false) return null;
