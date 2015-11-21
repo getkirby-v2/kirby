@@ -780,15 +780,22 @@ class Kirby extends Obj {
   /**
    * Register a new hook
    * 
-   * @param string $hook The name of the hook
+   * @param mixed $hooks The name of the hook or an array of names of hooks
    * @param closure $callback
    */
-  public function hook($hook, $callback) {
+  public function hook($hooks, $callback) {
 
-    if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
-      static::$hooks[$hook][] = $callback;
-    } else {
-      static::$hooks[$hook] = array($callback);
+    // Wrap a single hook in an array to avoid duplicating the registration logic
+    if (!is_array($hooks)) {
+      $hooks = array($hooks);
+    }
+
+    foreach($hooks as $hook) {
+      if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
+        static::$hooks[$hook][] = $callback;
+      } else {
+        static::$hooks[$hook] = array($callback);
+      }
     }
 
   }
