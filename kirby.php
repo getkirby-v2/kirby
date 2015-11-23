@@ -6,7 +6,7 @@ use Kirby\Request;
 
 class Kirby extends Obj {
 
-  static public $version = '2.2.1';
+  static public $version = '2.2.2';
   static public $instance;
   static public $hooks = array();
 
@@ -801,8 +801,17 @@ class Kirby extends Obj {
    * @return mixed
    */
   public function trigger($hook, $args = null) {
+
+    // store the triggered hooks to avoid duplications
+    static $triggered = array();
+
     if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
-      foreach(static::$hooks[$hook] as $callback) {
+      foreach(static::$hooks[$hook] as $key => $callback) {
+
+        if(in_array($key, $triggered)) continue;
+
+        $triggered[] = $key;
+
         try {
           call($callback, $args);        
         } catch(Exception $e) {
