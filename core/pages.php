@@ -233,6 +233,11 @@ abstract class PagesAbstract extends Collection {
 
   }
 
+  /**
+   * Returns files from all pages
+   *
+   * @return object A collection of all files of the pages (not of their subpages)
+   */
   public function files() {
     
     $files = new Collection();
@@ -247,6 +252,21 @@ abstract class PagesAbstract extends Collection {
 
   }
 
+  // File type filters
+  public function images()    { return $this->files()->filterBy('type', 'image');    }
+  public function videos()    { return $this->files()->filterBy('type', 'video');    }
+  public function documents() { return $this->files()->filterBy('type', 'document'); }
+  public function audio()     { return $this->files()->filterBy('type', 'audio');    }
+  public function code()      { return $this->files()->filterBy('type', 'code');     }
+  public function archives()  { return $this->files()->filterBy('type', 'archive');  }
+
+  /**
+   * Groups the pages by a given field
+   *
+   * @param string $field
+   * @param bool   $i (ignore upper/lowercase for group names)
+   * @return object A collection with an item for each group and a Pages object for each group
+   */
   public function groupBy($field, $i = true) {
 
     $groups = array();
