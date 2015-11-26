@@ -249,6 +249,8 @@ abstract class PagesAbstract extends Collection {
 
   public function group($callback) {
 
+    if (!is_callable($callback)) throw new Exception($callback . ' is not callable. Did you mean to use groupBy()?');
+
     $groups = array();
 
     foreach($this->data as $key => $item) {
