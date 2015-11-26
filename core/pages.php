@@ -233,4 +233,81 @@ abstract class PagesAbstract extends Collection {
 
   }
 
+  public function files() {
+    
+    $files = new Collection();
+
+    foreach($this->data as $page) {
+      foreach($page->files() as $file) {
+        $files->append($page->id() . '/' . strtolower($file->filename()), $file);        
+      }
+    }
+
+    return $files;
+
+  }
+
+  public function group($callback) {
+
+    $groups = array();
+
+    foreach($this->data as $key => $item) {
+
+      // get the value to group by
+      $value = call_user_func($callback, $item);
+
+      // make sure that there's always a proper value to group by
+      if(!$value) throw new Exception('Invalid grouping value for key: ' . $key);
+
+      // make sure we have a proper key for each group
+      if(is_array($value)) {
+        throw new Exception('You cannot group by arrays or objects');
+      } else if(is_object($value)) {
+        if(!method_exists($value, '__toString')) {
+          throw new Exception('You cannot group by arrays or objects');
+        } else {
+          $value = (string)$value;
+        }
+      }
+
+      if(!isset($groups[$value])) {
+        // create a new entry for the group if it does not exist yet
+        $groups[$value] = new Pages(array($key => $item));
+      } else {
+        // add the item to an existing group
+        $groups[$value]->set($key, $item);
+      }
+
+    }
+
+    return new Collection($groups);
+
+  }
+
+  /**
+   * Converts the pages collection
+   * into a plain array
+   * 
+   * @param closure $callback Filter callback for each item
+   * @return array
+   */
+  public function toArray($callback = null) {
+    $data = array();
+    foreach($this as $page) {
+      $data[] = is_string($page) ? $page : $page->toArray($callback);
+    }
+    return $data;
+  }
+
+  /**
+   * Converts the pages collection
+   * into a json string
+   * 
+   * @param closure $callback Filter callback for each item
+   * @return string
+   */
+  public function toJson($callback = null) {
+    return json_encode($this->toArray($callback));
+  }
+
 }
