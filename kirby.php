@@ -683,6 +683,10 @@ class Kirby extends Obj {
       'page'  => $page
     ), $page->templateData(), $data, $this->controller($page, $data));
 
+    if(!file_exists($page->templateFile())) {
+      throw new Exception('The default template could not be found');
+    }
+
     return tpl::load($page->templateFile());
 
   }
