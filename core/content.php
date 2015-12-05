@@ -123,7 +123,7 @@ abstract class ContentAbstract {
       return $this->data[$key];
     } else {
       // return an empty field as default
-      return $this->data[$key] = new Field($this->page, $key);
+      return new Field($this->page, $key);
     }
 
   }
