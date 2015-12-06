@@ -185,4 +185,17 @@ abstract class ChildrenAbstract extends Pages {
 
   }
 
+  /**
+   * Extended group method
+   * detaches children and converts them to 
+   * a simple pages collection
+   * 
+   * @param function $callback
+   * @return Pages
+   */
+  public function group($callback) {
+    $collection = new Pages($this);
+    return $collection->group($callback);
+  }
+
 }
