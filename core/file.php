@@ -257,32 +257,6 @@ abstract class FileAbstract extends Media {
 
   }
 
-  public function resize($width, $height = null, $quality = null) {
-
-    if($this->type() != 'image') return $this;
-
-    $params = array('width' => $width);
-
-    if($height)  $params['height']  = $height;
-    if($quality) $params['quality'] = $quality;
-
-    return thumb($this, $params);
-
-  }
-
-  public function crop($width, $height = null, $quality = null) {
-
-    if($this->type() != 'image') return $this;
-
-    $params = array('width' => $width, 'crop' => true);
-
-    if($height)  $params['height']  = $height;
-    if($quality) $params['quality'] = $quality;
-
-    return thumb($this, $params);
-
-  }
-
   /**
    * Converts the entire file object into 
    * a plain PHP array
