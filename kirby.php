@@ -94,6 +94,12 @@ class Kirby extends Obj {
       'thumbs.driver'                 => 'gd',
       'thumbs.filename'               => '{safeName}-{hash}.{extension}',
       'thumbs.destination'            => false,
+      'email.service'                 => 'mail',
+      'email.to'                      => null,
+      'email.replyTo'                 => null,
+      'email.subject'                 => null,
+      'email.body'                    => null,
+      'email.options'                 => array(),
     );
 
     // default markdown parser callback
@@ -254,6 +260,15 @@ class Kirby extends Obj {
     thumb::$defaults['driver']      = $this->option('thumbs.driver');
     thumb::$defaults['filename']    = $this->option('thumbs.filename');
     thumb::$defaults['destination'] = $this->option('thumbs.destination');
+
+    // setting up the email class
+    email::$defaults['service'] = $this->option('email.service');
+    email::$defaults['from']    = $this->option('email.from');
+    email::$defaults['to']      = $this->option('email.to');
+    email::$defaults['replyTo'] = $this->option('email.replyTo');
+    email::$defaults['subject'] = $this->option('email.subject');
+    email::$defaults['body']    = $this->option('email.body');
+    email::$defaults['options'] = $this->option('email.options');
 
     // simple error handling
     if($this->options['debug'] === true) {
