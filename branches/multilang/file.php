@@ -138,6 +138,13 @@ class File extends FileAbstract {
       throw new Exception('The file data could not be saved');
     }
 
+    // reset the page cache
+    $this->page->reset();
+
+    // reset the file cache
+    $this->cache = array();
+
+    cache::flush();
     return true;
 
   }
