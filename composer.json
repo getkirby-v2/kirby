@@ -1,0 +1,30 @@
+{
+  "name": "kirby/kirby",
+  "description": "This is the core system of the Kirby 2 CMS.",
+  "keywords": ["cms"],
+  "homepage": "http://getkirby.com",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Bastian Allgeier",
+      "email": "bastian@getkirby.com",
+      "homepage": "http://bastianallgeier.com"
+    }
+  ],
+  "support": {
+    "email": "support@getkirby.com",
+    "issues": "https://github.com/getkirby/kirby/issues",
+    "forum": "http://forum.getkirby.com",
+    "source": "https://github.com/getkirby/kirby"
+  },
+  "require-dev": {
+    "kirby/tests": "~2.0"
+  },
+  "replace": {
+    "erusev/parsedown": "1.0.1",
+    "erusev/parsedown-extra": "0.1.0"
+  },
+  "autoload": {
+    "files": ["bootstrap.php"]
+  }
+}
