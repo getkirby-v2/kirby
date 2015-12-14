@@ -44,7 +44,7 @@ abstract class KirbytextAbstract {
     }
 
     // tags
-    $text = preg_replace_callback('!(?=[^\]])\([a-z0-9]+:.*?\)!is', array($this, 'tag'), $text);
+    $text = preg_replace_callback('/(?=[^\]])\(([a-z0-9_-]+:((?:[^()]++|\((?2)\))*))\)/is', array($this, 'tag'), $text);
 
     // markdownify
     $text = markdown($text);
@@ -66,7 +66,7 @@ abstract class KirbytextAbstract {
   public function tag($input) {
 
     // remove the brackets
-    $tag  = trim(rtrim(ltrim($input[0], '('), ')'));
+    $tag  = $input[1];
     $name = trim(substr($tag, 0, strpos($tag, ':')));
 
     // if the tag is not installed return the entire string
