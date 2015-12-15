@@ -38,13 +38,10 @@ abstract class KirbytagAbstract {
       }
     } else {
 
-      // extract any attribute
-      preg_match_all('/([a-z0-9_-]+):((?:\s+(?![a-z0-9_-]+:\s+?)\S+|(?:[^()]*\)))+)/is', $tag, $matches);
+      // extract attributes
+      preg_match_all('/([a-z0-9_-]+):((?:\s+(?!' . implode('|',$attributes) . ':\s+?)\S+|(?:[^()]*\)))+)/is', $tag, $matches);
 
-      $attr = array_combine($matches[1], array_map('trim', $matches[2]));
-
-      // filter on expected attributes
-      $this->attr = array_intersect_key($attr, array_flip($attributes));
+      $this->attr = array_combine($matches[1], array_map('trim', $matches[2]));
 
     }
 
