@@ -39,7 +39,7 @@ abstract class KirbytagAbstract {
     } else {
 
       // extract attributes
-      preg_match_all('/([a-z0-9_-]+):((?:\s+(?!' . implode('|',$attributes) . ':\s+?)\S+|(?:[^()]*\)))+)/is', $tag, $matches);
+      preg_match_all('/(' . implode('|',$attributes) . '):((?:\s+(?!(' . implode('|',$attributes) . '):\s+?)\S+|(?:[^()]*\)))+)/is', $tag, $matches);
 
       $this->attr = array_combine($matches[1], array_map('trim', $matches[2]));
 
