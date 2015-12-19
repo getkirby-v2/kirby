@@ -1126,7 +1126,9 @@ abstract class PageAbstract {
     if(!is_a($page, 'Page')) {
       throw new Exception('The new page object could not be found');
     }
-
+    
+    kirby()->trigger('page.create', $page);
+    
     kirby::instance()->cache()->flush();
 
     return $page;
@@ -1138,12 +1140,17 @@ abstract class PageAbstract {
    *
    * @param array
    */
-  public function update($data = array()) {
+  public function update($data = array(), $skip_trigger = false) {
 
     $data = array_merge($this->content()->toArray(), $data);
 
     if(!data::write($this->textfile(), $data, 'kd')) {
       throw new Exception('The page could not be updated');
+    }
+    
+    if(!$skip_trigger)
+    {
+      kirby()->trigger('page.update', $page);
     }
 
     $this->kirby->cache()->flush();
@@ -1180,6 +1187,8 @@ abstract class PageAbstract {
     if(!dir::move($this->root(), $root)) {
       throw new Exception('The directory could not be moved');
     }
+    
+    kirby()->trigger('page.move', $page);
 
     $this->dirname = $dir;
     $this->root    = $root;
@@ -1208,6 +1217,8 @@ abstract class PageAbstract {
     if(!dir::move($this->root(), $root)) {
       throw new Exception('The directory could not be moved');
     }
+    
+    kirby()->trigger('page.sort', $this);
 
     $this->dirname = $dir;
     $this->num     = $num;
@@ -1230,6 +1241,8 @@ abstract class PageAbstract {
     if(!dir::move($this->root(), $root)) {
       throw new Exception('The directory could not be moved');
     }
+    
+    kirby()->trigger('page.hide', $page);
 
     $this->dirname = $this->uid();
     $this->num     = null;
@@ -1270,6 +1283,8 @@ abstract class PageAbstract {
     if(!dir::remove($this->root())) {
       throw new Exception('The page could not be deleted');
     }
+    
+    kirby()->trigger('page.delete', $this);
 
     $this->kirby->cache()->flush();
     $parent->reset();
