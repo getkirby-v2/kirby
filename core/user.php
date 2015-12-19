@@ -212,7 +212,7 @@ abstract class UserAbstract {
 
   }
 
-  public function update($data = array()) {
+  public function update($data = array(), $skip_trigger = false) {
 
     // sanitize the given data
     $data = $this->sanitize($data, 'update');
@@ -237,6 +237,11 @@ abstract class UserAbstract {
 
     // save the new user data
     static::save($this->file(), $this->data);
+    
+    if(!$skip_trigger)
+    {
+      kirby()->trigger('user.update', $this);
+    }
 
     // return the updated user project
     return $this;
@@ -252,6 +257,7 @@ abstract class UserAbstract {
     if(!f::remove($this->file())) {
       throw new Exception('The account could not be deleted');
     } else {
+      kirby()->trigger('user.delete', $this);
       return true;
     }
 
@@ -299,9 +305,12 @@ abstract class UserAbstract {
 
     static::save($file, $data);
 
-    // return the created user project
-    return new static($data['username']);
-
+    // the created user project
+    $user = new static($data['username']);
+    
+    kirby()->trigger('user.create', $user);
+    
+    return $user;
   }
 
   static protected function save($file, $data) {
