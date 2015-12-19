@@ -198,6 +198,8 @@ abstract class FileAbstract extends Media {
     if(!f::move($this->root(), $root)) {
       throw new Exception('The file could not be renamed');
     }
+    
+    kirby()->trigger('file.rename', $this);
 
     $meta = $this->textfile();
 
@@ -231,6 +233,8 @@ abstract class FileAbstract extends Media {
     if(!data::write($this->textfile(), $data, 'kd')) {
       throw new Exception('The file data could not be saved');
     }
+    
+    kirby()->trigger('file.update', $this);
 
     // reset the page cache
     $this->page->reset();
@@ -251,6 +255,8 @@ abstract class FileAbstract extends Media {
     if(!f::remove($this->root())) {
       throw new Exception('The file could not be deleted');
     }
+    
+    kirby()->trigger('file.delete', $this);
 
     cache::flush();
     return true;
