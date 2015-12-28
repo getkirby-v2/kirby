@@ -18,9 +18,9 @@ define( 'SMARTYPANTSTYPOGRAPHER_VERSION',  "1.0.1" ); # Sun 23 Jan 2013
 #
 # Default configuration:
 #
-#  1  ->  "--" for em-dashes; no en-dash support  
-#  2  ->  "---" for em-dashes; "--" for en-dashes  
-#  3  ->  "--" for em-dashes; "---" for en-dashes  
+#  1  ->  "--" for em-dashes; no en-dash support
+#  2  ->  "---" for em-dashes; "--" for en-dashes
+#  3  ->  "--" for em-dashes; "---" for en-dashes
 #  See docs for more configuration options.
 #
 define( 'SMARTYPANTS_ATTR', c::get('smartypants.attr', 1) );
@@ -72,7 +72,7 @@ class SmartyPants_Parser {
 	var $do_stupefy   = 0;
 	var $convert_quot = 0; # should we translate &quot; entities into normal quotes?
 
-	function SmartyPants_Parser($attr = SMARTYPANTS_ATTR) {
+	function __construct($attr = SMARTYPANTS_ATTR) {
 	#
 	# Initialize a SmartyPants_Parser with certain attributes.
 	#
@@ -81,7 +81,7 @@ class SmartyPants_Parser {
 	# 1 : set all
 	# 2 : set all, using old school en- and em- dash shortcuts
 	# 3 : set all, using inverted old school en and em- dash shortcuts
-	# 
+	#
 	# q : quotes
 	# b : backtick quotes (``double'' only)
 	# B : backtick quotes (``double'' and `single')
@@ -148,7 +148,7 @@ class SmartyPants_Parser {
 		$in_pre = 0;  # Keep track of when we're inside <pre> or <code> tags.
 
 		$prev_token_last_char = ""; # This is a cheat, used to get some context
-									# for one-character tokens that consist of 
+									# for one-character tokens that consist of
 									# just a quote char. What we do is remember
 									# the last character of the previous text
 									# token, to use as context to curl single-
@@ -223,7 +223,7 @@ class SmartyPants_Parser {
 		}
 
 		if ($this->do_stupefy) $t = $this->stupefyEntities($t);
-		
+
 		return $t;
 	}
 
@@ -478,7 +478,7 @@ class SmartyPants_Parser {
 	#               the second is the actual value.
 	#
 	#
-	#   Regular expression derived from the _tokenize() subroutine in 
+	#   Regular expression derived from the _tokenize() subroutine in
 	#   Brad Choate's MTRegex plugin.
 	#   <http://www.bradchoate.com/past/mtregex.php>
 	#
@@ -488,12 +488,12 @@ class SmartyPants_Parser {
 		$match = '(?s:<!--.*?-->)|'.	# comment
 				 '(?s:<\?.*?\?>)|'.				# processing instruction
 												# regular tags
-				 '(?:<[/!$]?[-a-zA-Z0-9:]+\b(?>[^"\'>]+|"[^"]*"|\'[^\']*\')*>)'; 
+				 '(?:<[/!$]?[-a-zA-Z0-9:]+\b(?>[^"\'>]+|"[^"]*"|\'[^\']*\')*>)';
 
 		$parts = preg_split("{($match)}", $str, -1, PREG_SPLIT_DELIM_CAPTURE);
 
 		foreach ($parts as $part) {
-			if (++$index % 2 && $part != '') 
+			if (++$index % 2 && $part != '')
 				$tokens[] = array('text', $part);
 			else
 				$tokens[] = array('tag', $part);
@@ -520,7 +520,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	var $do_space_frenchquote = 0;
 	var $do_space_thousand    = 0;
 	var $do_space_unit        = 0;
-	
+
 	# Smart quote characters:
 	var $smart_doublequote_open  = SMARTYPANTS_SMART_DOUBLEQUOTE_OPEN;
 	var $smart_doublequote_close = SMARTYPANTS_SMART_DOUBLEQUOTE_CLOSE;
@@ -536,13 +536,13 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	var $space_frenchquote = SMARTYPANTS_SPACE_FRENCHQUOTE;
 	var $space_thousand    = SMARTYPANTS_SPACE_THOUSAND;
 	var $space_unit        = SMARTYPANTS_SPACE_UNIT;
-	
+
 	# Expression of a space (breakable or not):
 	var $space = '(?: | |&nbsp;|&#0*160;|&#x0*[aA]0;)';
 
-	
 
-	function SmartyPantsTypographer_Parser($attr = SMARTYPANTS_ATTR) {
+
+	function __construct($attr = SMARTYPANTS_ATTR) {
 	#
 	# Initialize a SmartyPantsTypographer_Parser with certain attributes.
 	#
@@ -551,7 +551,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	# 1 : set all, except dash spacing
 	# 2 : set all, except dash spacing, using old school en- and em- dash shortcuts
 	# 3 : set all, except dash spacing, using inverted old school en and em- dash shortcuts
-	# 
+	#
 	# Punctuation:
 	# q -> quotes
 	# b -> backtick quotes (``double'' only)
@@ -573,13 +573,13 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	# f -> french quote spacing +-
 	# t -> thousand separator spacing -
 	# u -> unit spacing +-
-	#   (you can add a plus sign after some of these options denoted by + to 
-	#    add the space when it is not already present, or you can add a minus 
+	#   (you can add a plus sign after some of these options denoted by + to
+	#    add the space when it is not already present, or you can add a minus
 	#    sign to completly remove any space present)
 	#
 		# Initialize inherited SmartyPants parser.
-		parent::SmartyPants_Parser($attr);
-				
+		parent::__construct($attr);
+
 		if ($attr == "1" || $attr == "2" || $attr == "3") {
 			# Do everything, turn all options on.
 			$this->do_comma_quotes      = 1;
@@ -629,10 +629,10 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 
 	function educate($t, $prev_token_last_char) {
 		$t = parent::educate($t, $prev_token_last_char);
-		
+
 		if ($this->do_comma_quotes)      $t = $this->educateCommaQuotes($t);
 		if ($this->do_guillemets)        $t = $this->educateGuillemets($t);
-		
+
 		if ($this->do_space_emdash)      $t = $this->spaceEmDash($t);
 		if ($this->do_space_endash)      $t = $this->spaceEnDash($t);
 		if ($this->do_space_colon)       $t = $this->spaceColon($t);
@@ -641,7 +641,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 		if ($this->do_space_frenchquote) $t = $this->spaceFrenchQuotes($t);
 		if ($this->do_space_thousand)    $t = $this->spaceThousandSeparator($t);
 		if ($this->do_space_unit)        $t = $this->spaceUnit($t);
-		
+
 		return $t;
 	}
 
@@ -659,7 +659,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 		$dq_close = $this->smart_doublequote_close;
 		$sq_open  = $this->smart_singlequote_open;
 		$sq_close = $this->smart_singlequote_close;
-	
+
 		# Make our own "punctuation" character class, because the POSIX-style
 		# [:PUNCT:] is only available in Perl 5.6 or later:
 		$punct_class = "[!\"#\\$\\%'()*+,-.\\/:;<=>?\\@\\[\\\\\]\\^_`{|}~]";
@@ -748,7 +748,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	#   Example input:  ,,Isn't this fun?,,
 	#   Example output: &#8222;Isn't this fun?&#8222;
 	#
-	# Note: this is meant to be used alongside with backtick quotes; there is 
+	# Note: this is meant to be used alongside with backtick quotes; there is
 	# no language that use only lower quotations alone mark like in the example.
 	#
 		$_ = str_replace(",,", '&#8222;', $_);
@@ -774,7 +774,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	function spaceFrenchQuotes($_) {
 	#
 	#	Parameters: String, replacement character, and forcing flag.
-	#	Returns:    The string, with appropriates spaces replaced 
+	#	Returns:    The string, with appropriates spaces replaced
 	#				inside french-style quotes, only french quotes.
 	#
 	#	Example input:  Quotes in « French », »German« and »Finnish» style.
@@ -782,15 +782,15 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	#
 		$opt = ( $this->do_space_frenchquote ==  2 ? '?' : '' );
 		$chr = ( $this->do_space_frenchquote != -1 ? $this->space_frenchquote : '' );
-		
+
 		# Characters allowed immediatly outside quotes.
 		$outside_char = $this->space . '|\s|[.,:;!?\[\](){}|@*~=+-]|¡|¿';
-		
+
 		$_ = preg_replace(
 			"/(^|$outside_char)(&#171;|«|&#8250;|‹)$this->space$opt/",
 			"\\1\\2$chr", $_);
 		$_ = preg_replace(
-			"/$this->space$opt(&#187;|»|&#8249;|›)($outside_char|$)/", 
+			"/$this->space$opt(&#187;|»|&#8249;|›)($outside_char|$)/",
 			"$chr\\1\\2", $_);
 		return $_;
 	}
@@ -799,7 +799,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	function spaceColon($_) {
 	#
 	#	Parameters: String, replacement character, and forcing flag.
-	#	Returns:    The string, with appropriates spaces replaced 
+	#	Returns:    The string, with appropriates spaces replaced
 	#				before colons.
 	#
 	#	Example input:  Ingredients : fun.
@@ -807,7 +807,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	#
 		$opt = ( $this->do_space_colon ==  2 ? '?' : '' );
 		$chr = ( $this->do_space_colon != -1 ? $this->space_colon : '' );
-		
+
 		$_ = preg_replace("/$this->space$opt(:)(\\s|$)/m",
 						  "$chr\\1\\2", $_);
 		return $_;
@@ -817,7 +817,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	function spaceSemicolon($_) {
 	#
 	#	Parameters: String, replacement character, and forcing flag.
-	#	Returns:    The string, with appropriates spaces replaced 
+	#	Returns:    The string, with appropriates spaces replaced
 	#				before semicolons.
 	#
 	#	Example input:  There he goes ; there she goes.
@@ -825,11 +825,11 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	#
 		$opt = ( $this->do_space_semicolon ==  2 ? '?' : '' );
 		$chr = ( $this->do_space_semicolon != -1 ? $this->space_semicolon : '' );
-		
-		$_ = preg_replace("/$this->space(;)(?=\\s|$)/m", 
+
+		$_ = preg_replace("/$this->space(;)(?=\\s|$)/m",
 						  " \\1", $_);
 		$_ = preg_replace("/((?:^|\\s)(?>[^&;\\s]+|&#?[a-zA-Z0-9]+;)*)".
-						  " $opt(;)(?=\\s|$)/m", 
+						  " $opt(;)(?=\\s|$)/m",
 						  "\\1$chr\\2", $_);
 		return $_;
 	}
@@ -838,7 +838,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	function spaceMarks($_) {
 	#
 	#	Parameters: String, replacement character, and forcing flag.
-	#	Returns:    The string, with appropriates spaces replaced 
+	#	Returns:    The string, with appropriates spaces replaced
 	#				around question and exclamation marks.
 	#
 	#	Example input:  ¡ Holà ! What ?
@@ -853,7 +853,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 		// Inverted marks.
 		$imarks = "(?:¡|&iexcl;|&#161;|&#x[Aa]1;|¿|&iquest;|&#191;|&#x[Bb][Ff];)";
 		$_ = preg_replace("/($imarks+)$this->space$opt/", "\\1$chr", $_);
-	
+
 		return $_;
 	}
 
@@ -863,7 +863,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	#	Parameters: String, two replacement characters separated by a hyphen (`-`),
 	#				and forcing flag.
 	#
-	#	Returns:    The string, with appropriates spaces replaced 
+	#	Returns:    The string, with appropriates spaces replaced
 	#				around dashes.
 	#
 	#	Example input:  Then — without any plan — the fun happend.
@@ -871,18 +871,18 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	#
 		$opt = ( $this->do_space_emdash ==  2 ? '?' : '' );
 		$chr = ( $this->do_space_emdash != -1 ? $this->space_emdash : '' );
-		$_ = preg_replace("/$this->space$opt(&#8212;|—)$this->space$opt/", 
+		$_ = preg_replace("/$this->space$opt(&#8212;|—)$this->space$opt/",
 			"$chr\\1$chr", $_);
 		return $_;
 	}
-	
-	
+
+
 	function spaceEnDash($_) {
 	#
 	#	Parameters: String, two replacement characters separated by a hyphen (`-`),
 	#				and forcing flag.
 	#
-	#	Returns:    The string, with appropriates spaces replaced 
+	#	Returns:    The string, with appropriates spaces replaced
 	#				around dashes.
 	#
 	#	Example input:  Then — without any plan — the fun happend.
@@ -890,7 +890,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	#
 		$opt = ( $this->do_space_endash ==  2 ? '?' : '' );
 		$chr = ( $this->do_space_endash != -1 ? $this->space_endash : '' );
-		$_ = preg_replace("/$this->space$opt(&#8211;|–)$this->space$opt/", 
+		$_ = preg_replace("/$this->space$opt(&#8211;|–)$this->space$opt/",
 			"$chr\\1$chr", $_);
 		return $_;
 	}
@@ -899,7 +899,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	function spaceThousandSeparator($_) {
 	#
 	#	Parameters: String, replacement character, and forcing flag.
-	#	Returns:    The string, with appropriates spaces replaced 
+	#	Returns:    The string, with appropriates spaces replaced
 	#				inside numbers (thousand separator in french).
 	#
 	#	Example input:  Il y a 10 000 insectes amusants dans ton jardin.
@@ -933,7 +933,7 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 			$
 		)|
 		### Other units
-		(?: ° | &deg; | &\#0*176; | &\#[xX]0*[Bb]0; ) [CF]? | 
+		(?: ° | &deg; | &\#0*176; | &\#[xX]0*[Bb]0; ) [CF]? |
 		%|pt|pi|M?px|em|en|gal|lb|[NSEOW]|[NS][EOW]|ha|mbar
 		'; //x
 
@@ -970,10 +970,10 @@ class SmartyPantsTypographer_Parser extends SmartyPants_Parser {
 	#	Example output: Fun i.e._something pleasant.
 	#
 		$opt = ( $this->do_space_abbr ==  2 ? '?' : '' );
-		
+
 		$_ = preg_replace("/(^|\s)($this->abbr_after) $opt/m",
 			"\\1\\2$this->space_abbr", $_);
-		$_ = preg_replace("/( )$opt($this->abbr_sp_before)(?![a-zA-Z'])/m", 
+		$_ = preg_replace("/( )$opt($this->abbr_sp_before)(?![a-zA-Z'])/m",
 			"\\1$this->space_abbr\\2", $_);
 		return $_;
 	}
@@ -1054,14 +1054,14 @@ proper HTML entity for closing single-quotes (`&#8217;`) by hand.
 Copyright and License
 ---------------------
 
-PHP SmartyPants & Typographer  
-Copyright (c) 2004-2006 Michel Fortin  
-<http://www.michelf.com>  
+PHP SmartyPants & Typographer
+Copyright (c) 2004-2006 Michel Fortin
+<http://www.michelf.com>
 All rights reserved.
 
-Original SmartyPants  
-Copyright (c) 2003-2004 John Gruber  
-<http://daringfireball.net/>  
+Original SmartyPants
+Copyright (c) 2003-2004 John Gruber
+<http://daringfireball.net/>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -1079,14 +1079,14 @@ modification, are permitted provided that the following conditions are met:
 	without specific prior written permission.
 
 This software is provided by the copyright holders and contributors "as is"
-and any express or implied warranties, including, but not limited to, the 
-implied warranties of merchantability and fitness for a particular purpose 
-are disclaimed. In no event shall the copyright owner or contributors be 
-liable for any direct, indirect, incidental, special, exemplary, or 
-consequential damages (including, but not limited to, procurement of 
-substitute goods or services; loss of use, data, or profits; or business 
-interruption) however caused and on any theory of liability, whether in 
-contract, strict liability, or tort (including negligence or otherwise) 
+and any express or implied warranties, including, but not limited to, the
+implied warranties of merchantability and fitness for a particular purpose
+are disclaimed. In no event shall the copyright owner or contributors be
+liable for any direct, indirect, incidental, special, exemplary, or
+consequential damages (including, but not limited to, procurement of
+substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in
+contract, strict liability, or tort (including negligence or otherwise)
 arising in any way out of the use of this software, even if advised of the
 possibility of such damage.
 
