@@ -6,9 +6,6 @@ if(!defined('DS'))     define('DS', DIRECTORY_SEPARATOR);
 // load the kirby toolkit
 include(__DIR__ . DS . 'toolkit' . DS . 'bootstrap.php');
 
-// start a session
-s::start();
-
 // load all core classes
 load(array(
 

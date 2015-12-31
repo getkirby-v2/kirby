@@ -233,6 +233,48 @@ abstract class PagesAbstract extends Collection {
 
   }
 
+  public function files() {
+    
+    $files = new Collection();
+
+    foreach($this->data as $page) {
+      foreach($page->files() as $file) {
+        $files->append($page->id() . '/' . strtolower($file->filename()), $file);        
+      }
+    }
+
+    return $files;
+
+  }
+
+  public function groupBy($field, $i = true) {
+
+    $groups = array();
+
+    foreach($this->data as $key => $item) {
+
+      $value = $item->content()->get($field)->value();
+
+      // make sure that there's always a proper value to group by
+      if(!$value) throw new Exception('Invalid grouping value for key: ' . $key);
+
+      // ignore upper/lowercase for group names
+      if($i) $value = str::lower($value);
+
+      if(!isset($groups[$value])) {
+        // create a new entry for the group if it does not exist yet
+        $groups[$value] = new Pages(array($key => $item));
+      } else {
+        // add the item to an existing group
+        $groups[$value]->set($key, $item);
+      }
+
+    }
+
+    return new Collection($groups);
+
+  }
+
   /**
    * Converts the pages collection
    * into a plain array

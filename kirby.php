@@ -6,7 +6,7 @@ use Kirby\Request;
 
 class Kirby extends Obj {
 
-  static public $version = '2.1.1';
+  static public $version = '2.2.3';
   static public $instance;
   static public $hooks = array();
 
@@ -90,9 +90,16 @@ class Kirby extends Obj {
       'kirbytext.image.figure'        => true,
       'content.file.extension'        => 'txt',
       'content.file.ignore'           => array(),
+      'content.file.normalize'        => false,
       'thumbs.driver'                 => 'gd',
       'thumbs.filename'               => '{safeName}-{hash}.{extension}',
       'thumbs.destination'            => false,
+      'email.service'                 => 'mail',
+      'email.to'                      => null,
+      'email.replyTo'                 => null,
+      'email.subject'                 => null,
+      'email.body'                    => null,
+      'email.options'                 => array(),
     );
 
     // default markdown parser callback
@@ -122,7 +129,7 @@ class Kirby extends Obj {
 
       if(is_array($url)) {
         $css = array();
-        foreach($url as $u) $css[] = call($kirby->option('css.handler'), $u);
+        foreach($url as $u) $css[] = call($kirby->option('css.handler'), array($u, $media));
         return implode(PHP_EOL, $css) . PHP_EOL;
       }
 
@@ -152,7 +159,7 @@ class Kirby extends Obj {
 
       if(is_array($src)) {
         $js = array();
-        foreach($src as $s) $js[] = call($kirby->option('js.handler'), $s);
+        foreach($src as $s) $js[] = call($kirby->option('js.handler'), array($s, $async));
         return implode(PHP_EOL, $js) . PHP_EOL;
       }
 
@@ -244,12 +251,24 @@ class Kirby extends Obj {
 
     });
 
+    // setup the pagination redirect to the error page
+    pagination::$defaults['redirect'] = $this->option('error');
+
     // setup the thumbnail generator
     thumb::$defaults['root']        = $this->roots->thumbs();
     thumb::$defaults['url']         = $this->urls->thumbs();
     thumb::$defaults['driver']      = $this->option('thumbs.driver');
     thumb::$defaults['filename']    = $this->option('thumbs.filename');
     thumb::$defaults['destination'] = $this->option('thumbs.destination');
+
+    // setting up the email class
+    email::$defaults['service'] = $this->option('email.service');
+    email::$defaults['from']    = $this->option('email.from');
+    email::$defaults['to']      = $this->option('email.to');
+    email::$defaults['replyTo'] = $this->option('email.replyTo');
+    email::$defaults['subject'] = $this->option('email.subject');
+    email::$defaults['body']    = $this->option('email.body');
+    email::$defaults['options'] = $this->option('email.options');
 
     // simple error handling
     if($this->options['debug'] === true) {
@@ -306,7 +325,10 @@ class Kirby extends Obj {
             if(s::get('language') and $language = $kirby->site()->sessionLanguage()) {
               // $language is already set but the user wants to 
               // select the default language
-              $language = $kirby->site()->defaultLanguage();
+              $referer = r::referer();
+              if(!empty($referer) && str::startsWith($referer, $this->urls()->index())) {
+                $language = $kirby->site()->defaultLanguage();
+              } 
             } else {
               // detect the user language
               $language = $kirby->site()->detectedLanguage();
@@ -676,6 +698,10 @@ class Kirby extends Obj {
       'page'  => $page
     ), $page->templateData(), $data, $this->controller($page, $data));
 
+    if(!file_exists($page->templateFile())) {
+      throw new Exception('The default template could not be found');
+    }
+
     return tpl::load($page->templateFile());
 
   }
@@ -794,8 +820,17 @@ class Kirby extends Obj {
    * @return mixed
    */
   public function trigger($hook, $args = null) {
+
+    // store the triggered hooks to avoid duplications
+    static $triggered = array();
+
     if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
-      foreach(static::$hooks[$hook] as $callback) {
+      foreach(static::$hooks[$hook] as $key => $callback) {
+
+        if(in_array($key, $triggered)) continue;
+
+        $triggered[] = $key;
+
         try {
           call($callback, $args);        
         } catch(Exception $e) {

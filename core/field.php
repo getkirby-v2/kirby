@@ -26,6 +26,9 @@ abstract class FieldAbstract {
   public function page() {
     return $this->page;
   }
+  public function exists() {
+    return $this->page->content()->has($this->key);
+  }
   public function key() {
     return $this->key;
   }

@@ -11,9 +11,27 @@
  */
 abstract class RoleAbstract {
 
-  protected $id    = null;
-  protected $name  = null;
-  protected $panel = false;
+  protected $id          = null;
+  protected $name        = null;
+  protected $panel       = false;
+  protected $permissions = array(
+      'panel.access'         => true,
+      'panel.site.update'    => true,
+      'panel.page.create'    => true,
+      'panel.page.update'    => true,
+      'panel.page.move'      => true,
+      'panel.page.sort'      => true,
+      'panel.page.hide'      => true,
+      'panel.page.delete'    => true,
+      'panel.file.upload'    => true,
+      'panel.file.replace'   => true,
+      'panel.file.update'    => true,
+      'panel.file.delete'    => true,
+      'panel.user.add'       => true,
+      'panel.user.edit'      => true,
+      'panel.user.role'      => true,
+      'panel.user.delete'    => true,
+    );
 
   public $default = false;
 
@@ -22,18 +40,27 @@ abstract class RoleAbstract {
     if(!isset($data['id']))   throw new Exception('The role id is missing');
     if(!isset($data['name'])) throw new Exception('The role name is missing');
 
-    // make sure to set some important admin defaults
-    if($data['id'] == 'admin') {
-      $data['panel'] = true;
-    }
-
     // required data
     $this->id   = $data['id'];
     $this->name = $data['name'];
 
-    // does this role have panel access?
-    $this->panel   = (isset($data['panel'])   and $data['panel'])   === true ? true : false;
-    $this->default = (isset($data['default']) and $data['default']) === true ? true : false;
+    if(isset($data['permissions']) and is_array($data['permissions'])) {
+      $this->permissions = a::merge($this->permissions, $data['permissions']);
+    } else if(isset($data['permissions']) and $data['permissions'] === false) {
+      $this->permissions = array_fill_keys(array_keys($this->permissions), false);
+    } else {
+      $this->permissions = $this->permissions;
+    }
+
+    // fallback permissions support for old 'panel' role variable
+    if(isset($data['panel']) and is_bool($data['panel'])) {
+      $this->permissions['panel.access'] = $data['panel'];
+    }
+
+    // is this role the default role?
+    if(isset($data['default'])) {
+      $this->default = $data['default'] === true;
+    }
 
   }
 
@@ -45,8 +72,19 @@ abstract class RoleAbstract {
     return $this->name;
   }
 
+  // support for old 'panel' role permission
   public function hasPanelAccess() {
-    return $this->panel;
+    return $this->hasPermission('panel.access');
+  }
+
+  public function hasPermission($target) {
+    if($this->id == 'admin') {
+      return true;
+    } else if(isset($this->permissions[$target]) and $this->permissions[$target] === true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public function isDefault() {
