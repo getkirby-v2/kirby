@@ -373,7 +373,7 @@ class Kirby extends Obj {
     $routes['homeRedirect'] = array(
       'pattern' => $this->options['home'],
       'action'  => function() {
-        go(page('home')->url(), 307);
+        redirect::send(page('home')->url(), 307);
       }
     );
 
