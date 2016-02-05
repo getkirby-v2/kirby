@@ -22,4 +22,19 @@ class FilesTest extends KirbyTestCase {
 
   }
 
+  public function testNot() {
+
+    $kirby = $this->kirbyInstance();    
+    $site  = $this->siteInstance($kirby);
+    $page  = new Page($site, '1-a');
+    $files = new Files($page);
+
+    $this->assertEquals(1, $files->count());
+
+    $modified = $files->not('test.js');
+
+    $this->assertEquals(0, $modified->count());
+
+  }
+
 }

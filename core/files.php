@@ -61,6 +61,29 @@ abstract class FilesAbstract extends Collection {
   }
 
   /**
+   * Returns a new collection of files without the given files
+   *
+   * @param args any number of filenames or file objects, passed as individual arguments
+   * @return object a new collection without the files
+   */
+  public function not() {
+    $collection = clone $this;
+    foreach(func_get_args() as $filename) {
+      if(is_array($filename)) {
+        foreach($filename as $f) {
+          $collection = $collection->not(strtolower($f));
+        }
+      } else if(is_a($filename, 'Media')) {
+        // unset by Media object
+        unset($collection->data[strtolower($filename->filename())]);
+      } else {
+        unset($collection->data[strtolower($filename)]);
+      }
+    }
+    return $collection;
+  }
+
+  /**
    * Converts the files collection
    * into a plain array
    * 
