@@ -90,6 +90,10 @@ class File extends FileAbstract {
     $filename = $this->createNewFilename($name, $safeName);
     $root     = $this->dir() . DS . $filename;
 
+    if(empty($name)) {
+      throw new Exception('The filename is missing');
+    }
+
     if($root == $this->root()) return $filename;
 
     if(file_exists($root)) {
