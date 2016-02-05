@@ -135,9 +135,7 @@ function excerpt($text, $length = 140, $mode = 'chars') {
  * @param string $lang
  * @return string
  */
-function textfile($uri, $template = null, $lang = null) {
-
-  if(is_null($template)) $template = $this->intendedTemplate();
+function textfile($uri, $template, $lang = null) {
 
   $curi   = '';
   $parts  = str::split($uri, '/');
