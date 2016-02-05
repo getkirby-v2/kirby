@@ -264,8 +264,9 @@ kirbytext::$tags['youtube'] = array(
     }
 
     return '<figure class="' . $tag->attr('class', kirby()->option('kirbytext.video.class', 'video')) . '">' . embed::youtube($tag->attr('youtube'), array(
-      'width'  => $tag->attr('width',  kirby()->option('kirbytext.video.width')),
-      'height' => $tag->attr('height', kirby()->option('kirbytext.video.height')),
+      'width'   => $tag->attr('width',  kirby()->option('kirbytext.video.width')),
+      'height'  => $tag->attr('height', kirby()->option('kirbytext.video.height')),
+      'options' => kirby()->option('kirbytext.video.youtube.options')
     )) . $figcaption . '</figure>';
 
   }
@@ -289,8 +290,9 @@ kirbytext::$tags['vimeo'] = array(
     }
 
     return '<figure class="' . $tag->attr('class', kirby()->option('kirbytext.video.class', 'video')) . '">' . embed::vimeo($tag->attr('vimeo'), array(
-      'width'  => $tag->attr('width',  kirby()->option('kirbytext.video.width')),
-      'height' => $tag->attr('height', kirby()->option('kirbytext.video.height')),
+      'width'   => $tag->attr('width',  kirby()->option('kirbytext.video.width')),
+      'height'  => $tag->attr('height', kirby()->option('kirbytext.video.height')),
+      'options' => kirby()->option('kirbytext.video.vimeo.options')
     )) . $figcaption . '</figure>';
 
   }
