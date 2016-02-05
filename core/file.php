@@ -258,6 +258,25 @@ abstract class FileAbstract extends Media {
   }
 
   /**
+   * Get formatted date fields
+   *
+   * @param string $format
+   * @param string $field
+   * @return mixed
+   */
+  public function date($format = null, $field = 'date') {
+    if($timestamp = strtotime($this->meta()->$field())) {
+      if(is_null($format)) {
+        return $timestamp;
+      } else {
+        return $this->kirby->options['date.handler']($format, $timestamp);
+      }
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * Converts the entire file object into 
    * a plain PHP array
    * 
