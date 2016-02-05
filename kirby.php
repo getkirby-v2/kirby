@@ -369,6 +369,14 @@ class Kirby extends Obj {
       );
     }
 
+    // home redirect
+    $routes['homeRedirect'] = array(
+      'pattern' => $this->options['home'],
+      'action'  => function() {
+        go(page('home')->url(), 307);
+      }
+    );
+
     // all other urls
     $routes['others'] = array(
       'pattern' => '(:all)',
