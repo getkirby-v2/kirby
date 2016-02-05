@@ -19,12 +19,13 @@ abstract class KirbytextAbstract {
 
   public function __construct($field) {
 
-    if(empty($field) or is_string($field)) {
-      $value = $field;
-      $field = new Field(page(), null, $value);
+    if(is_a($field, 'Field')) {
+      $this->field = $field;
+    } else if(is_array($field)) {
+      throw new Exception('Kirbytext cannot handle arrays');
+    } else if(empty($field) or is_string($field)) {
+      $this->field = new Field(page(), null, $field);
     }
-
-    $this->field = $field;
 
   }
 
