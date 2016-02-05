@@ -837,9 +837,9 @@ class Kirby extends Obj {
     if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
       foreach(static::$hooks[$hook] as $key => $callback) {
 
-        if(in_array($key, $triggered)) continue;
+        if(array_key_exists($hook, $triggered) && in_array($key, $triggered[$hook])) continue;
 
-        $triggered[] = $key;
+        $triggered[$hook] = $key;
 
         try {
           call($callback, $args);        
