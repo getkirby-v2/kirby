@@ -525,7 +525,7 @@ class Kirby extends Obj {
     $file = $this->roots->controllers() . DS . $page->template() . '.php';
 
     if(!file_exists($file)) {
-      $file = $this->roots->controllers() . DS . 'default.php';
+      $file = $this->roots->controllers() . DS . 'site.php';
     }
 
     if(file_exists($file)) {
