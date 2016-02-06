@@ -524,16 +524,22 @@ class Kirby extends Obj {
 
     $file = $this->roots->controllers() . DS . $page->template() . '.php';
 
+    if(!file_exists($file)) {
+      $file = $this->roots->controllers() . DS . 'default.php';
+    }
+
     if(file_exists($file)) {
 
       $callback = include_once($file);
 
-      if(is_callable($callback)) return (array)call_user_func_array($callback, array(
-        $this->site(),
-        $this->site()->children(),
-        $page,
-        $arguments
-      ));
+      if(is_callable($callback)) {
+        return (array)call_user_func_array($callback, array(
+          $this->site(),
+          $this->site()->children(),
+          $page,
+          $arguments
+        ));
+      }
 
     }
 
