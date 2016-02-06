@@ -242,14 +242,28 @@ abstract class PageAbstract {
       return false;
     }
 
-    foreach($this->kirby->option('cache.ignore') as $pattern) {
+    if(count($this->kirby->option('cache.whitelist')) > 0) {
+      return $this->matchesOptionPattern('cache.whitelist');
+    } else {
+      return !$this->matchesOptionPattern('cache.ignore');
+    }
+
+    return false;
+  }
+
+  /**
+   * Checks if the page matches a pattern set in an option array
+   *
+   * @return boolean
+   */
+  protected function matchesOptionPattern($option) {
+    foreach($this->kirby->option($option) as $pattern) {
       if(fnmatch($pattern, $this->uri()) === true) {
-        return false;
+        return true;
       }
     }
 
-    return true;
-
+    return false;
   }
 
   /**

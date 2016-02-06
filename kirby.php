@@ -64,6 +64,7 @@ class Kirby extends Obj {
       'cache.driver'                    => 'file',
       'cache.options'                   => array(),
       'cache.ignore'                    => array(),
+      'cache.whitelist'                 => array(),
       'cache.autoupdate'                => true,
       'date.handler'                    => 'date',
       'tinyurl.enabled'                 => true,
