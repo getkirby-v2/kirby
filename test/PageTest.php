@@ -115,4 +115,17 @@ class PageTest extends KirbyTestCase {
 
   }
 
+  public function testSort() {
+    $site  = $this->siteInstance();
+    $page  = new Page($site, '2-b');
+    $this->assertEquals('2', $page->num());
+    $this->assertEquals('2', $page->sort());
+    $this->assertEquals(true, $page->sort(3));
+    $this->assertEquals('3', $page->num());
+    $this->assertEquals('3', $page->sort());
+    $this->assertEquals(true, $page->sort(2));
+    $this->assertEquals('2', $page->num());
+    $this->assertEquals('2', $page->sort());
+  }
+
 }
