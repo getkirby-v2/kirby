@@ -11,6 +11,8 @@
  */
 abstract class FileAbstract extends Media {
 
+  static public $methods = array();
+
   public $kirby;
   public $site;
   public $page;
@@ -150,7 +152,15 @@ abstract class FileAbstract extends Media {
    * @return Field
    */
   public function __call($key, $arguments = null) {
-    return $this->meta()->get($key, $arguments);
+    if($meta = $this->meta() and $meta->has($key)) {
+      return $meta->get($key, $arguments);
+    } else if(isset(static::$methods[$key])) {
+      if(!$arguments) $arguments = array();
+      array_unshift($arguments, clone $this);
+      return call(static::$methods[$key], $arguments);
+    } else {
+      return $this;
+    }
   }
 
   /**
