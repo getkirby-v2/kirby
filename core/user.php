@@ -20,7 +20,7 @@ abstract class UserAbstract {
     $this->username = str::slug(basename($username));
 
     // check if the account file exists
-    if(!file_exists($this->file())) {
+    if(!$this->exists()) {
       throw new Exception('The user account could not be found');
     }
 
@@ -134,11 +134,11 @@ abstract class UserAbstract {
   }
 
   protected function file() {
-    return kirby::instance()->roots()->accounts() . DS . $this->username() . '.php';
+    return f::resolve(kirby::instance()->roots()->accounts() . DS . $this->username(), array('yml', 'php', 'yaml'));
   }
 
   public function exists() {
-    return file_exists($this->file());
+    return f::exists($this->file());
   }
 
   public function generateKey() {
@@ -285,7 +285,7 @@ abstract class UserAbstract {
     static::validate($data, 'insert');
 
     // create the file root
-    $file = kirby::instance()->roots()->accounts() . DS . $data['username'] . '.php';
+    $file = kirby::instance()->roots()->accounts() . DS . $data['username'] . '.yml';
 
     // check for an existing username
     if(file_exists($file)) {
@@ -306,10 +306,7 @@ abstract class UserAbstract {
 
   static protected function save($file, $data) {
 
-    $yaml  = '<?php if(!defined(\'KIRBY\')) exit ?>' . PHP_EOL . PHP_EOL;
-    $yaml .= data::encode($data, 'yaml');
-
-    if(!f::write($file, $yaml)) {
+    if(!data::write($file, $data, 'yaml')) {
       throw new Exception('The user account could not be saved');
     } else {
       return true;
