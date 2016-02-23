@@ -33,9 +33,7 @@ class Modules {
   }
 
   public function __call($method, $arguments) {
-    if(isset($this->modules[$method])) {
-      return $this->modules[$method] ? $this->modules[$method] : array();
-    }
+    return a::get($this->modules, $method, array());
   }
 
 }
