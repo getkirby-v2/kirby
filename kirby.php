@@ -536,7 +536,7 @@ class Kirby extends Obj {
    */
   public function controller($page, $arguments = array()) {
 
-    $file = $this->roots->controllers() . DS . $page->template() . '.php';
+    $file = $this->modules()->findFile('controllers', $page->template(), '.php', $this->roots->controllers());
 
     if(file_exists($file)) {
 
