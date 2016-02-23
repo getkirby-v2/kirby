@@ -493,6 +493,11 @@ class Kirby extends Obj {
     // install additional kirby tags
     kirbytext::install($this->roots->tags());
 
+    // install kirby tags from registered modules
+    foreach($this->modules()->tags() as $tags) {
+      kirbytext::install($tags);
+    }
+
   }
 
   /**
@@ -757,11 +762,11 @@ class Kirby extends Obj {
     // set the timezone for all date functions
     date_default_timezone_set($this->options['timezone']);
 
-    // load all extensions
-    $this->extensions();
-
     // load all plugins
     $this->plugins();
+
+    // load all extensions
+    $this->extensions();
 
     // load all models
     $this->models();
