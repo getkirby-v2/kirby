@@ -10,7 +10,16 @@
  */
 function snippet($file, $data = array(), $return = false) {
   if(is_object($data)) $data = array('item' => $data);
-  return tpl::load(kirby::instance()->roots()->snippets() . DS . $file . '.php', $data, $return);
+
+  $snippet = kirby::instance()->roots()->snippets() . DS . $file . '.php';
+  if(!f::exists($snippet)) {
+    foreach(kirby::instance()->modules()->snippets() as $dir) {
+      $snippet = $dir . DS . $file . '.php';
+      if(f::exists($snippet)) break;
+    }
+  }
+
+  return tpl::load($snippet, $data, $return);
 }
 
 /**

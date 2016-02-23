@@ -2,6 +2,7 @@
 
 use Kirby\Roots;
 use Kirby\Urls;
+use Kirby\Modules;
 use Kirby\Request;
 
 class Kirby extends Obj {
@@ -21,6 +22,7 @@ class Kirby extends Obj {
   public $route;
   public $site;
   public $page;
+  public $modules;
   public $plugins;
   public $response;
   public $request;
@@ -37,6 +39,7 @@ class Kirby extends Obj {
   public function __construct($options = array()) {
     $this->roots   = new Roots(dirname(__DIR__));
     $this->urls    = new Urls();
+    $this->modules = new Modules();
     $this->options = array_merge($this->defaults(), $options);
     $this->path    = implode('/', (array)url::fragments(detect::path()));
 
@@ -282,6 +285,12 @@ class Kirby extends Obj {
     }
 
   }
+
+
+  public function modules() {
+    return $this->modules;
+  }
+
 
   /**
    * Registers all routes
