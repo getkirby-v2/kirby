@@ -578,10 +578,17 @@ class Kirby extends Obj {
 
     // additional language variables for multilang sites
     if($site->multilang()) {
-      // path for the language file
-      $file = $this->roots()->languages() . DS . $site->language()->code() . '.php';
-      // load the file if it exists
-      if(file_exists($file)) include_once($file);
+      $roots   = $this->modules()->languages();
+      $roots[] = $this->roots()->languages();
+
+      foreach($roots as $root) {
+        // path for the language file
+        $file =  $root . DS . $site->language()->code() . '.php';
+
+        // load the file if it exists
+        if(file_exists($file)) include_once($file);
+      }
+
     }
 
   }
