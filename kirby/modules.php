@@ -17,7 +17,7 @@ class Modules {
   }
 
   public function findFile($type, $file, $extension, $default) {
-    $dirs = $this->{$type}();
+    $dirs = (array)$this->{$type}();
     array_unshift($dirs, $default);
 
     foreach($dirs as $dir) {
