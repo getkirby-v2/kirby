@@ -2,6 +2,8 @@
 
 namespace Kirby;
 
+use F;
+
 class Modules {
 
   public $modules = array();
@@ -12,6 +14,18 @@ class Modules {
     } else {
       $this->modules[$type] = array($dir);
     }
+  }
+
+  public function findFile($type, $file, $extension, $default) {
+    $dirs = $this->{$type}();
+    array_unshift($dirs, $default);
+
+    foreach($dirs as $dir) {
+      $return = $dir . DS . $file . $extension;
+      if(f::exists($return)) break;
+    }
+
+    return f::exists($return) ? $return : $default . DS . $file . $extension;
   }
 
   public function __call($method, $arguments) {
