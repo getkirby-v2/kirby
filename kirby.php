@@ -505,20 +505,24 @@ class Kirby extends Obj {
    */
   public function models() {
 
-    if(!is_dir($this->roots()->models())) return false;
+    $roots   = $this->modules()->models();
+    $roots[] = $this->roots()->models();
+    $load    = array();
 
-    $root  = $this->roots()->models();
-    $files = dir::read($root);
-    $load  = array();
+    foreach($roots as $root) {
+      if(!is_dir($root)) continue;
 
-    foreach($files as $file) {
-      if(f::extension($file) != 'php') continue;
-      $name      = f::name($file);
-      $classname = str_replace(array('.', '-', '_'), '', $name . 'page');
-      $load[$classname] = $root . DS . $file;
+      $files = dir::read($root);
 
-      // register the model
-      page::$models[$name] = $classname;
+      foreach($files as $file) {
+        if(f::extension($file) != 'php') continue;
+        $name      = f::name($file);
+        $classname = str_replace(array('.', '-', '_'), '', $name . 'page');
+        $load[$classname] = $root . DS . $file;
+
+        // register the model
+        page::$models[$name] = $classname;
+      }
     }
 
     // start the autoloader
