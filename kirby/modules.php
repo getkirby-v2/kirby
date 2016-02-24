@@ -49,14 +49,18 @@ class Modules {
     return f::exists($return) ? $return : $default . DS . $file . $exts[0];
   }
 
-  public function allFiles($type, $default = null) {
+  public function allFiles($type, $default = null, $sort = false) {
     $files = array();
 
     foreach($this->allRoots($type, $default) as $dir) {
-      $files = a::merge($files, dir::read($dir));
+      foreach(dir::read($dir) as $file){
+        $files[] = $file;
+      }
     }
 
-    return $files;
+    if($sort) sort($files);
+
+    return array_unique($files);
   }
 
   public function allRoots($type, $default = null) {
