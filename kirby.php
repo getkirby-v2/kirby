@@ -494,7 +494,7 @@ class Kirby extends Obj {
     kirbytext::install($this->roots->tags());
 
     // install kirby tags from registered modules
-    foreach((array)$this->modules()->tags() as $tags) {
+    foreach($this->modules()->tags() as $tags) {
       kirbytext::install($tags);
     }
 
