@@ -491,10 +491,8 @@ class Kirby extends Obj {
     include_once(__DIR__ . DS . 'extensions' . DS . 'methods.php');
 
     // install additional kirby tags
-    kirbytext::install($this->roots->tags());
-
-    // install kirby tags from registered modules
-    foreach($this->modules()->tags() as $tags) {
+    $roots = $this->modules()->allRoots('tags', $this->roots->tags());
+    foreach($roots as $tags) {
       kirbytext::install($tags);
     }
 
@@ -505,8 +503,7 @@ class Kirby extends Obj {
    */
   public function models() {
 
-    $roots   = $this->modules()->models();
-    $roots[] = $this->roots()->models();
+    $roots   = $this->modules()->allRoots('models', $this->roots()->models());
     $load    = array();
 
     foreach($roots as $root) {
@@ -578,8 +575,7 @@ class Kirby extends Obj {
 
     // additional language variables for multilang sites
     if($site->multilang()) {
-      $roots   = $this->modules()->languages();
-      $roots[] = $this->roots()->languages();
+      $roots   = $this->modules()->allRoots('languages', $this->roots()->languages());
 
       foreach($roots as $root) {
         // path for the language file

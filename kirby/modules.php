@@ -4,6 +4,7 @@ namespace Kirby;
 
 use A;
 use F;
+use Dir;
 
 class Modules {
 
@@ -46,6 +47,22 @@ class Modules {
     }
 
     return f::exists($return) ? $return : $default . DS . $file . $exts[0];
+  }
+
+  public function allFiles($type, $default = null) {
+    $files = array();
+
+    foreach($this->allRoots($type, $default) as $dir) {
+      $files = a::merge($files, dir::read($dir));
+    }
+
+    return $files;
+  }
+
+  public function allRoots($type, $default = null) {
+    $dirs  = $this->{$type}();
+    if($default) $dirs[] = $default;
+    return $dirs;
   }
 
   protected function extensions($extensions = array()) {
