@@ -921,7 +921,7 @@ abstract class PageAbstract {
    * @return int
    */
   public function modified($format = null, $handler = null) {
-    return f::modified($this->root, $format, $handler ? $handler : $this->kirby->options['date.handler']);
+    return f::modified($this->textFile(), $format, $handler ? $handler : $this->kirby->options['date.handler']);
   }
 
   /**
