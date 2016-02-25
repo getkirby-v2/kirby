@@ -25,16 +25,6 @@ class Page extends PageAbstract {
   }
 
   /**
-   * Returns the cache id
-   *
-   * @return string
-   */
-  public function cacheId($lang = null) {
-    if(is_null($lang)) $lang = $this->site->language->code;
-    return $lang . '.' . parent::cacheId();
-  }
-
-  /**
    * Returns the URL key from the content file
    * if available and otherwise returns the page UID
    * 
