@@ -85,25 +85,25 @@ abstract class FileAbstract extends Media {
     return $this->files->not($this->filename);
   }
 
-  function next() {
+  public function next() {
     $siblings = $this->files;
     $index    = $siblings->indexOf($this);
     if($index === false) return false;
     return $this->files->nth($index+1);
   }
 
-  function hasNext() {
+  public function hasNext() {
     return $this->next();
   }
 
-  function prev() {
+  public function prev() {
     $siblings = $this->files;
     $index    = $siblings->indexOf($this);
     if($index === false) return false;
     return $this->files->nth($index-1);
   }
 
-  function hasPrev() {
+  public function hasPrev() {
     return $this->prev();
   }
 
