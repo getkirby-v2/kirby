@@ -1127,6 +1127,12 @@ abstract class PageAbstract {
       throw new Exception('The new page object could not be found');
     }
 
+    // let's create a model if one is defined
+    if(isset(static::$models[$template])) {
+      $model = static::$models[$template];
+      $page = new $model($this->parent(), $page->dirname());
+    }
+
     kirby::instance()->cache()->flush();
 
     return $page;
@@ -1196,10 +1202,12 @@ abstract class PageAbstract {
   }
 
   /**
-   * Changes the prepended number for the page
+   * Return the prepended number for the page
+   * or changes it to the number passed as parameter 
    */
-  public function sort($num) {
+  public function sort($num = null) {
 
+    if(!$num) return $this->num();
     if($num === $this->num()) return true;
 
     $dir  = $num . '-' . $this->uid();
