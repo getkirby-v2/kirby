@@ -11,7 +11,7 @@
  */
 abstract class FileAbstract extends Media {
 
-  public static $methods = array();
+  static public $methods = array();
 
   public $kirby;
   public $site;

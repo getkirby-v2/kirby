@@ -18,7 +18,8 @@
  */
 abstract class PageAbstract {
 
-  static public $models = array();
+  static public $models  = array();
+  static public $methods = array();
 
   public $kirby;
   public $site;
@@ -759,7 +760,15 @@ abstract class PageAbstract {
    * @return Field
    */
   public function __call($key, $arguments = null) {
-    return isset($this->$key) ? $this->$key : $this->content()->get($key, $arguments);
+    if(isset($this->$key)) {
+      return $this->$key;
+    } else if(isset(static::$methods[$key])) {
+      if(!$arguments) $arguments = array();
+      array_unshift($arguments, clone $this);
+      return call(static::$methods[$key], $arguments);
+    } else {
+      return $this->content()->get($key, $arguments);
+    }
   }
 
   /**
