@@ -235,8 +235,18 @@ abstract class UserAbstract {
       if(is_null($value)) unset($this->data[$key]);
     }
 
+    // get filename and rename it to .yml if .php
+    $file = $this->file();
+    if(f::extension($file) === 'php') {
+      $old = $file;
+      $file = f::dirname($file) . DS . f::extension($file, 'yml');
+      if(!f::move($old, $file)) {
+        throw new Exception('The account file could not be renamed');
+      }
+    }
+
     // save the new user data
-    static::save($this->file(), $this->data);
+    static::save($file, $this->data);
 
     // return the updated user project
     return $this;
