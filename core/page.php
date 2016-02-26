@@ -1207,7 +1207,7 @@ abstract class PageAbstract {
    */
   public function sort($num = null) {
 
-    if(!$num) return $this->num();
+    if(!$num and $num !== 0) return $this->num();
     if($num === $this->num()) return true;
 
     $dir  = $num . '-' . $this->uid();
