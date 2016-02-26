@@ -117,6 +117,24 @@ abstract class FileAbstract extends Media {
   }
 
   /**
+   * Returns the relative URI for the image
+   *
+   * @return string
+   */
+  public function uri() {
+    return $this->page->uri() . '/' . rawurlencode($this->filename);
+  }
+
+  /**
+   * Returns the full directory path starting from the content folder
+   *
+   * @return string
+   */
+  public function diruri() {
+    return $this->page->diruri() . '/' . rawurlencode($this->filename);
+  }
+
+  /**
    * Get the meta information
    *
    * @return Content
