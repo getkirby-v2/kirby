@@ -11,6 +11,8 @@
  */
 abstract class FilesAbstract extends Collection {
 
+  static public $methods = array();
+
   public $kirby = null;
   public $site  = null;
   public $page  = null;
@@ -25,6 +27,17 @@ abstract class FilesAbstract extends Collection {
       $file = new File($this, $filename);
       $this->data[strtolower($file->filename())] = $file;
     }
+  }
+
+  public function __call($method, $arguments) {
+
+    if(isset(static::$methods[$method])) {
+      array_unshift($arguments, clone $this);
+      return call(static::$methods[$method], $arguments);
+    } else {
+      return $this->get($method);
+    }
+
   }
 
   public function kirby() {
