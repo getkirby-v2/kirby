@@ -137,6 +137,10 @@ abstract class UserAbstract {
     return kirby::instance()->roots()->accounts() . DS . $this->username() . '.php';
   }
 
+  public function textfile() {
+    return $this->file();
+  }
+
   public function exists() {
     return file_exists($this->file());
   }
