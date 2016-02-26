@@ -276,3 +276,31 @@ function structure($data, $page = null, $key = null) {
   } 
 
 };
+
+
+/**
+ * Return an image from any page
+ * specified by the path
+ * 
+ * Example: 
+ * <?= image('some/page/myimage.jpg') ?>
+ * 
+ * @param string $path
+ * @return File|null
+ */
+function image($path) {
+
+  $uri      = dirname($path);
+  $filename = basename($path);
+
+  if($uri == '.') {
+    $uri = null;
+  }
+
+  if($page = page($uri)) {
+    return $page->image($filename);
+  } else {
+    return null;
+  }
+
+}
