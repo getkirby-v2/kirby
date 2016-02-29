@@ -41,7 +41,7 @@ class Modules {
     if(in_array($type, array('autocss', 'autojs'))) {
       $route = 'assets/modules/' . sha1($dir);
       $dir   = array($dir, $route);
-      $this->assets($dir, $route);
+      $this->assets($route, $dir);
     }
 
     array_push($this->modules[$type], $dir);
