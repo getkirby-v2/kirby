@@ -968,7 +968,7 @@ abstract class PageAbstract {
 
     // check if the file exists and return the appropriate template name
     return $this->cache['template'] =
-      file_exists($this->kirby->modules()->findFile('templates', $templateName, '.php', $this->kirby->roots()->templates())) ?
+      file_exists($this->kirby->modules()->getFile('templates', $templateName, '.php', $this->kirby->roots()->templates())) ?
         $templateName : 'default';
 
   }
@@ -979,7 +979,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function templateFile() {
-    return $this->kirby->modules()->findFile('templates', $this->template(), '.php', $this->kirby->roots()->templates());
+    return $this->kirby->modules()->getFile('templates', $this->template(), '.php', $this->kirby->roots()->templates());
   }
 
   /**
@@ -1009,7 +1009,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function intendedTemplateFile() {
-    return $this->kirby->modules()->findFile('templates', $this->intendedTemplate(), '.php', $this->kirby->roots()->templates());
+    return $this->kirby->modules()->getFile('templates', $this->intendedTemplate(), '.php', $this->kirby->roots()->templates());
   }
 
   /**

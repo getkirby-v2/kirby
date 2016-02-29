@@ -141,11 +141,14 @@ class Kirby extends Obj {
       // auto template css files
       if($url == '@auto') {
 
-        $file = $kirby->site()->page()->template() . '.css';
-        $root = $kirby->roots()->autocss() . DS . $file;
-        $url  = $kirby->urls()->autocss() . '/' . $file;
+        $file    = $kirby->site()->page()->template() . '.css';
+        $root    = $kirby->roots()->autocss() . DS . $file;
+        $url     = $kirby->urls()->autocss() . '/' . $file;
 
-        if(!file_exists($root)) return false;
+        if(!file_exists($root)) {
+          if(!($url = $kirby->modules()->getAsset('autocss', $file)))
+          return false;
+        }
 
       }
 
@@ -175,7 +178,10 @@ class Kirby extends Obj {
         $root = $kirby->roots()->autojs() . DS . $file;
         $src  = $kirby->urls()->autojs() . '/' . $file;
 
-        if(!file_exists($root)) return false;
+        if(!file_exists($root)) {
+          if(!($url = $kirby->modules()->getAsset('autojs', $file)))
+          return false;
+        }
 
       }
 
@@ -537,7 +543,7 @@ class Kirby extends Obj {
    */
   public function controller($page, $arguments = array()) {
 
-    $file = $this->modules()->findFile('controllers', $page->template(), '.php', $this->roots->controllers());
+    $file = $this->modules()->getFile('controllers', $page->template(), '.php', $this->roots->controllers());
 
     if(file_exists($file)) {
 

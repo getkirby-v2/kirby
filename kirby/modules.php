@@ -5,6 +5,7 @@ namespace Kirby;
 use A;
 use F;
 use Dir;
+use Response;
 
 class Modules {
 
@@ -19,6 +20,8 @@ class Modules {
       'snippets'    => array(),
       'tags'        => array(),
       'templates'   => array(),
+      'autocss'     => array(),
+      'autojs'      => array(),
 
       // panel
       'blueprints'  => array(),
@@ -26,27 +29,94 @@ class Modules {
     );
   }
 
+  /**
+   * Registers a plugin directory for a module type
+   * @param  [string] $type module type
+   * @param  [string] $dir  directory to be included as source
+   */
   public function register($type, $dir) {
     if(!isset($this->modules[$type])) return false;
+
+    // prepare for auto-assets
+    if(in_array($type, array('autocss', 'autojs'))) {
+      while (true) {
+        $route = 'assets/module_' . sha1($dir);
+        if($this->assets($dir, $route)) break;
+      }
+      $dir = array($dir, $route);
+    }
+
     array_push($this->modules[$type], $dir);
+  }
+
+  /**
+   * Creates route for plugin assets
+   * @param  [string] $dir   plugin directory with assets
+   * @param  [type] $route   route to point to $dir
+   */
+  public function assets($dir, $route) {
+    if($page = page($route)) return false;
+
+    return kirby()->routes(array(
+      array(
+        'pattern' => trim($route, '/') . '/(:all)',
+        'action'  => function($file) use($dir, $route) {
+          $path = $dir . DS . $file;
+          if(is_file($path)) {
+            $extension = substr(strchr($path, '.'), 1);
+            return new Response(f::read($path), $extension);
+          } else {
+            return site()->errorPage();
+          }
+        }
+      )
+    ));
   }
 
   public function __call($method, $arguments) {
     return a::get($this->modules, $method, null);
   }
 
-  public function findFile($type, $file, $extensions, $default) {
-    if(!isset($this->modules[$type])) return null;
 
-    $dirs = a::get($this->modules, $type);
-    $exts = $this->extensions($extensions);
-    array_unshift($dirs, $default);
+  public function getAsset($type, $file) {
 
-    foreach($dirs as $dir) {
-      if($return = f::resolve($dir . DS . $file, $exts)) break;
+    if($dirs = $this->{$type}()) {
+      foreach($dirs as $dir) {
+        $root = $dir[0] . DS . $file;
+        $url  = $dir[1] . DS . $file;
+        if(f::exists($root)) return $url;
+      }
+
+    } else {
+      return null;
     }
 
-    return f::exists($return) ? $return : $default . DS . $file . $exts[0];
+  }
+
+  public function getFile($type, $file, $extensions, $default = null) {
+
+    if($dirs = $this->{$type}()) {
+      // $extensions as array without dots
+      $extensions = array_map(function($ext) {
+        return ltrim($ext, '.');
+      }, (array)$extensions);
+
+      // add default location as possible source
+      if(!is_null($default)) {
+        array_unshift($dirs, $default);
+      }
+
+      foreach($dirs as $dir) {
+        $root = f::resolve($dir . DS . $file, $extensions);
+        if($root) return $root;
+      }
+
+      return $default . DS . $file . $extensions[0];
+
+    } else {
+      return null;
+    }
+
   }
 
   public function allFiles($type, $default = null, $sort = false) {
@@ -58,21 +128,18 @@ class Modules {
       }
     }
 
-    if($sort) sort($files);
+    if($sort === true) {
+      sort($files);
+    }
 
     return array_unique($files);
   }
 
   public function allRoots($type, $default = null) {
-    $dirs  = $this->{$type}();
+    $dirs = $this->{$type}();
+    if(is_null($dirs)) $dirs = array();
     if($default) $dirs[] = $default;
     return $dirs;
-  }
-
-  protected function extensions($extensions = array()) {
-    return array_map(function($ext) {
-      return ltrim($ext, '.');
-    }, (array)$extensions);
   }
 
 }

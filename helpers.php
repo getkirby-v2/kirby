@@ -11,7 +11,7 @@
 function snippet($file, $data = array(), $return = false) {
   if(is_object($data)) $data = array('item' => $data);
 
-  $file = kirby::instance()->modules()->findFile('snippets', $file, '.php', kirby::instance()->roots()->snippets());
+  $file = kirby::instance()->modules()->getFile('snippets', $file, '.php', kirby::instance()->roots()->snippets());
 
   return tpl::load($file, $data, $return);
 }
