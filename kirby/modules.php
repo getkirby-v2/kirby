@@ -47,12 +47,16 @@ class Modules {
     array_push($this->modules[$type], $dir);
   }
 
+  public function assets($route, $dir) {
+    return $this->route($route, $dir);
+  }
+
   /**
    * Creates route for plugin assets
    * @param  [string] $dir   plugin directory with assets
    * @param  [type] $route   route to point to $dir
    */
-  public function assets($dir, $route) {
+  public function route($route, $dir) {
     if($page = page($route)) return false;
 
     return kirby()->routes(array(
