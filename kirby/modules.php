@@ -45,12 +45,13 @@ class Modules {
     }
 
     array_push($this->{$module}, $dir);
+    return true;
   }
 
   /**
    * Creates route for plugin assets
    */
-  public function route($route, $root) {
+   public function assets($route, $root) {
     if($page = page($route)) return false;
 
     return kirby()->routes(array(
@@ -67,10 +68,6 @@ class Modules {
         }
       )
     ));
-  }
-
-  public function assets($route, $root) {
-    return $this->route($route, $root);
   }
 
 
