@@ -39,11 +39,9 @@ class Modules {
 
     // prepare for auto-assets
     if(in_array($type, array('autocss', 'autojs'))) {
-      while (true) {
-        $route = 'assets/module_' . sha1($dir);
-        if($this->assets($dir, $route)) break;
-      }
-      $dir = array($dir, $route);
+      $route = 'assets/modules/' . sha1($dir);
+      $dir   = array($dir, $route);
+      $this->assets($dir, $route);
     }
 
     array_push($this->modules[$type], $dir);
