@@ -34,17 +34,17 @@ class Modules {
   /**
    * Registers a plugin directory for a module type
    */
-  public function register($module, $dir) {
+  public function register($module, $root) {
     if(!isset($this->{$module})) return false;
 
     // prepare for auto-assets
     if($module === 'autocss' or $module === 'autojs') {
-      $route = 'assets/modules/' . sha1($dir);
-      $dir   = array($dir, $route);
-      $this->assets($route, $dir);
+      $route = 'assets/modules/' . sha1($root);
+      $this->assets($route, $root);
+      $root  = compact('root', 'route');
     }
 
-    array_push($this->{$module}, $dir);
+    array_push($this->{$module}, $root);
     return true;
   }
 
@@ -57,7 +57,7 @@ class Modules {
     return kirby()->routes(array(
       array(
         'pattern' => trim($route, '/') . '/(:all)',
-        'action'  => function($file) use($route, $root) {
+        'action'  => function($file) use($root) {
           $path = $root . DS . $file;
           if(is_file($path)) {
             $extension = substr(strchr($path, '.'), 1);
@@ -75,8 +75,8 @@ class Modules {
 
     if($dirs = $this->{$module}()) {
       foreach($dirs as $dir) {
-        $root = $dir[0] . DS . $file;
-        $url  = $dir[1] . DS . $file;
+        $root = $dir['root'] . DS . $file;
+        $url  = $dir['route'] . DS . $file;
         if(f::exists($root)) return $url;
       }
     }

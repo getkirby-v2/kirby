@@ -146,8 +146,7 @@ class Kirby extends Obj {
         $url     = $kirby->urls()->autocss() . '/' . $file;
 
         if(!file_exists($root)) {
-          if(!($url = $kirby->modules()->getAsset('autocss', $file)))
-          return false;
+          if(!($url = $kirby->modules()->getAsset('autocss', $file))) return false;
         }
 
       }
@@ -179,8 +178,7 @@ class Kirby extends Obj {
         $src  = $kirby->urls()->autojs() . '/' . $file;
 
         if(!file_exists($root)) {
-          if(!($url = $kirby->modules()->getAsset('autojs', $file)))
-          return false;
+          if(!($url = $kirby->modules()->getAsset('autojs', $file))) return false;
         }
 
       }
@@ -510,6 +508,7 @@ class Kirby extends Obj {
   public function models() {
 
     $roots   = $this->modules()->allRoots('models', $this->roots()->models());
+    if(empty($roots)) return false;
     $load    = array();
 
     foreach($roots as $root) {
@@ -531,6 +530,8 @@ class Kirby extends Obj {
     // start the autoloader
     if(!empty($load)) {
       load($load);
+    } else {
+      return false;
     }
 
   }
