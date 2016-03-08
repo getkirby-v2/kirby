@@ -160,12 +160,15 @@ class Page extends PageAbstract {
         $inventory['meta'][$file][$lang] = $content;
       } else {
 
-        if(is_null($lang)) {
-          $lang = f::extension($file);
-          if(empty($lang)) $lang = $defaultLang;
+        if (!is_null($lang)) {
+          $inventory['content'][$lang] = $content;
+        } else {
+          // Don't overwrite a language specific content file with the default one
+          if (!isset($inventory['content'][$defaultLang])) {
+            $inventory['content'][$defaultLang] = $content;
+          }
         }
 
-        $inventory['content'][$lang] = $content;
       }
 
       unset($inventory['content'][$key]);
