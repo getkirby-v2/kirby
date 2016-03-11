@@ -1153,9 +1153,9 @@ abstract class PageAbstract {
    *
    * @param array
    */
-  public function update($data = array()) {
+  public function update($input = array()) {
 
-    $data = array_merge($this->content()->toArray(), $data);
+    $data = a::update($this->content()->toArray(), $input);
 
     if(!data::write($this->textfile(), $data, 'kd')) {
       throw new Exception('The page could not be updated');
@@ -1166,6 +1166,42 @@ abstract class PageAbstract {
     $this->touch();
     return true;
 
+  }
+
+  /**
+   * Increment a field value by one or a given value
+   * 
+   * @param string $field
+   * @param int $by
+   * @param int $max
+   * @return Page
+   */
+  public function increment($field, $by = 1, $max = null) {
+    $this->update(array(
+      $field => function($value) use($by, $max) {
+        $new = (int)$value + $by;
+        return ($max and $new >= $max) ? $max : $new;
+      }
+    ));
+    return $this;
+  }
+
+  /**
+   * Decrement a field value by one or a given value
+   * 
+   * @param string $field
+   * @param int $by
+   * @param int $min
+   * @return Page
+   */
+  public function decrement($field, $by = 1, $min = 0) {
+    $this->update(array(
+      $field => function($value) use($by, $min) {
+        $new = (int)$value - $by;
+        return $new <= $min ? $min : $new;
+      }
+    ));
+    return $this;
   }
 
   /**

@@ -252,9 +252,9 @@ class Page extends PageAbstract {
    *
    * @param array $data
    */
-  public function update($data = array(), $lang = null) {
+  public function update($input = array(), $lang = null) {
 
-    $data = array_merge($this->content()->toArray(), $data);
+    $data = a::update($this->content($lang)->toArray(), $input);
 
     if(!data::write($this->textfile(null, $lang), $data, 'kd')) {
       throw new Exception('The page could not be updated');
