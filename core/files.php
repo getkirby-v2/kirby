@@ -82,7 +82,7 @@ abstract class FilesAbstract extends Collection {
   public function not() {
     $collection = clone $this;
     foreach(func_get_args() as $filename) {
-      if(is_array($filename)) {
+      if(is_array($filename) or $filename instanceof Traversable) {
         foreach($filename as $f) {
           $collection = $collection->not(strtolower($f));
         }

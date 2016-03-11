@@ -62,7 +62,7 @@ abstract class PagesAbstract extends Collection {
   public function not() {
     $collection = clone $this;
     foreach(func_get_args() as $uri) {
-      if(is_array($uri)) {
+      if(is_array($uri) or $uri instanceof Traversable) {
         foreach($uri as $u) {
           $collection = $collection->not($u);
         }
