@@ -22,6 +22,29 @@ class PagesTest extends KirbyTestCase {
 
   }
 
+  public function testFind() {
+
+    $pages = $this->pages();
+
+    // test simple find with a single uri
+    $result = $pages->find('a');
+
+    $this->assertInstanceOf('Page', $result);
+
+    // test simple find with multiple uris
+    $result = $pages->find('a', 'b');
+
+    $this->assertInstanceOf('Pages', $result);
+    $this->assertEquals(2, $result->count());
+
+    // test find by array    
+    $result = $pages->find(['a', 'b']);
+
+    $this->assertInstanceOf('Pages', $result);
+    $this->assertEquals(2, $result->count());
+
+  }
+
   public function testNot() {
 
     // test unsetting by a single uri
