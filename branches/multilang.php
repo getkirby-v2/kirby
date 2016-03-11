@@ -5,7 +5,6 @@
  */
 class Pages     extends PagesAbstract {}
 class Children  extends ChildrenAbstract {}
-class Field     extends FieldAbstract {}
 class Files     extends FilesAbstract {}
 class Kirbytext extends KirbytextAbstract {}
 class Kirbytag  extends KirbytagAbstract {}
