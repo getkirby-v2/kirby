@@ -84,7 +84,7 @@ abstract class FilesAbstract extends Collection {
     foreach(func_get_args() as $filename) {
       if(is_array($filename) or $filename instanceof Traversable) {
         foreach($filename as $f) {
-          $collection = $collection->not(strtolower($f));
+          $collection = $collection->not($f);
         }
       } else if(is_a($filename, 'Media')) {
         // unset by Media object
