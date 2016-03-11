@@ -86,10 +86,12 @@ abstract class PagesAbstract extends Collection {
 
     if(!count($args)) {
       return false;
-    } else if(count($array) === 1 and is_array($args[0])) {
+    } 
+        
+    if(count($args) === 1 and is_array($args[0])) {
       $args = $args[0];
     }
-
+    
     if(count($args) > 1) {
       $pages = new static();
       foreach($args as $id) {
