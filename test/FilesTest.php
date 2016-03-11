@@ -22,6 +22,32 @@ class FilesTest extends KirbyTestCase {
 
   }
 
+  public function testFind() {
+
+    $kirby = $this->kirbyInstance();    
+    $site  = $this->siteInstance($kirby);
+    $page  = new Page($site, 'tests/file-extension-case-test');
+    $files = new Files($page);
+
+    // test simple find by a single filename
+    $result = $files->find('a.json');
+
+    $this->assertInstanceOf('File', $result);
+
+    // test simple find with multiple uris
+    $result = $files->find('a.json', 'b.json');
+
+    $this->assertInstanceOf('Files', $result);
+    $this->assertEquals(2, $result->count());
+
+    // test find by array    
+    $result = $files->find(['a.json', 'b.json']);
+
+    $this->assertInstanceOf('Files', $result);
+    $this->assertEquals(2, $result->count());
+
+  }
+
   public function testNot() {
 
     $kirby = $this->kirbyInstance();    

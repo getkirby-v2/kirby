@@ -53,10 +53,18 @@ abstract class FilesAbstract extends Collection {
   }
 
   public function find() {
+
     $args = func_get_args();
+
     if(!count($args)) {
       return false;
-    } else if(count($args) > 1) {
+    } 
+
+    if(count($args) === 1 and is_array($args[0])) {
+      $args = $args[0];
+    }
+
+    if(count($args) > 1) {
       $files = clone $this;
       $files->data = array();
       foreach($args as $filename) {
