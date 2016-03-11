@@ -6,8 +6,9 @@ class KirbyTestCase extends PHPUnit_Framework_TestCase {
 
     c::$data = array();
 
-    $kirby = new Kirby($options);    
-    $kirby->roots->content = TEST_ROOT_ETC . DS . 'content';
+    $kirby = new Kirby($options);
+    $kirby->roots->content  = TEST_ROOT_ETC . DS . 'content';
+    $kirby->roots->accounts = TEST_ROOT_ETC . DS . 'site' . DS . 'accounts';
     return $kirby;
 
   }
