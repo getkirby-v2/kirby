@@ -9,6 +9,7 @@ class Kirby extends Obj {
   static public $version = '2.2.3';
   static public $instance;
   static public $hooks = array();
+  static public $triggered = array();
 
   public $roots;
   public $urls;
@@ -837,15 +838,12 @@ class Kirby extends Obj {
    */
   public function trigger($hook, $args = null) {
 
-    // store the triggered hooks to avoid duplications
-    static $triggered = array();
-
     if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
       foreach(static::$hooks[$hook] as $key => $callback) {
 
-        if(array_key_exists($hook, $triggered) && in_array($key, $triggered[$hook])) continue;
+        if(array_key_exists($hook, static::$triggered) && in_array($key, static::$triggered[$hook])) continue;
 
-        $triggered[$hook] = $key;
+        static::$triggered[$hook] = $key;
 
         try {
           call($callback, $args);        
