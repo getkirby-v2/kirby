@@ -10,7 +10,10 @@
  */
 function snippet($file, $data = array(), $return = false) {
   if(is_object($data)) $data = array('item' => $data);
-  return tpl::load(kirby::instance()->roots()->snippets() . DS . $file . '.php', $data, $return);
+
+  $file = kirby::instance()->modules()->getFile('snippets', $file, '.php', kirby::instance()->roots()->snippets());
+
+  return tpl::load($file, $data, $return);
 }
 
 /**
@@ -112,7 +115,7 @@ function pages($data = array()) {
 function excerpt($text, $length = 140, $mode = 'chars') {
 
   if(strtolower($mode) == 'words') {
-    $text = str::excerpt(kirbytext($text), 0);    
+    $text = str::excerpt(kirbytext($text), 0);
 
     if(str_word_count($text, 0) > $length) {
       $words = str_word_count($text, 2);
@@ -122,7 +125,7 @@ function excerpt($text, $length = 140, $mode = 'chars') {
     return $text;
 
   } else {
-    return str::excerpt(kirbytext($text), $length);    
+    return str::excerpt(kirbytext($text), $length);
   }
 
 }
@@ -248,9 +251,9 @@ function thisUrl() {
 }
 
 /**
- * Give this any kind of array 
+ * Give this any kind of array
  * to get some kirby style structure
- * 
+ *
  * @param mixed $data
  * @param mixed $page
  * @param mixed $key
@@ -273,7 +276,7 @@ function structure($data, $page = null, $key = null) {
     return $data;
   } else {
     return new Field($page, $key, $data);
-  } 
+  }
 
 };
 

@@ -2,6 +2,7 @@
 
 use Kirby\Roots;
 use Kirby\Urls;
+use Kirby\Modules;
 use Kirby\Request;
 
 class Kirby extends Obj {
@@ -22,6 +23,7 @@ class Kirby extends Obj {
   public $route;
   public $site;
   public $page;
+  public $modules;
   public $plugins;
   public $response;
   public $request;
@@ -38,6 +40,7 @@ class Kirby extends Obj {
   public function __construct($options = array()) {
     $this->roots   = new Roots(dirname(__DIR__));
     $this->urls    = new Urls();
+    $this->modules = new Modules();
     $this->options = array_merge($this->defaults(), $options);
     $this->path    = implode('/', (array)url::fragments(detect::path()));
 
@@ -139,11 +142,13 @@ class Kirby extends Obj {
       // auto template css files
       if($url == '@auto') {
 
-        $file = $kirby->site()->page()->template() . '.css';
-        $root = $kirby->roots()->autocss() . DS . $file;
-        $url  = $kirby->urls()->autocss() . '/' . $file;
+        $file    = $kirby->site()->page()->template() . '.css';
+        $root    = $kirby->roots()->autocss() . DS . $file;
+        $url     = $kirby->urls()->autocss() . '/' . $file;
 
-        if(!file_exists($root)) return false;
+        if(!file_exists($root)) {
+          if(!($url = $kirby->modules()->getAsset('autocss', $file))) return false;
+        }
 
       }
 
@@ -173,7 +178,9 @@ class Kirby extends Obj {
         $root = $kirby->roots()->autojs() . DS . $file;
         $src  = $kirby->urls()->autojs() . '/' . $file;
 
-        if(!file_exists($root)) return false;
+        if(!file_exists($root)) {
+          if(!($url = $kirby->modules()->getAsset('autojs', $file))) return false;
+        }
 
       }
 
@@ -283,6 +290,12 @@ class Kirby extends Obj {
     }
 
   }
+
+
+  public function modules() {
+    return $this->modules;
+  }
+
 
   /**
    * Registers all routes
@@ -483,7 +496,10 @@ class Kirby extends Obj {
     include_once(__DIR__ . DS . 'extensions' . DS . 'methods.php');
 
     // install additional kirby tags
-    kirbytext::install($this->roots->tags());
+    $roots = $this->modules()->allRoots('tags', $this->roots->tags());
+    foreach($roots as $tags) {
+      kirbytext::install($tags);
+    }
 
   }
 
@@ -492,25 +508,31 @@ class Kirby extends Obj {
    */
   public function models() {
 
-    if(!is_dir($this->roots()->models())) return false;
+    $roots   = $this->modules()->allRoots('models', $this->roots()->models());
+    if(empty($roots)) return false;
+    $load    = array();
 
-    $root  = $this->roots()->models();
-    $files = dir::read($root);
-    $load  = array();
+    foreach($roots as $root) {
+      if(!is_dir($root)) continue;
 
-    foreach($files as $file) {
-      if(f::extension($file) != 'php') continue;
-      $name      = f::name($file);
-      $classname = str_replace(array('.', '-', '_'), '', $name . 'page');
-      $load[$classname] = $root . DS . $file;
+      $files = dir::read($root);
 
-      // register the model
-      page::$models[$name] = $classname;
+      foreach($files as $file) {
+        if(f::extension($file) != 'php') continue;
+        $name      = f::name($file);
+        $classname = str_replace(array('.', '-', '_'), '', $name . 'page');
+        $load[$classname] = $root . DS . $file;
+
+        // register the model
+        page::$models[$name] = $classname;
+      }
     }
 
     // start the autoloader
     if(!empty($load)) {
       load($load);
+    } else {
+      return false;
     }
 
   }
@@ -523,7 +545,7 @@ class Kirby extends Obj {
    */
   public function controller($page, $arguments = array()) {
 
-    $file = $this->roots->controllers() . DS . $page->template() . '.php';
+    $file = $this->modules()->getFile('controllers', $page->template(), '.php', $this->roots->controllers());
 
     if(!file_exists($file)) {
       $file = $this->roots->controllers() . DS . 'site.php';
@@ -567,10 +589,16 @@ class Kirby extends Obj {
 
     // additional language variables for multilang sites
     if($site->multilang()) {
-      // path for the language file
-      $file = $this->roots()->languages() . DS . $site->language()->code() . '.php';
-      // load the file if it exists
-      if(file_exists($file)) include_once($file);
+      $roots   = $this->modules()->allRoots('languages', $this->roots()->languages());
+
+      foreach($roots as $root) {
+        // path for the language file
+        $file =  $root . DS . $site->language()->code() . '.php';
+
+        // load the file if it exists
+        if(file_exists($file)) include_once($file);
+      }
+
     }
 
   }
@@ -755,11 +783,11 @@ class Kirby extends Obj {
     // set the timezone for all date functions
     date_default_timezone_set($this->options['timezone']);
 
-    // load all extensions
-    $this->extensions();
-
     // load all plugins
     $this->plugins();
+
+    // load all extensions
+    $this->extensions();
 
     // load all models
     $this->models();

@@ -11,6 +11,7 @@ load(array(
 
   // kirby class and subclasses
   'kirby'                  => __DIR__ . DS . 'kirby.php',
+  'kirby\\modules'         => __DIR__ . DS . 'kirby' . DS . 'modules.php',
   'kirby\\roots'           => __DIR__ . DS . 'kirby' . DS . 'roots.php',
   'kirby\\urls'            => __DIR__ . DS . 'kirby' . DS . 'urls.php',
   'kirby\\request'         => __DIR__ . DS . 'kirby' . DS . 'request.php',
