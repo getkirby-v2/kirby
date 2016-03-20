@@ -17,6 +17,7 @@ abstract class FileAbstract extends Media {
   public $site;
   public $page;
   public $files;
+  public $thumb = [];
 
   /**
    * Constructor
@@ -112,8 +113,123 @@ abstract class FileAbstract extends Media {
    *
    * @return string
    */
-  public function url() {
-    return $this->page->contentUrl() . '/' . rawurlencode($this->filename);
+  public function url($raw = false) {
+    if($raw || $this->type() != 'image' || empty($this->thumb)) {
+      return $this->page->contentUrl() . '/' . rawurlencode($this->filename);
+    } else {
+      return $this->kirby->component('thumb')->url($this);      
+    }  
+  }
+
+  /**
+   * Thumb creator
+   * 
+   * @param array $params
+   * @return Media
+   */
+  public function thumb($params = array()) {
+
+    if($this->type() != 'image') return $this;
+
+    $self = clone $this;
+
+    if($params === false) {
+      
+      // remove all thumb settings
+      $self->thumb = array();
+  
+      // remove the overwritten dimensions      
+      unset($self->cache['dimensions']);
+
+    } else {
+
+      if(is_string($params)) {
+        $versions = (array)kirby()->option('thumbs', array());
+        $version  = a::get($versions, $params);
+
+        if(empty($version)) return $this;
+
+        $self->thumb = $version;
+      } else {
+        $self->thumb = array_merge($self->thumb, $params);
+      }
+
+      $crop   = a::get($self->thumb, 'crop');
+      $width  = a::get($self->thumb, 'width', null);
+      $height = a::get($self->thumb, 'height', null);
+
+      if($crop === true && $width) {
+        $self->dimensions()->crop($width, $height);
+      } else {
+        $self->dimensions()->fitWidthAndHeight($width, $height);      
+      }
+
+    }
+
+    return $self;
+
+  }
+
+  public function width($width = null) {
+    return $width ? $this->thumb(['width' => $width]) : parent::width();
+  }
+
+  public function height($height = null) {
+    return $height ? $this->thumb(['height' => $height]) : parent::height();
+  }
+
+  public function blur($status = true) {
+    return $this->thumb(['blur' => $status]);
+  }
+
+  public function quality($quality = 90) {
+    return $this->thumb(['quality' => $quality]);
+  }
+
+  public function grayscale($status = true) {
+    return $this->thumb(['grayscale' => $status]);
+  }
+
+  public function bw($status = true) {
+    return $this->grayscale($status);
+  }
+
+  /**
+   * Scales the image if possible
+   * 
+   * @param int $width
+   * @param mixed $height
+   * @param mixed $quality
+   * @return Media
+   */
+  public function resize($width, $height = null, $quality = null) {
+
+    $params = array('width' => $width);
+
+    if($height)  $params['height']  = $height;
+    if($quality) $params['quality'] = $quality;
+
+    return $this->thumb($params);
+
+  }
+
+  /**
+   * Scales and crops the image if possible
+   * 
+   * @param int $width
+   * @param mixed $height
+   * @param mixed $quality
+   * @return Media
+   */
+  public function crop($width, $height = null, $quality = null) {
+
+    $params = array('width' => $width, 'crop' => true);
+
+    if($height)  $params['height']  = $height;
+    if($quality) $params['quality'] = $quality;
+
+    return $this->thumb($params);
+
   }
 
   /**

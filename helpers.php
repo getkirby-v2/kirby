@@ -9,8 +9,7 @@
  * @return string
  */
 function snippet($file, $data = array(), $return = false) {
-  if(is_object($data)) $data = array('item' => $data);
-  return tpl::load(kirby::instance()->roots()->snippets() . DS . $file . '.php', $data, $return);
+  return kirby::instance()->component('snippet')->render($file, $data, $return);
 }
 
 /**
@@ -21,7 +20,7 @@ function snippet($file, $data = array(), $return = false) {
  * @return string
  */
 function css() {
-  return call(kirby::instance()->option('css.handler'), func_get_args());
+  return call([kirby::instance()->component('css'), 'render'], func_get_args());
 }
 
 /**
@@ -32,7 +31,7 @@ function css() {
  * @return string
  */
 function js($src, $async = false) {
-  return call(kirby::instance()->option('js.handler'), func_get_args());
+  return call([kirby::instance()->component('js'), 'render'], func_get_args());
 }
 
 /**
@@ -42,7 +41,7 @@ function js($src, $async = false) {
  * @return string
  */
 function markdown($text) {
-  return call(kirby::instance()->option('markdown.parser'), $text);
+  return kirby::instance()->component('markdown')->parse($text);
 }
 
 /**
@@ -52,7 +51,7 @@ function markdown($text) {
  * @return string
  */
 function smartypants($text) {
-  return call(kirby::instance()->option('smartypants.parser'), $text);
+  return kirby::instance()->component('smartypants')->render($text);
 }
 
 /**
@@ -297,7 +296,9 @@ function image($path) {
     $uri = null;
   }
 
-  if($page = page($uri)) {
+  $page = empty($uri) ? site() : page($uri);
+
+  if($page) {
     return $page->image($filename);
   } else {
     return null;

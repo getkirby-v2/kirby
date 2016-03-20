@@ -49,13 +49,13 @@ abstract class KirbytextAbstract {
 
     // markdownify
     if(kirby()->option('markdown')) {
-      $text = call(kirby::instance()->option('markdown.parser'), $text);
+      $text = kirby::instance()->component('markdown')->render($text);
     }
 
     // smartypantsify
     if(kirby()->option('smartypants')) {
       $text = str_replace('&quot;', '"', $text);
-      $text = call(kirby::instance()->option('smartypants.parser'), $text);
+      $text = kirby::instance()->component('smartypants')->render($text);
     }
 
     // post filters

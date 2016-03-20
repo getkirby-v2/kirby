@@ -975,10 +975,11 @@ abstract class PageAbstract {
     // get the template name
     $templateName = $this->intendedTemplate();
 
-    // check if the file exists and return the appropriate template name
-    return $this->cache['template'] =
-      file_exists($this->kirby->roots()->templates() . DS . $templateName . '.php') ?
-        $templateName : 'default';
+    if($this->kirby->registry->get('template', $templateName)) {
+      return $this->cache['template'] = $templateName;  
+    } else {
+      return $this->cache['template'] = 'default';
+    }
 
   }
 
@@ -988,7 +989,11 @@ abstract class PageAbstract {
    * @return string
    */
   public function templateFile() {
-    return $this->kirby->roots()->templates() . DS . $this->template() . '.php';
+    if($template = $this->kirby->registry->get('template', $this->intendedTemplate())) {
+      return $template;  
+    } else {
+      return $this->kirby->registry->get('template', 'default');
+    }
   }
 
   /**
@@ -1366,6 +1371,29 @@ abstract class PageAbstract {
     } else if(is_callable($callback)) {
       return $callback($this);
     }
+
+  }
+
+  /**
+   * Tries to find a controller for
+   * the current page and loads the data
+   *
+   * @return array
+   */
+  public function controller($arguments = array()) {
+
+    $controller = $this->kirby->registry->get('controller', $this->template());
+      
+    if(is_a($controller, 'Closure')) {
+      return (array)call_user_func_array($controller, array(
+        $this->site,
+        $this->site->children(),
+        $this,
+        $arguments
+      ));
+    }
+
+    return array();
 
   }
 

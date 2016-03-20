@@ -47,7 +47,6 @@ class KirbyTest extends KirbyTestCase {
     $this->assertEquals('txt', $kirby->option('content.file.extension'));
     $this->assertEquals(array(), $kirby->option('content.file.ignore'));
     $this->assertEquals('gd', $kirby->option('thumbs.driver'));
-    $this->assertEquals('{safeName}-{hash}.{extension}', $kirby->option('thumbs.filename'));
 
   }
 
@@ -146,7 +145,6 @@ class KirbyTest extends KirbyTestCase {
     $this->assertEquals(thumb::$defaults['root'], $kirby->roots()->thumbs());
     $this->assertEquals(thumb::$defaults['url'], $kirby->urls()->thumbs());
     $this->assertEquals(thumb::$defaults['driver'], $kirby->option('thumbs.driver'));
-    $this->assertEquals(thumb::$defaults['filename'], $kirby->option('thumbs.filename'));
     $this->assertEquals(url::$home, $kirby->urls()->index());
 
     $kirby = $this->kirbyInstance();
