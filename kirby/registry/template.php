@@ -5,10 +5,32 @@ namespace Kirby\Registry;
 use A;
 use Exception;
 
+/**
+ * Template Registy Entry
+ *
+ * @package   Kirby CMS
+ * @author    Bastian Allgeier <bastian@getkirby.com>
+ * @link      http://getkirby.com
+ * @copyright Bastian Allgeier
+ * @license   http://getkirby.com/license
+ */
 class Template extends Entry {
 
+  /**
+   * List of registered template files
+   * 
+   * @var array $templates
+   */
   protected static $templates = [];
 
+  /**
+   * Registers a new template file
+   * 
+   * Must be an existing file
+   * 
+   * @param string $name
+   * @param string $path
+   */
   public function set($name, $path) {
     
     if(file_exists($path)) {
@@ -19,6 +41,12 @@ class Template extends Entry {
 
   }
 
+  /**
+   * Retrieves a registered template file
+   * 
+   * @param string $name
+   * @return string
+   */
   public function get($name) {
     
     $file = $this->kirby->roots()->templates() . DS . str_replace('/', DS, $name) . '.php';

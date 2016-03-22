@@ -5,10 +5,33 @@ namespace Kirby\Registry;
 use A;
 use Exception;
 
+/**
+ * Widget Registy Entry
+ *
+ * @package   Kirby CMS
+ * @author    Bastian Allgeier <bastian@getkirby.com>
+ * @link      http://getkirby.com
+ * @copyright Bastian Allgeier
+ * @license   http://getkirby.com/license
+ */
 class Widget extends Entry {
 
+  /**
+   * List of registered widget directories
+   * 
+   * @var array $widgets
+   */
   protected static $widgets = [];
 
+  /**
+   * Registers a new widget 
+   * 
+   * You must pass an existing widget directory
+   * 
+   * @param string $name
+   * @param string $path
+   * @return string
+   */
   public function set($name, $path) {
     
     if(is_dir($path)) {
@@ -19,6 +42,12 @@ class Widget extends Entry {
 
   }
 
+  /**
+   * Retreives a registered widget directory
+   * 
+   * @param string|null $name If null, all registered widgets will be returned as array
+   * @return string|array
+   */
   public function get($name = null) {
 
     if(is_null($name)) {

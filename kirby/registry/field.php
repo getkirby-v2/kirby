@@ -6,10 +6,31 @@ use A;
 use Exception;
 use Obj;
 
+/**
+ * Field Registy Entry
+ *
+ * @package   Kirby CMS
+ * @author    Bastian Allgeier <bastian@getkirby.com>
+ * @link      http://getkirby.com
+ * @copyright Bastian Allgeier
+ * @license   http://getkirby.com/license
+ */
 class Field extends Entry {
 
+  /**
+   * Store for registered fields
+   *
+   * @var array $fields
+   */
   protected static $fields = [];
 
+  /**
+   * Adds a new field to the registry
+   * 
+   * @param string $name
+   * @param string $root valid field directory path
+   * @return Obj generic Kirby object with info about the field
+   */
   public function set($name, $root) {
     
     $name = strtolower($name);
@@ -28,6 +49,12 @@ class Field extends Entry {
 
   }
 
+  /**
+   * Retreives a field info object from the registry
+   * 
+   * @param string|null $name If null, all registered fields will be returned as array
+   * @param Obj|null|array
+   */
   public function get($name = null) {
 
     if(is_null($name)) {

@@ -6,10 +6,27 @@ use Exception;
 use Kirby;
 use Str;
 
+/**
+ * Registry
+ *
+ * @package   Kirby CMS
+ * @author    Bastian Allgeier <bastian@getkirby.com>
+ * @link      http://getkirby.com
+ * @copyright Bastian Allgeier
+ * @license   http://getkirby.com/license
+ */
 class Registry {
 
+  /**
+   * Kirby Instance
+   * 
+   * @var Kirby
+   */
   protected $kirby;
 
+  /**
+   * @param Kirby $kirby
+   */
   public function __construct(Kirby $kirby) {
 
     $this->kirby = $kirby;
@@ -34,6 +51,22 @@ class Registry {
 
   }
 
+  /**
+   * Returns the Kirby instance
+   * 
+   * @return Kirby
+   */
+  public function kirby() {
+    return $this->kirby;
+  }
+
+  /**
+   * Returns a registry entry object by type
+   * 
+   * @param string $type
+   * @param string $subtype
+   * @return Kirby\Registry\Entry
+   */
   public function entry($type, $subtype = null) {
 
     $class = 'kirby\\registry\\' . $type;
@@ -55,12 +88,27 @@ class Registry {
 
   } 
 
+  /**
+   * Adds a new entry to the registry
+   * This will initialize a registry object
+   * and call the set method of it 
+   * with the passed arguments
+   */
   public function set() {
     $args = func_get_args();
     $type = strtolower(array_shift($args));
     return $this->entry($type)->call('set', $args);
   }
 
+  /**
+   * Retrieves an entry from the registry
+   *
+   * This will initialize a registry object
+   * and call the get method of it 
+   * with the passed arguments
+   * 
+   * @return Entry
+   */
   public function get() {
     $args = func_get_args();
     $type = array_shift($args);
