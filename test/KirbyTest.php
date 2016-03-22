@@ -217,4 +217,8 @@ class KirbyTest extends KirbyTestCase {
 
   }
 
+  public function testRegistry() {
+    $this->assertInstanceOf('Kirby\\Registry', $this->kirbyInstance()->registry());
+  } 
+
 }

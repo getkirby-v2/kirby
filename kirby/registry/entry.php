@@ -19,7 +19,7 @@ use Kirby\Registry;
  * @copyright Bastian Allgeier
  * @license   http://getkirby.com/license
  */
-abstract class Entry {
+class Entry {
 
   /**
    * Kirby instance 
@@ -49,9 +49,9 @@ abstract class Entry {
    * @param Kirby\Registry $registry
    * @param string $subtype
    */
-  public function __construct(Kirby $kirby, Registry $registry, $subtype = null) {
-    $this->kirby    = $kirby;
+  public function __construct(Registry $registry, $subtype = null) {
     $this->registry = $registry;
+    $this->kirby    = $registry->kirby();
     $this->subtype  = $subtype;
   }
 
@@ -66,6 +66,33 @@ abstract class Entry {
    */
   public function call($method, $args) {
     return call([$this, $method], $args);
+  }
+
+  /**
+   * Returns the Kirby instance
+   * 
+   * @return Kirby    
+   */
+  public function kirby() {
+    return $this->kirby;
+  }
+
+  /**
+   * Returns the Registry instance
+   * 
+   * @return Kirby\Registry    
+   */
+  public function registry() {
+    return $this->registry;
+  }
+
+  /**
+   * Returns the optional subtype
+   * 
+   * @return string
+   */
+  public function subtype() {
+    return $this->subtype;
   }
 
 }

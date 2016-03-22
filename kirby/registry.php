@@ -84,7 +84,7 @@ class Registry {
     
     }
 
-    return new $class($this->kirby, $this, $subtype);
+    return new $class($this, $subtype);
 
   } 
 

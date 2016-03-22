@@ -26,12 +26,11 @@ class Method extends Entry {
   protected $subtypes = ['page', 'pages', 'file', 'files', 'field'];
 
   /**
-   * @param Kirby $kirby
    * @param Kirby\Registry $registry
    * @param string $subtype
    */
-  public function __construct(Kirby $kirby, Registry $registry, $subtype) {
-    parent::__construct($kirby, $registry, $subtype);
+  public function __construct(Registry $registry, $subtype) {
+    parent::__construct($registry, $subtype);
     if(!in_array($this->subtype, $this->subtypes)) {
       throw new Exception('Invalid method type: ' . $this->subtype . '::method');
     }

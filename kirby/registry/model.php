@@ -26,12 +26,11 @@ class Model extends Entry {
   protected $subtypes = ['page'];
 
   /**
-   * @param Kirby $kirby
    * @param Kirby\Registry $registry
    * @param string $subtype
    */
-  public function __construct(Kirby $kirby, Registry $registry, $subtype) {
-    parent::__construct($kirby, $registry, $subtype);
+  public function __construct(Registry $registry, $subtype) {
+    parent::__construct($registry, $subtype);
     if(!in_array($this->subtype, $this->subtypes)) {
       throw new Exception('Invalid model type: ' . $this->subtype . '::model');
     }
