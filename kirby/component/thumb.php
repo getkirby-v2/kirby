@@ -30,6 +30,7 @@ class Thumb extends \Kirby\Component {
       'thumbs.driver'    => 'gd',
       'thumbs.bin'       => 'convert',
       'thumbs.interlace' => false,
+      'thumbs.quality'   => 90,
       'thumbs.memory'    => '128M'
     ];    
   }
