@@ -107,13 +107,16 @@ class Thumb extends \Kirby\Component {
    */
   public function url(File $file) {
 
+    // get all modifications for the file
+    $modifications = $file->modifications();
+
     // don't try to create a API url for files without the option to generate previews
-    if(empty($file->modifications()) || !$this->isCompatible($file)) {
+    if(empty($modifications) || !$this->isCompatible($file)) {
       return $file->page()->contentUrl() . '/' . rawurlencode($file->filename());
     }
 
     // build the thumb query
-    $query    = $this->query($file->modifications());
+    $query    = $this->query($modifications);
     $path     = $this->path($file, $query);
     $root     = $this->kirby()->roots()->thumbs() . DS . str_replace('/', DS, $path);
     $modified = $file->modified();
