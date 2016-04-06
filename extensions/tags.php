@@ -103,7 +103,7 @@ kirbytext::$tags['image'] = array(
     }
 
     // at least some accessibility for the image
-    if(empty($alt)) $alt = true;
+    if(empty($alt)) $alt = ' ';
 
     // link builder
     $_link = function($image) use($tag, $url, $link, $file) {
