@@ -4,9 +4,25 @@ namespace Kirby\Component;
 
 use HTML;
 
+/**
+ * Kirby Script Tag Component
+ *
+ * @package   Kirby CMS
+ * @author    Bastian Allgeier <bastian@getkirby.com>
+ * @link      http://getkirby.com
+ * @copyright Bastian Allgeier
+ * @license   http://getkirby.com/license
+ */
 class JS extends \Kirby\Component {
 
-  public function render($src, $async = false) {
+  /**
+   * Builds the html script tag for the given javascript file
+   * 
+   * @param string $src
+   * @param boolean async
+   * @return string
+   */
+  public function tag($src, $async = false) {
 
     if(is_array($src)) {
       $js = array();

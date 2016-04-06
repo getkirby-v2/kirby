@@ -72,24 +72,6 @@ class Kirby {
       'cache.ignore'                    => array(),
       'cache.autoupdate'                => true,
       'date.handler'                    => 'date',
-      'tinyurl.enabled'                 => true,
-      'tinyurl.folder'                  => 'x',
-      'markdown'                        => true,
-      'markdown.extra'                  => false,
-      'markdown.breaks'                 => true,
-      'smartypants'                     => false,
-      'smartypants.attr'                => 1,
-      'smartypants.doublequote.open'    => '&#8220;',
-      'smartypants.doublequote.close'   => '&#8221;',
-      'smartypants.space.emdash'        => ' ',
-      'smartypants.space.endash'        => ' ',
-      'smartypants.space.colon'         => '&#160;',
-      'smartypants.space.semicolon'     => '&#160;',
-      'smartypants.space.marks'         => '&#160;',
-      'smartypants.space.frenchquote'   => '&#160;',
-      'smartypants.space.thousand'      => '&#160;',
-      'smartypants.space.unit'          => '&#160;',
-      'smartypants.skip'                => 'pre|code|kbd|script|style|math',
       'kirbytext.video.class'           => 'video',
       'kirbytext.video.width'           => false,
       'kirbytext.video.height'          => false,
@@ -99,8 +81,6 @@ class Kirby {
       'content.file.extension'          => 'txt',
       'content.file.ignore'             => array(),
       'content.file.normalize'          => false,
-      'thumbs.driver'                   => 'gd',
-      'thumbs.bin'                      => 'convert',
       'email.service'                   => 'mail',
       'email.to'                        => null,
       'email.replyTo'                   => null,
@@ -220,12 +200,6 @@ class Kirby {
     // setup the pagination redirect to the error page
     pagination::$defaults['redirect'] = $this->option('error');
 
-    // setup the thumbnail generator
-    thumb::$defaults['root']   = $this->roots->thumbs();
-    thumb::$defaults['url']    = $this->urls->thumbs();
-    thumb::$defaults['driver'] = $this->option('thumbs.driver');
-    thumb::$defaults['bin']    = $this->option('thumbs.bin');
-
     // setting up the email class
     email::$defaults['service'] = $this->option('email.service');
     email::$defaults['from']    = $this->option('email.from');
@@ -318,9 +292,7 @@ class Kirby {
     }
 
     // tinyurl handling
-    if($this->options['tinyurl.enabled']) {
-      $routes['tinyurl'] = $this->component('tinyurl')->route();
-    }
+    $routes['tinyurl'] = $this->component('tinyurl')->route();
 
     // home redirect
     $routes['homeRedirect'] = array(
@@ -330,39 +302,8 @@ class Kirby {
       }
     );
 
-    // missing thumb catcher for the thumbs directory
-    $routes['thumbFallback'] = array(
-      'pattern' => basename($this->urls()->thumbs()) . '/(:all)/(.*?).(?i)(jpg|jpeg|gif|png)', 
-      'action'  => function($path, $name, $extension) use($kirby) {
-
-        $site = site();
-        $page = $site->find($path);
-
-        if($page = $site->find($path)) {
-          $name      = rawurldecode($name);
-          $fileparts = str::split($name, '@');
-
-          if(count($fileparts) == 2) {
-            $filename = $fileparts[0] . '.' . $extension;
-            parse_str($fileparts[1], $options);
-          } else {
-            $filename = $name . '.' . $extension;
-            $options  = [];
-          }
-
-          if($file = $page->file($filename)) {
-            return $kirby->component('thumb')->api($page, $file, $options);
-          }
-
-        }
-
-        return new Response('The image could not be found', $extension, 404);
-      
-      }
-    );
-
     // content folder thumb api
-    $routes['thumbApi'] = array(
+    $routes['thumbs'] = array(
       'pattern' => array(
         '(:all)/(.*?).(?i)(jpg|jpeg|gif|png)',
         '(/?)(.*?).(?i)(jpg|jpeg|gif|png)', 
@@ -851,6 +792,13 @@ class Kirby {
         throw new Exception('The component "' . $name . '" must be an instance of the Kirby\\Component\\' . ucfirst($name) . ' class');
       }
 
+      // add the component defaults
+      $this->options = array_merge($object->defaults(), $this->options);
+
+      // configure the component
+      $object->configure();
+
+      // register the component
       $this->components[$name] = $object;       
 
     }

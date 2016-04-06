@@ -49,7 +49,7 @@ class Template extends Entry {
    */
   public function get($name) {
     
-    $file = $this->kirby->roots()->templates() . DS . str_replace('/', DS, $name) . '.php';
+    $file = $this->kirby->component('template')->file($name);
 
     if(file_exists($file)) {
       return $file;

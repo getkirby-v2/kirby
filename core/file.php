@@ -17,7 +17,13 @@ abstract class FileAbstract extends Media {
   public $site;
   public $page;
   public $files;
-  public $thumb = [];
+
+  /**
+   * Thumbnail modifications
+   * 
+   * @var array
+   */
+  public $modifications = [];
 
   /**
    * Constructor
@@ -114,7 +120,7 @@ abstract class FileAbstract extends Media {
    * @return string
    */
   public function url($raw = false) {
-    if($raw || $this->type() != 'image' || empty($this->thumb)) {
+    if($raw) {
       return $this->page->contentUrl() . '/' . rawurlencode($this->filename);
     } else {
       return $this->kirby->component('thumb')->url($this);      
@@ -129,14 +135,16 @@ abstract class FileAbstract extends Media {
    */
   public function thumb($params = array()) {
 
-    if($this->type() != 'image') return $this;
+    if(!$this->kirby->component('thumb')->isCompatible($this)) {
+      return $this;
+    }
 
     $self = clone $this;
 
     if($params === false) {
       
       // remove all thumb settings
-      $self->thumb = array();
+      $self->modifications = [];
   
       // remove the overwritten dimensions      
       unset($self->cache['dimensions']);
@@ -149,14 +157,14 @@ abstract class FileAbstract extends Media {
 
         if(empty($version)) return $this;
 
-        $self->thumb = $version;
+        $self->modifications = $version;
       } else {
-        $self->thumb = array_merge($self->thumb, $params);
+        $self->modifications = array_merge($self->modifications, $params);
       }
 
-      $crop   = a::get($self->thumb, 'crop');
-      $width  = a::get($self->thumb, 'width', null);
-      $height = a::get($self->thumb, 'height', null);
+      $crop   = a::get($self->modifications, 'crop');
+      $width  = a::get($self->modifications, 'width', null);
+      $height = a::get($self->modifications, 'height', null);
 
       if($crop === true && $width) {
         $self->dimensions()->crop($width, $height);
@@ -170,28 +178,73 @@ abstract class FileAbstract extends Media {
 
   }
 
+  /**
+   * Getter and setter for the width of the image
+   * 
+   * @param int|null $width
+   * @return this|int
+   */
   public function width($width = null) {
     return $width ? $this->thumb(['width' => $width]) : parent::width();
   }
 
+  /**
+   * Getter and setter for the height of the image
+   * 
+   * @param int|null $height
+   * @return this|int
+   */
   public function height($height = null) {
     return $height ? $this->thumb(['height' => $height]) : parent::height();
   }
 
+  /**
+   * Activates or deactivates blurring of the image
+   * 
+   * @param boolean $status
+   * @return this
+   */
   public function blur($status = true) {
     return $this->thumb(['blur' => $status]);
   }
 
+  /**
+   * Sets the compression of the image
+   * 
+   * @param int $quality
+   * @return this
+   */
   public function quality($quality = 90) {
     return $this->thumb(['quality' => $quality]);
   }
 
+  /**
+   * Activates or deactivates grayscale mode for the image
+   * 
+   * @param boolean $status
+   * @return this
+   */
   public function grayscale($status = true) {
     return $this->thumb(['grayscale' => $status]);
   }
 
+  /**
+   * Alias for grayscale
+   * 
+   * @param boolean $status
+   * @return this
+   */
   public function bw($status = true) {
     return $this->grayscale($status);
+  }
+
+  /**
+   * Returns the array of applied modifications
+   * 
+   * @return array
+   */
+  public function modifications() {
+    return $this->modifications;
   }
 
   /**

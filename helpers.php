@@ -20,7 +20,7 @@ function snippet($file, $data = array(), $return = false) {
  * @return string
  */
 function css() {
-  return call([kirby::instance()->component('css'), 'render'], func_get_args());
+  return call([kirby::instance()->component('css'), 'tag'], func_get_args());
 }
 
 /**
@@ -31,7 +31,7 @@ function css() {
  * @return string
  */
 function js($src, $async = false) {
-  return call([kirby::instance()->component('js'), 'render'], func_get_args());
+  return call([kirby::instance()->component('js'), 'tag'], func_get_args());
 }
 
 /**
@@ -51,7 +51,7 @@ function markdown($text) {
  * @return string
  */
 function smartypants($text) {
-  return kirby::instance()->component('smartypants')->render($text);
+  return kirby::instance()->component('smartypants')->parse($text);
 }
 
 /**

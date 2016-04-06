@@ -51,7 +51,7 @@ class Snippet extends Entry {
    */
   public function get($name) {
     
-    $file = $this->kirby->roots()->snippets() . DS . str_replace('/', DS, $name) . '.php';
+    $file = $this->kirby->component('snippet')->file($name);
 
     if(file_exists($file)) {
       return $file;

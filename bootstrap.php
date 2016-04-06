@@ -21,14 +21,15 @@ load(array(
   'kirby\\request\\path'   => __DIR__ . DS . 'kirby' . DS . 'request' . DS . 'path.php',
 
   // core components
-  'kirby\\component\\template' => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'template.php',
-  'kirby\\component\\thumb'    => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'thumb.php',
-  'kirby\\component\\markdown' => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'markdown.php',
-  'kirby\\component\\snippet'  => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'snippet.php',
-  'kirby\\component\\css'      => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'css.php',
-  'kirby\\component\\js'       => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'js.php',
-  'kirby\\component\\tinyurl'  => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'tinyurl.php',
-  'kirby\\component\\response' => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'response.php',
+  'kirby\\component\\template'    => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'template.php',
+  'kirby\\component\\thumb'       => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'thumb.php',
+  'kirby\\component\\markdown'    => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'markdown.php',
+  'kirby\\component\\smartypants' => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'smartypants.php',
+  'kirby\\component\\snippet'     => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'snippet.php',
+  'kirby\\component\\css'         => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'css.php',
+  'kirby\\component\\js'          => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'js.php',
+  'kirby\\component\\tinyurl'     => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'tinyurl.php',
+  'kirby\\component\\response'    => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'response.php',
 
   // all core abstracts
   'pagesabstract'          => __DIR__ . DS . 'core' . DS . 'pages.php',

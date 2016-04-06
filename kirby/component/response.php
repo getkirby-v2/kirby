@@ -2,8 +2,23 @@
 
 namespace Kirby\Component;
 
+/**
+ * Kirby Response Builder Component
+ *
+ * @package   Kirby CMS
+ * @author    Bastian Allgeier <bastian@getkirby.com>
+ * @link      http://getkirby.com
+ * @copyright Bastian Allgeier
+ * @license   http://getkirby.com/license
+ */
 class Response extends \Kirby\Component {
 
+  /**
+   * Builds and return the response by various input
+   * 
+   * @param mixed $response
+   * @return mixed
+   */
   public function make($response) {
 
     if(is_string($response)) {
