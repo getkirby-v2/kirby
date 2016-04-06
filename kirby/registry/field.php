@@ -45,7 +45,7 @@ class Field extends Entry {
       ]);
     } 
 
-    throw new Exception('The field does not exist at the specified path: ' . $path);
+    throw new Exception('The field does not exist at the specified path: ' . $root);
 
   }
 
