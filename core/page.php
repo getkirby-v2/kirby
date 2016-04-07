@@ -681,11 +681,34 @@ abstract class PageAbstract {
 
   /**
    * Returns a single image
+   * 
+   * @return File
    */
   public function image($filename = null) {
     if(is_null($filename)) return $this->images()->first();
     return $this->images()->find($filename);
   }
+
+  /**
+   * Returns a single video
+   * 
+   * @return File
+   */
+  public function video($filename = null) {
+    if(is_null($filename)) return $this->videos()->first();
+    return $this->videos()->find($filename);
+  }
+
+  /**
+   * Returns a single document
+   * 
+   * @return File
+   */
+  public function document($filename = null) {
+    if(is_null($filename)) return $this->documents()->first();
+    return $this->documents()->find($filename);
+  }
+
 
   /**
    * Returns the content object for this page
