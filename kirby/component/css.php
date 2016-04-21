@@ -26,7 +26,7 @@ class CSS extends \Kirby\Component {
 
     if(is_array($url)) {
       $css = array();
-      foreach($url as $u) $css[] = $this->render($u, $media);
+      foreach($url as $u) $css[] = $this->tag($u, $media);
       return implode(PHP_EOL, $css) . PHP_EOL;
     }
 
