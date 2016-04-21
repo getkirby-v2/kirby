@@ -26,7 +26,7 @@ class JS extends \Kirby\Component {
 
     if(is_array($src)) {
       $js = array();
-      foreach($src as $s) $js[] = $this->render($s, $async);
+      foreach($src as $s) $js[] = $this->tag($s, $async);
       return implode(PHP_EOL, $js) . PHP_EOL;
     }
 
