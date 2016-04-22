@@ -299,8 +299,8 @@ function image($path = null) {
   if($uri == '.') {
     $uri = null;
   }
-
-  $page = empty($uri) ? site() : page($uri);
+  
+  $page = $uri == '/' ? site() : page($uri);
 
   if($page) {
     return $page->image($filename);
