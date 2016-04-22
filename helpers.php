@@ -287,7 +287,11 @@ function structure($data, $page = null, $key = null) {
  * @param string $path
  * @return File|null
  */
-function image($path) {
+function image($path = null) {
+
+  if($path === null) {
+    return page()->image();
+  }
 
   $uri      = dirname($path);
   $filename = basename($path);
