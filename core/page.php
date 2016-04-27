@@ -1046,7 +1046,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function intendedTemplateFile() {
-    return $this->kirby->roots()->templates() . DS . $this->intendedTemplate() . '.php';
+    return $this->kirby->component('template')->file($this->intendedTemplate());
   }
 
   /**
