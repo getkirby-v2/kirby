@@ -5,9 +5,10 @@ namespace Kirby\Component;
 use A;
 use F;
 use File;
+use Media;
+use Obj;
 use R;
 use Redirect;
-use Obj;
 
 /**
  * Kirby Thumb Render and API Component
@@ -53,173 +54,87 @@ class Thumb extends \Kirby\Component {
     \thumb::$defaults['interlace'] = $this->kirby->options['thumbs.interlace'];
     \thumb::$defaults['memory']    = $this->kirby->options['thumbs.memory'];
 
-    // setup the destination creator
-    \thumb::$defaults['destination'] = function($thumb) use($self) {
+  }
 
-      $path = $self->path($thumb->source, $thumb->options);
+  public function create($file, $params) {
+    
+    if(!$file->isWebsafe()) {
+      return $file;
+    }
+
+    $self = $this;    
+
+    // thumbnail destination builder
+    \thumb::$defaults['destination'] = function($thumb) use($self, $file, $params) {
+
+      $path = $self->path($file, $params);
 
       return new Obj([
         'root' => $self->kirby->roots()->thumbs() . DS . str_replace('/', DS, $path),
-        'url'  => $self->kirby->urls()->thumbs() . '/' . $path,
+        'url'  => $self->kirby->urls()->thumbs()  . DS . $path,
       ]);
-
+    
     };
 
+    $thumb = new \Thumb($file, $params);
+    $asset = new \Asset($thumb->result);
+
+    return $thumb->exists() ? $asset : $file;
+
   }
 
   /**
-   * Thumb API Handler
    * 
-   * This is being called by the thumb api route in 
-   * order to create thumbnails on the fly for files like
-   * 
-   * http://yourdomain/some/page/myimage.jpg?w=200&h=200
-   * 
-   * @param Page $page
-   * @param File $file
-   * @param array $args
    */
-  public function api($page, $file, $args) {
-
-    $thumb = new \Thumb($file, $this->args($args));
-
-    // redirect to the generated thumbnail
-    go($thumb->url());
-
+  protected function dir(Media $file) {
+    if(is_a($file, 'File')) {
+      return $file->page()->id();      
+    } else {
+      return str_replace($this->kirby->urls()->index(), '', dirname($file->url(true)));      
+    }
   }
 
   /**
-   * Checks if the file is compatible with the
-   * thumbs driver
+   * Returns the filename for a thumb including the 
+   * identifying option hash
    * 
-   * @param File $file
-   * @return boolean
-   */
-  public function isCompatible(File $file) {
-    return in_array($file->extension(), ['jpg', 'jpeg', 'gif', 'png']);
-  }
-
-  /**
-   * URL builder for resized/modified files
-   * 
-   * @param File $file
+   * @param Media $file
    * @return string
    */
-  public function url(File $file) {
-
-    // get all modifications for the file
-    $modifications = $file->modifications();
-
-    // don't try to create a API url for files without the option to generate previews
-    if(empty($modifications) || !$this->isCompatible($file)) {
-      return $file->page()->contentUrl() . '/' . rawurlencode($file->filename());
-    }
-
-    // build the thumb query
-    $query    = $this->query($modifications);
-    $path     = $this->path($file, $query);
-    $root     = $this->kirby()->roots()->thumbs() . DS . str_replace('/', DS, $path);
-    $modified = $file->modified();
-
-    if(file_exists($root) and filemtime($root) >= $modified) {
-      return $this->kirby()->urls()->thumbs() . '/' . $path;
-    } 
-
-    $filename = rawurlencode($file->filename()) . '?' . $query;
-
-    if($file->page()->isHomePage()) {
-      return $file->page()->url() . '/' . $this->kirby()->option('home') . '/' . $filename;      
-    } else {
-      return $file->page()->url() . '/' . $filename;      
-    }    
-
+  protected function filename(Media $file, $params) {
+    return $file->name() . '-' . $this->hash($params) . '.' . $file->extension();
   }
 
   /**
    * Returns the clean path for a thumbnail
    * 
-   * @param string $file
-   * @param array $args
+   * @param Media $file
    * @return string
    */
-  public function path($file, $args = []) {
-
-    $page  = $file->page();
-    $query = is_array($args) ? $this->query($args) : $args;
-    $name  = str_replace('@', '-', f::safeName($file->name()));
-    $path  = $page->id() . '/' . $name . r(!empty($query), '@') . $query . '.' . $file->extension();
-    $path  = ltrim($path, '/');
-
-    return $path;
-
+  protected function path(Media $file, $params) {
+    return ltrim($this->dir($file) . '/' . $this->filename($file, $params), '/');
   }
 
   /**
-   * Translate the request query into arguments for 
-   * the thumbnail class
+   * Removes all unnecessary options and 
+   * shortens the key in the array
    * 
-   * @param array $args
-   * @return array
-   */
-  protected function args($args) {
-    return [
-      'width'      => $this->getInt($args, 'w', null), 
-      'height'     => $this->getInt($args, 'h', null),
-      'quality'    => $this->getInt($args, 'q', 90),
-      'grayscale'  => $this->getBool($args, 'bw'),
-      'crop'       => $this->getBool($args, 'crop'),
-      'blur'       => $this->getBool($args, 'blur'),
-      'upscale'    => $this->getBool($args, 'upscale'),
-      'autoOrient' => $this->getBool($args, 'autoOrient'),
-      'interlace'  => $this->getBool($args, 'interlace'),
-      'overwrite'  => true
-    ];
-  }
-
-  /**
-   * Returns a sanitized boolean argument from the query string
-   * 
-   * @param array $args
-   * @param string $key
-   * @param mixed $default
-   * @return boolean
-   */
-  protected function getBool($args, $key, $default = null) {
-    $value = a::get($args, $key, $default);
-    return ($value === true || $value === 1 || $value === 'true' || $value === '1');
-  }
-
-  /**
-   * Returns a sanitized integer argument from the query string
-   * 
-   * @param array $args
-   * @param string $key
-   * @param mixed $default
-   * @return int
-   */
-  protected function getInt($args, $key, $default = null) {
-    $value = a::get($args, $key, $default);
-    return $value === null ? null : intval($value);    
-  }
-
-  /**
-   * Converts the thumb args to query string
-   * 
-   * @param array $args
+   * @param array $params
    * @return string
    */
-  protected function query($args) {
+  protected function args($params) {
 
     $keys = [
       'width'     => 'w', 
       'height'    => 'h', 
-      'quality'   => 'q',
       'crop'      => 'crop',
+      'upscale'   => 'up',      
       'blur'      => 'blur',
-      'grayscale' => 'bw'
+      'grayscale' => 'bw',
+      'quality'   => 'q',
     ];
 
-    $args  = array_merge(\thumb::$defaults, $args);
+    $args  = array_merge(\thumb::$defaults, $params);
     $query = [];
 
     foreach($keys as $long => $short) {
@@ -232,7 +147,29 @@ class Thumb extends \Kirby\Component {
 
     }
 
-    return http_build_query($query);
+    return $query;
+
+  }
+
+  /**
+   * Returns an identifying option hash for thumb filenames
+   * 
+   * @param array $params
+   * @return string
+   */
+  protected function hash($params) {
+
+    $args = $this->args($params);
+
+    array_walk($args, function(&$value, $key) {
+      if($value === true) {
+        $value = $key;
+      } else {
+        $value = $key . $value;        
+      }
+    }); 
+
+    return implode('-', $args);
 
   }
 

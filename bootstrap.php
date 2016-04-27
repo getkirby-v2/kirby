@@ -31,7 +31,12 @@ load(array(
   'kirby\\component\\tinyurl'     => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'tinyurl.php',
   'kirby\\component\\response'    => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'response.php',
 
+  // traits
+  'kirby\\traits\\image'   => __DIR__ . DS . 'kirby' . DS . 'traits' . DS . 'image.php',
+
   // all core abstracts
+  'assetabstract'          => __DIR__ . DS . 'core' . DS . 'asset.php',
+  'avatarabstract'         => __DIR__ . DS . 'core' . DS . 'avatar.php',
   'pagesabstract'          => __DIR__ . DS . 'core' . DS . 'pages.php',
   'childrenabstract'       => __DIR__ . DS . 'core' . DS . 'children.php',
   'contentabstract'        => __DIR__ . DS . 'core' . DS . 'content.php',

@@ -302,29 +302,6 @@ class Kirby {
       }
     );
 
-    // content folder thumb api
-    $routes['thumbs'] = array(
-      'pattern' => array(
-        '(:all)/(.*?).(?i)(jpg|jpeg|gif|png)',
-        '(/?)(.*?).(?i)(jpg|jpeg|gif|png)', 
-      ),
-      'method'  => 'GET',
-      'action'  => function($path, $name, $extension) use($kirby) {
-        
-        $site = site();
-        $page = (!empty($path) && $path !== '/') ? $site->find($path) : $site;
-
-        if($page) {
-          if($file = $page->file(rawurldecode($name) . '.' . $extension)) {
-            return $kirby->component('thumb')->api($page, $file, get());
-          }
-        }
-
-        return new Response('The image could not be found', $extension, 404);
-
-      }
-    );
-
     // plugin assets
     $routes['pluginAssets'] = array(
       'pattern' => 'assets/plugins/(:any)/(:all)',

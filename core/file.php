@@ -11,19 +11,14 @@
  */
 abstract class FileAbstract extends Media {
 
+  use Kirby\Traits\Image;
+
   static public $methods = array();
 
   public $kirby;
   public $site;
   public $page;
   public $files;
-
-  /**
-   * Thumbnail modifications
-   * 
-   * @var array
-   */
-  public $modifications = [];
 
   /**
    * Constructor
@@ -120,169 +115,11 @@ abstract class FileAbstract extends Media {
    * @return string
    */
   public function url($raw = false) {
-    if($raw) {
+    if($raw || empty($this->modifications)) {
       return $this->page->contentUrl() . '/' . rawurlencode($this->filename);
     } else {
       return $this->kirby->component('thumb')->url($this);      
     }  
-  }
-
-  /**
-   * Thumb creator
-   * 
-   * @param array $params
-   * @return Media
-   */
-  public function thumb($params = array()) {
-
-    if(!$this->kirby->component('thumb')->isCompatible($this)) {
-      return $this;
-    }
-
-    $self = clone $this;
-
-    if($params === false) {
-      
-      // remove all thumb settings
-      $self->modifications = [];
-  
-      // remove the overwritten dimensions      
-      unset($self->cache['dimensions']);
-
-    } else {
-
-      if(is_string($params)) {
-        $versions = (array)kirby()->option('thumbs', array());
-        $version  = a::get($versions, $params);
-
-        if(empty($version)) return $this;
-
-        $self->modifications = $version;
-      } else {
-        $self->modifications = array_merge($self->modifications, $params);
-      }
-
-      $crop   = a::get($self->modifications, 'crop');
-      $width  = a::get($self->modifications, 'width', null);
-      $height = a::get($self->modifications, 'height', null);
-
-      if($crop === true && $width) {
-        $self->dimensions()->crop($width, $height);
-      } else {
-        $self->dimensions()->fitWidthAndHeight($width, $height);      
-      }
-
-    }
-
-    return $self;
-
-  }
-
-  /**
-   * Getter and setter for the width of the image
-   * 
-   * @param int|null $width
-   * @return this|int
-   */
-  public function width($width = null) {
-    return $width ? $this->thumb(['width' => $width]) : parent::width();
-  }
-
-  /**
-   * Getter and setter for the height of the image
-   * 
-   * @param int|null $height
-   * @return this|int
-   */
-  public function height($height = null) {
-    return $height ? $this->thumb(['height' => $height]) : parent::height();
-  }
-
-  /**
-   * Activates or deactivates blurring of the image
-   * 
-   * @param boolean $status
-   * @return this
-   */
-  public function blur($status = true) {
-    return $this->thumb(['blur' => $status]);
-  }
-
-  /**
-   * Sets the compression of the image
-   * 
-   * @param int $quality
-   * @return this
-   */
-  public function quality($quality = 90) {
-    return $this->thumb(['quality' => $quality]);
-  }
-
-  /**
-   * Activates or deactivates grayscale mode for the image
-   * 
-   * @param boolean $status
-   * @return this
-   */
-  public function grayscale($status = true) {
-    return $this->thumb(['grayscale' => $status]);
-  }
-
-  /**
-   * Alias for grayscale
-   * 
-   * @param boolean $status
-   * @return this
-   */
-  public function bw($status = true) {
-    return $this->grayscale($status);
-  }
-
-  /**
-   * Returns the array of applied modifications
-   * 
-   * @return array
-   */
-  public function modifications() {
-    return $this->modifications;
-  }
-
-  /**
-   * Scales the image if possible
-   * 
-   * @param int $width
-   * @param mixed $height
-   * @param mixed $quality
-   * @return Media
-   */
-  public function resize($width, $height = null, $quality = null) {
-
-    $params = array('width' => $width);
-
-    if($height)  $params['height']  = $height;
-    if($quality) $params['quality'] = $quality;
-
-    return $this->thumb($params);
-
-  }
-
-  /**
-   * Scales and crops the image if possible
-   * 
-   * @param int $width
-   * @param mixed $height
-   * @param mixed $quality
-   * @return Media
-   */
-  public function crop($width, $height = null, $quality = null) {
-
-    $params = array('width' => $width, 'crop' => true);
-
-    if($height)  $params['height']  = $height;
-    if($quality) $params['quality'] = $quality;
-
-    return $this->thumb($params);
-
   }
 
   /**
@@ -491,15 +328,6 @@ abstract class FileAbstract extends Media {
       return array_map($callback, $data);
     }
 
-  }
-
-  /**
-   * Makes it possible to echo the entire object
-   *
-   * @return string
-   */
-  public function __toString() {
-    return (string)$this->root;
   }
 
 }

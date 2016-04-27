@@ -309,3 +309,19 @@ function image($path = null) {
   }
 
 }
+
+/**
+ * Shortcut to create a new thumb object
+ *
+ * @param mixed Either a file path or a Media object
+ * @param array An array of additional params for the thumb
+ * @return object Thumb
+ */
+function thumb($image, $params = array(), $obj = true) {
+  if(is_a($image, 'File') || is_a($image, 'Asset')) {
+    return $obj ? $image->thumb($params) : $image->thumb($params)->url();
+  } else {
+    $class = new Thumb($image, $params);
+    return $obj ? $class : $class->url();
+  }
+}

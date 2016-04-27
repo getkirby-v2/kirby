@@ -3,6 +3,8 @@
 /**
  * Unmodified classes
  */
+class Asset     extends AssetAbstract {}
+class Avatar    extends AvatarAbstract {}
 class Pages     extends PagesAbstract {}
 class Children  extends ChildrenAbstract {}
 class Files     extends FilesAbstract {}
