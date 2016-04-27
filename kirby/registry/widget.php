@@ -34,7 +34,7 @@ class Widget extends Entry {
    */
   public function set($name, $path) {
     
-    if(is_dir($path)) {
+    if(!$this->kirby->option('debug') || is_dir($path)) {    
       return static::$widgets[$name] = $path;
     } 
 

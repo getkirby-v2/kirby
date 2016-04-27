@@ -38,7 +38,7 @@ class Controller extends Entry {
       throw new Exception('You are not allowed to set the site controller');
     }
 
-    if(is_a($callback, 'Closure') || file_exists($callback)) {
+    if(!$this->kirby->option('debug') || is_a($callback, 'Closure') || file_exists($callback)) {
       return static::$controllers[$name] = $callback;      
     } else {
       throw new Exception('Invalid controller. You must pass a closure or an existing file');

@@ -33,7 +33,7 @@ class Template extends Entry {
    */
   public function set($name, $path) {
     
-    if(file_exists($path)) {
+    if(!$this->kirby->option('debug') || file_exists($path)) {    
       return static::$templates[$name] = $path;
     } 
 

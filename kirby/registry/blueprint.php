@@ -35,8 +35,8 @@ class Blueprint extends Entry {
    * @return $path 
    */
   public function set($name, $path) {
-    
-    if(file_exists($path)) {
+
+    if(!$this->kirby->option('debug') || file_exists($path)) {    
       return static::$blueprints[$name] = $path;
     } 
 

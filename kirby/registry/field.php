@@ -36,7 +36,7 @@ class Field extends Entry {
     $name = strtolower($name);
     $file = $root . DS . $name . '.php';
 
-    if(is_dir($root) && is_file($file)) {
+    if(!$this->kirby->option('debug') || (is_dir($root) && is_file($file))) {
       return static::$fields[$name] = new Obj([
         'root'  => $root,
         'file'  => $file,
