@@ -136,8 +136,6 @@ class KirbyTest extends KirbyTestCase {
     $kirby->configure();
 
     $this->assertEquals($kirby->defaults(), $kirby->options());
-    $this->assertEquals(thumb::$defaults['root'], $kirby->roots()->thumbs());
-    $this->assertEquals(thumb::$defaults['url'], $kirby->urls()->thumbs());
     $this->assertEquals(url::$home, $kirby->urls()->index());
 
     $kirby = $this->kirbyInstance();
