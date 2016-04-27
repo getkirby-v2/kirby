@@ -85,6 +85,16 @@ class Thumb extends \Kirby\Component {
   }
 
   /**
+   * Returns the clean path for a thumbnail
+   * 
+   * @param Media $file
+   * @return string
+   */
+  protected function path(Media $file, $params) {
+    return ltrim($this->dir($file) . '/' . $this->filename($file, $params), '/');
+  }
+
+  /**
    * 
    */
   protected function dir(Media $file) {
@@ -103,52 +113,14 @@ class Thumb extends \Kirby\Component {
    * @return string
    */
   protected function filename(Media $file, $params) {
-    return $file->name() . '-' . $this->hash($params) . '.' . $file->extension();
-  }
 
-  /**
-   * Returns the clean path for a thumbnail
-   * 
-   * @param Media $file
-   * @return string
-   */
-  protected function path(Media $file, $params) {
-    return ltrim($this->dir($file) . '/' . $this->filename($file, $params), '/');
-  }
+    $dimensions = $this->dimensions($file, $params);
 
-  /**
-   * Removes all unnecessary options and 
-   * shortens the key in the array
-   * 
-   * @param array $params
-   * @return string
-   */
-  protected function args($params) {
+    $filename[] = $file->name();
+    $filename[] = $this->dimensions($file, $params);
+    $filename[] = $this->hash($params);
 
-    $keys = [
-      'width'     => 'w', 
-      'height'    => 'h', 
-      'crop'      => 'crop',
-      'upscale'   => 'up',      
-      'blur'      => 'blur',
-      'grayscale' => 'bw',
-      'quality'   => 'q',
-    ];
-
-    $args  = array_merge(\thumb::$defaults, $params);
-    $query = [];
-
-    foreach($keys as $long => $short) {
-
-      $value = a::get($args, $long);
-
-      if(!empty($value)) {
-        $query[$short] = $value;
-      }
-
-    }
-
-    return $query;
+    return implode('-', array_filter($filename)) . '.' . $file->extension();
 
   }
 
@@ -165,12 +137,59 @@ class Thumb extends \Kirby\Component {
     array_walk($args, function(&$value, $key) {
       if($value === true) {
         $value = $key;
+      } else if($key === 'q' && $value == \thumb::$defaults['quality']) {
+        $value = null;
       } else {
         $value = $key . $value;        
       }
     }); 
 
-    return implode('-', $args);
+    return implode('-', array_filter($args));
+
+  }
+
+  protected function dimensions(Media $file, $params) {
+
+    $dimensions = clone $file->dimensions();
+
+    if(isset($params['crop']) && $params['crop']) {
+      $dimensions->crop(a::get($params, 'width'), a::get($params, 'height'));
+    } else {
+      $dimensions->resize(a::get($params, 'width'), a::get($params, 'height'));
+    }
+
+    return $dimensions->width() . 'x' . $dimensions->height();
+
+  }
+
+  /**
+   * Removes all unnecessary options and 
+   * shortens the key in the array
+   * 
+   * @param array $params
+   * @return string
+   */
+  protected function args($params) {
+
+    $keys = [
+      'blur'      => 'blur',
+      'grayscale' => 'bw',
+      'quality'   => 'q',
+    ];
+
+    $args = array_merge(\thumb::$defaults, $params);
+
+    foreach($keys as $long => $short) {
+
+      $value = a::get($args, $long);
+
+      if(!empty($value)) {
+        $query[$short] = $value;
+      }
+
+    }
+
+    return $query;
 
   }
 
