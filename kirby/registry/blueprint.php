@@ -50,7 +50,11 @@ class Blueprint extends Entry {
    * @param string $name
    * @return string 
    */
-  public function get($name) {
+  public function get($name = null) {
+
+    if(is_null($name)) {
+      return static::$blueprints;
+    }
     
     $file = f::resolve($this->kirby->roots()->blueprints() . DS . str_replace('/', DS, $name), ['php', 'yml', 'yaml']);
 
