@@ -75,7 +75,7 @@ class File extends FileAbstract {
     }
 
     // find and cache the content for this language
-    return new Content($this->page, $this->page->root() . DS . $meta);
+    return new Content($this->page, $this->page->root() . DS . $meta, $lang);
 
   }
 

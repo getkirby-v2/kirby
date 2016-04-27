@@ -10,18 +10,21 @@ class Content extends ContentAbstract {
   /**
    * Constructor
    */
-  public function __construct($page, $root) {
+  public function __construct($page, $root, $language) {
+
     parent::__construct($page, $root);
 
-    // strip the language code from the filename
-    // to make sure that the right template is being loaded
-    /*
-    $expression = '!(\.(' . implode('|', $page->site()->languages->codes()) . '))$!';
-    $this->name = preg_replace($expression, '', $this->name);
-    */
+    $this->name     = f::name($this->name);
+    $this->language = $language;
 
-    $this->name = f::name($this->name);
+  }
 
+  public function realroot() {
+    return dirname($this->root()) . DS . $this->name() . '.' . $this->language . '.' . f::extension($this->root());
+  }
+
+  public function exists() {
+    return file_exists($this->realroot());
   }
 
   public function language() {

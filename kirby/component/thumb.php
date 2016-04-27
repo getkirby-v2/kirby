@@ -32,7 +32,8 @@ class Thumb extends \Kirby\Component {
       'thumbs.bin'       => 'convert',
       'thumbs.interlace' => false,
       'thumbs.quality'   => 90,
-      'thumbs.memory'    => '128M'
+      'thumbs.memory'    => '128M',
+      'thumbs.filename'  => false,
     ];    
   }
 

@@ -232,7 +232,7 @@ class Page extends PageAbstract {
     }
 
     // find and cache the content for this language
-    return new Content($this, $this->root() . DS . $content);
+    return new Content($this, $this->root() . DS . $content, $lang);
 
   }
 
