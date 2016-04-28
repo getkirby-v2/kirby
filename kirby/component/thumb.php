@@ -3,12 +3,16 @@
 namespace Kirby\Component;
 
 use A;
+use Asset;
 use F;
 use File;
 use Media;
 use Obj;
 use R;
 use Redirect;
+use Str;
+use Thumb as Generator;
+use Kirby\Component;
 
 /**
  * Kirby Thumb Render and API Component
@@ -19,7 +23,7 @@ use Redirect;
  * @copyright Bastian Allgeier
  * @license   http://getkirby.com/license
  */
-class Thumb extends \Kirby\Component {
+class Thumb extends Component {
 
   /**
    * Returns the default options for the thumb component
@@ -27,13 +31,26 @@ class Thumb extends \Kirby\Component {
    * @return array
    */  
   public function defaults() {
+
+    $self = $this;
+
     return [
-      'thumbs.driver'    => 'gd',
-      'thumbs.bin'       => 'convert',
-      'thumbs.interlace' => false,
-      'thumbs.quality'   => 90,
-      'thumbs.memory'    => '128M',
-      'thumbs.filename'  => false,
+      'thumbs.driver'      => 'gd',
+      'thumbs.bin'         => 'convert',
+      'thumbs.interlace'   => false,
+      'thumbs.quality'     => 90,
+      'thumbs.memory'      => '128M',
+      'thumbs.filename'    => false,
+      'thumbs.destination' => function($thumb) use($self) {
+
+        $path = $self->path($thumb);
+
+        return new Obj([
+          'root' => $self->kirby->roots()->thumbs() . DS . str_replace('/', DS, $path),
+          'url'  => $self->kirby->urls()->thumbs()  . DS . $path,
+        ]);
+
+      }
     ];    
   }
 
@@ -45,15 +62,17 @@ class Thumb extends \Kirby\Component {
     $self = $this;    
 
     // setup the thumbnail location
-    \thumb::$defaults['root'] = $this->kirby->roots->thumbs();
-    \thumb::$defaults['url']  = $this->kirby->urls->thumbs();
+    generator::$defaults['root'] = $this->kirby->roots->thumbs();
+    generator::$defaults['url']  = $this->kirby->urls->thumbs();
 
     // setup the default thumbnail options
-    \thumb::$defaults['driver']    = $this->kirby->options['thumbs.driver'];
-    \thumb::$defaults['bin']       = $this->kirby->options['thumbs.bin'];
-    \thumb::$defaults['quality']   = $this->kirby->options['thumbs.quality'];
-    \thumb::$defaults['interlace'] = $this->kirby->options['thumbs.interlace'];
-    \thumb::$defaults['memory']    = $this->kirby->options['thumbs.memory'];
+    generator::$defaults['driver']      = $this->kirby->option('thumbs.driver');
+    generator::$defaults['bin']         = $this->kirby->option('thumbs.bin');
+    generator::$defaults['quality']     = $this->kirby->option('thumbs.quality');
+    generator::$defaults['interlace']   = $this->kirby->option('thumbs.interlace');
+    generator::$defaults['memory']      = $this->kirby->option('thumbs.memory');
+    generator::$defaults['destination'] = $this->kirby->option('thumbs.destination');
+    generator::$defaults['filename']    = $this->kirby->option('thumbs.filename');
 
   }
 
@@ -63,22 +82,8 @@ class Thumb extends \Kirby\Component {
       return $file;
     }
 
-    $self = $this;    
-
-    // thumbnail destination builder
-    \thumb::$defaults['destination'] = function($thumb) use($self, $file, $params) {
-
-      $path = $self->path($file, $params);
-
-      return new Obj([
-        'root' => $self->kirby->roots()->thumbs() . DS . str_replace('/', DS, $path),
-        'url'  => $self->kirby->urls()->thumbs()  . DS . $path,
-      ]);
-    
-    };
-
-    $thumb = new \Thumb($file, $params);
-    $asset = new \Asset($thumb->result);
+    $thumb = new Generator($file, $params);
+    $asset = new Asset($thumb->result);
 
     return $thumb->exists() ? $asset : $file;
 
@@ -87,21 +92,22 @@ class Thumb extends \Kirby\Component {
   /**
    * Returns the clean path for a thumbnail
    * 
-   * @param Media $file
+   * @param Generator $thumb
    * @return string
    */
-  protected function path(Media $file, $params) {
-    return ltrim($this->dir($file) . '/' . $this->filename($file, $params), '/');
+  protected function path(Generator $thumb) {
+    return ltrim($this->dir($thumb) . '/' . $this->filename($thumb), '/');
   }
 
   /**
-   * 
+   * @param Generator $thumb
+   * @return string
    */
-  protected function dir(Media $file) {
-    if(is_a($file, 'File')) {
-      return $file->page()->id();      
+  protected function dir(Generator $thumb) {
+    if(is_a($thumb->source, 'File')) {
+      return $thumb->source->page()->id();      
     } else {
-      return str_replace($this->kirby->urls()->index(), '', dirname($file->url(true)));      
+      return str_replace($this->kirby->urls()->index(), '', dirname($thumb->source->url()));      
     }
   }
 
@@ -109,67 +115,43 @@ class Thumb extends \Kirby\Component {
    * Returns the filename for a thumb including the 
    * identifying option hash
    * 
-   * @param Media $file
+   * @param Generator $thumb
    * @return string
    */
-  protected function filename(Media $file, $params) {
+  protected function filename(Generator $thumb) {
 
-    $dimensions = $this->dimensions($file, $params);
+    $dimensions = $this->dimensions($thumb);
+    $wh         = $dimensions->width() . 'x' . $dimensions->height();
+    $safeName   = f::safeName($thumb->source->name());
+    $options    = $this->options($thumb);
+    $extension  = $thumb->source->extension();
 
-    $filename[] = $file->name();
-    $filename[] = $this->dimensions($file, $params);
-    $filename[] = $this->hash($params);
-
-    return implode('-', array_filter($filename)) . '.' . $file->extension();
+    if($thumb->options['filename'] === false) {
+      return $safeName . '-' . $wh . r($options, '-' . $options) . '.' . $extension;
+    } else {
+      return str::template($thumb->options['filename'], [
+        'extension'    => $extension,
+        'name'         => $thumb->source->name(),
+        'filename'     => $thumb->source->filename(),
+        'safeName'     => $safeName,
+        'safeFilename' => $safeName . '.' . $extension,
+        'width'        => $dimensions->width(),
+        'height'       => $dimensions->height(),
+        'dimensions'   => $wh,
+        'options'      => $options,
+        'hash'         => md5($thumb->source->root() . $thumb->settingsIdentifier()),
+      ]);
+    }
 
   }
 
   /**
    * Returns an identifying option hash for thumb filenames
    * 
-   * @param array $params
+   * @param Generator $thumb
    * @return string
    */
-  protected function hash($params) {
-
-    $args = $this->args($params);
-
-    array_walk($args, function(&$value, $key) {
-      if($value === true) {
-        $value = $key;
-      } else if($key === 'q' && $value == \thumb::$defaults['quality']) {
-        $value = null;
-      } else {
-        $value = $key . $value;        
-      }
-    }); 
-
-    return implode('-', array_filter($args));
-
-  }
-
-  protected function dimensions(Media $file, $params) {
-
-    $dimensions = clone $file->dimensions();
-
-    if(isset($params['crop']) && $params['crop']) {
-      $dimensions->crop(a::get($params, 'width'), a::get($params, 'height'));
-    } else {
-      $dimensions->resize(a::get($params, 'width'), a::get($params, 'height'));
-    }
-
-    return $dimensions->width() . 'x' . $dimensions->height();
-
-  }
-
-  /**
-   * Removes all unnecessary options and 
-   * shortens the key in the array
-   * 
-   * @param array $params
-   * @return string
-   */
-  protected function args($params) {
+  protected function options(Generator $thumb) {
 
     $keys = [
       'blur'      => 'blur',
@@ -177,19 +159,44 @@ class Thumb extends \Kirby\Component {
       'quality'   => 'q',
     ];
 
-    $args = array_merge(\thumb::$defaults, $params);
+    $string = [];
 
-    foreach($keys as $long => $short) {
+    foreach($keys as $long => $key) {
 
-      $value = a::get($args, $long);
+      $value = a::get($thumb->options, $long);
 
-      if(!empty($value)) {
-        $query[$short] = $value;
+      if($value === true) {
+        $string[] = $key;
+      } else if($value === false) {
+        continue;
+      } else if($key === 'q' && $value == generator::$defaults['quality']) {
+        // ignore the default quality setting
+        continue;
+      } else {
+        $string[] = $key . $value;        
       }
 
     }
 
-    return $query;
+    return implode('-', array_filter($string));
+
+  }
+
+  /**
+   * @param Generator $thumb
+   * @return string
+   */
+  protected function dimensions(Generator $thumb) {
+
+    $dimensions = clone $thumb->source->dimensions();
+
+    if(isset($thumb->options['crop']) && $thumb->options['crop']) {
+      $dimensions->crop(a::get($thumb->options, 'width'), a::get($thumb->options, 'height'));
+    } else {
+      $dimensions->resize(a::get($thumb->options, 'width'), a::get($thumb->options, 'height'), a::get($thumb->options, 'upscale'));
+    }
+
+    return $dimensions;
 
   }
 
