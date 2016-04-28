@@ -85,6 +85,9 @@ class Thumb extends Component {
     $thumb = new Generator($file, $params);
     $asset = new Asset($thumb->result);
 
+    // store a reference to the original file
+    $asset->original($file);
+
     return $thumb->exists() ? $asset : $file;
 
   }

@@ -4,12 +4,33 @@ namespace Kirby\Traits;
 
 use A;
 use Exception;
+use Media;
 use Str;
 
 /**
  * 
  */
 trait Image {
+
+  /**
+   * store for the original image file
+   * 
+   * @var Media|Asset|File
+   */
+  protected $original;
+
+  /**
+   * @param Media $original
+   * @return Media|this
+   */
+  public function original(Media $original = null) {
+    if($original === null) {
+      return $this->original;      
+    } else {
+      $this->original = $original;
+      return $this;
+    }
+  }
 
   /**
    * Creates a thumbnail for the image
@@ -19,7 +40,7 @@ trait Image {
    */
   public function thumb($params) {
     // don't scale thumbs further down
-    if($this->isThumb()) {    
+    if($this->original()) {    
       throw new Exception('Thumbnails cannot be modified further');
     } else {
       return $this->kirby->component('thumb')->create($this, $params);
