@@ -47,7 +47,7 @@ class Thumb extends Component {
 
         return new Obj([
           'root' => $self->kirby->roots()->thumbs() . DS . str_replace('/', DS, $path),
-          'url'  => $self->kirby->urls()->thumbs()  . DS . $path,
+          'url'  => $self->kirby->urls()->thumbs()  . '/' . $path,
         ]);
 
       }
