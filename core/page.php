@@ -1167,7 +1167,7 @@ abstract class PageAbstract {
     // let's create a model if one is defined
     if(isset(static::$models[$template])) {
       $model = static::$models[$template];
-      $page = new $model($this->parent(), $page->dirname());
+      $page = new $model($page->parent(), $page->dirname());
     }
 
     kirby::instance()->cache()->flush();
