@@ -267,4 +267,15 @@ class Page extends PageAbstract {
 
   }
 
+  /**
+   * Returns the name of the content text file / intended template
+   * So even if there's no such template it will return the intended name.
+   *
+   * @return string
+   */
+  public function intendedTemplate() {
+    if(isset($this->cache['intendedTemplate'])) return $this->cache['intendedTemplate'];
+    return $this->cache['intendedTemplate'] = $this->content($this->site->defaultLanguage()->code())->exists() ? $this->content()->name() : 'default';
+  }
+
 }
