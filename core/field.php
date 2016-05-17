@@ -35,6 +35,9 @@ abstract class FieldAbstract {
   public function value() {
     return $this->value;
   }
+  public function isTranslated($lang = null) {
+    return true;
+  }
   public function __toString() {
     return (string)$this->value;
   }

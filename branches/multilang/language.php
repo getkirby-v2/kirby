@@ -23,6 +23,10 @@ class Language extends Obj {
     return url::makeAbsolute($this->url, $this->site->url());
   }
 
+  public function isDefault() {
+    return $this->default;    
+  }
+
   public function __toString() {
     return $this->code;
   }

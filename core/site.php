@@ -312,6 +312,18 @@ abstract class SiteAbstract extends Page {
   }
 
   /**
+   * Gets the last modification date of all pages
+   * in the content folder. 
+   * 
+   * @param mixed $format 
+   * @param mixed $handler
+   * @return mixed
+   */
+  public function modified($format = null, $handler = null) {
+    return dir::modified($this->root, $format, $handler ? $handler : $this->kirby->options['date.handler']);
+  }
+
+  /**
    * Checks if any content of the site has been
    * modified after the given unix timestamp
    * This is mainly used to auto-update the cache

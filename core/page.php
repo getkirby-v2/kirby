@@ -18,7 +18,8 @@
  */
 abstract class PageAbstract {
 
-  static public $models = array();
+  static public $models  = array();
+  static public $methods = array();
 
   public $kirby;
   public $site;
@@ -680,11 +681,34 @@ abstract class PageAbstract {
 
   /**
    * Returns a single image
+   * 
+   * @return File
    */
   public function image($filename = null) {
     if(is_null($filename)) return $this->images()->first();
     return $this->images()->find($filename);
   }
+
+  /**
+   * Returns a single video
+   * 
+   * @return File
+   */
+  public function video($filename = null) {
+    if(is_null($filename)) return $this->videos()->first();
+    return $this->videos()->find($filename);
+  }
+
+  /**
+   * Returns a single document
+   * 
+   * @return File
+   */
+  public function document($filename = null) {
+    if(is_null($filename)) return $this->documents()->first();
+    return $this->documents()->find($filename);
+  }
+
 
   /**
    * Returns the content object for this page
@@ -759,7 +783,15 @@ abstract class PageAbstract {
    * @return Field
    */
   public function __call($key, $arguments = null) {
-    return isset($this->$key) ? $this->$key : $this->content()->get($key, $arguments);
+    if(isset($this->$key)) {
+      return $this->$key;
+    } else if(isset(static::$methods[$key])) {
+      if(!$arguments) $arguments = array();
+      array_unshift($arguments, clone $this);
+      return call(static::$methods[$key], $arguments);
+    } else {
+      return $this->content()->get($key, $arguments);
+    }
   }
 
   /**
@@ -966,10 +998,11 @@ abstract class PageAbstract {
     // get the template name
     $templateName = $this->intendedTemplate();
 
-    // check if the file exists and return the appropriate template name
-    return $this->cache['template'] =
-      file_exists($this->kirby->roots()->templates() . DS . $templateName . '.php') ?
-        $templateName : 'default';
+    if($this->kirby->registry->get('template', $templateName)) {
+      return $this->cache['template'] = $templateName;  
+    } else {
+      return $this->cache['template'] = 'default';
+    }
 
   }
 
@@ -979,7 +1012,11 @@ abstract class PageAbstract {
    * @return string
    */
   public function templateFile() {
-    return $this->kirby->roots()->templates() . DS . $this->template() . '.php';
+    if($template = $this->kirby->registry->get('template', $this->intendedTemplate())) {
+      return $template;  
+    } else {
+      return $this->kirby->registry->get('template', 'default');
+    }
   }
 
   /**
@@ -1009,7 +1046,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function intendedTemplateFile() {
-    return $this->kirby->roots()->templates() . DS . $this->intendedTemplate() . '.php';
+    return $this->kirby->component('template')->file($this->intendedTemplate());
   }
 
   /**
@@ -1127,6 +1164,12 @@ abstract class PageAbstract {
       throw new Exception('The new page object could not be found');
     }
 
+    // let's create a model if one is defined
+    if(isset(static::$models[$template])) {
+      $model = static::$models[$template];
+      $page = new $model($page->parent(), $page->dirname());
+    }
+
     kirby::instance()->cache()->flush();
 
     return $page;
@@ -1138,9 +1181,9 @@ abstract class PageAbstract {
    *
    * @param array
    */
-  public function update($data = array()) {
+  public function update($input = array()) {
 
-    $data = array_merge($this->content()->toArray(), $data);
+    $data = a::update($this->content()->toArray(), $input);
 
     if(!data::write($this->textfile(), $data, 'kd')) {
       throw new Exception('The page could not be updated');
@@ -1151,6 +1194,42 @@ abstract class PageAbstract {
     $this->touch();
     return true;
 
+  }
+
+  /**
+   * Increment a field value by one or a given value
+   * 
+   * @param string $field
+   * @param int $by
+   * @param int $max
+   * @return Page
+   */
+  public function increment($field, $by = 1, $max = null) {
+    $this->update(array(
+      $field => function($value) use($by, $max) {
+        $new = (int)$value + $by;
+        return ($max and $new >= $max) ? $max : $new;
+      }
+    ));
+    return $this;
+  }
+
+  /**
+   * Decrement a field value by one or a given value
+   * 
+   * @param string $field
+   * @param int $by
+   * @param int $min
+   * @return Page
+   */
+  public function decrement($field, $by = 1, $min = 0) {
+    $this->update(array(
+      $field => function($value) use($by, $min) {
+        $new = (int)$value - $by;
+        return $new <= $min ? $min : $new;
+      }
+    ));
+    return $this;
   }
 
   /**
@@ -1196,10 +1275,12 @@ abstract class PageAbstract {
   }
 
   /**
-   * Changes the prepended number for the page
+   * Return the prepended number for the page
+   * or changes it to the number passed as parameter 
    */
-  public function sort($num) {
+  public function sort($num = null) {
 
+    if(!$num and $num !== 0) return $this->num();
     if($num === $this->num()) return true;
 
     $dir  = $num . '-' . $this->uid();
@@ -1313,6 +1394,29 @@ abstract class PageAbstract {
     } else if(is_callable($callback)) {
       return $callback($this);
     }
+
+  }
+
+  /**
+   * Tries to find a controller for
+   * the current page and loads the data
+   *
+   * @return array
+   */
+  public function controller($arguments = array()) {
+
+    $controller = $this->kirby->registry->get('controller', $this->template());
+      
+    if(is_a($controller, 'Closure')) {
+      return (array)call_user_func_array($controller, array(
+        $this->site,
+        $this->site->children(),
+        $this,
+        $arguments
+      ));
+    }
+
+    return array();
 
   }
 

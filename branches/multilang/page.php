@@ -25,16 +25,6 @@ class Page extends PageAbstract {
   }
 
   /**
-   * Returns the cache id
-   *
-   * @return string
-   */
-  public function cacheId($lang = null) {
-    if(is_null($lang)) $lang = $this->site->language->code;
-    return $lang . '.' . parent::cacheId();
-  }
-
-  /**
    * Returns the URL key from the content file
    * if available and otherwise returns the page UID
    * 
@@ -242,7 +232,7 @@ class Page extends PageAbstract {
     }
 
     // find and cache the content for this language
-    return new Content($this, $this->root() . DS . $content);
+    return new Content($this, $this->root() . DS . $content, $lang);
 
   }
 
@@ -262,9 +252,9 @@ class Page extends PageAbstract {
    *
    * @param array $data
    */
-  public function update($data = array(), $lang = null) {
+  public function update($input = array(), $lang = null) {
 
-    $data = array_merge($this->content()->toArray(), $data);
+    $data = a::update($this->content($lang)->toArray(), $input);
 
     if(!data::write($this->textfile(null, $lang), $data, 'kd')) {
       throw new Exception('The page could not be updated');
@@ -275,6 +265,17 @@ class Page extends PageAbstract {
     $this->touch();
     return true;
 
+  }
+
+  /**
+   * Returns the name of the content text file / intended template
+   * So even if there's no such template it will return the intended name.
+   *
+   * @return string
+   */
+  public function intendedTemplate() {
+    if(isset($this->cache['intendedTemplate'])) return $this->cache['intendedTemplate'];
+    return $this->cache['intendedTemplate'] = $this->content($this->site->defaultLanguage()->code())->exists() ? $this->content()->name() : 'default';
   }
 
 }

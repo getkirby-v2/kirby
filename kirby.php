@@ -1,21 +1,24 @@
 <?php
 
+use Kirby\Component;
+use Kirby\Pipe;
+use Kirby\Registry;
+use Kirby\Request;
 use Kirby\Roots;
 use Kirby\Urls;
-use Kirby\Request;
 
-class Kirby extends Obj {
+class Kirby {
 
-  static public $version = '2.2.3';
+  static public $version = '2.3.0';
   static public $instance;
   static public $hooks = array();
+  static public $triggered = array();
 
   public $roots;
   public $urls;
   public $cache;
   public $path;
   public $options = array();
-  public $license;
   public $routes;
   public $router;
   public $route;
@@ -24,6 +27,8 @@ class Kirby extends Obj {
   public $plugins;
   public $response;
   public $request;
+  public $components = [];
+  public $registry;
 
   static public function instance($class = null) {
     if(!is_null(static::$instance)) return static::$instance;
@@ -35,10 +40,11 @@ class Kirby extends Obj {
   }
 
   public function __construct($options = array()) {
-    $this->roots   = new Roots(dirname(__DIR__));
-    $this->urls    = new Urls();
-    $this->options = array_merge($this->defaults(), $options);
-    $this->path    = implode('/', (array)url::fragments(detect::path()));
+    $this->roots    = new Roots(dirname(__DIR__));
+    $this->urls     = new Urls();
+    $this->registry = new Registry($this);
+    $this->options  = array_merge($this->defaults(), $options);
+    $this->path     = implode('/', (array)url::fragments(detect::path()));
 
     // make sure the instance is stored / overwritten
     static::$instance = $this;
@@ -47,142 +53,64 @@ class Kirby extends Obj {
   public function defaults() {
 
     $defaults = array(
-      'url'                           => false,
-      'timezone'                      => 'UTC',
-      'license'                       => null,
-      'rewrite'                       => true,
-      'error'                         => 'error',
-      'home'                          => 'home',
-      'locale'                        => 'en_US.UTF8',
-      'routes'                        => array(),
-      'headers'                       => array(),
-      'languages'                     => array(),
-      'roles'                         => array(),
-      'cache'                         => false,
-      'debug'                         => 'env',
-      'ssl'                           => false,
-      'cache.driver'                  => 'file',
-      'cache.options'                 => array(),
-      'cache.ignore'                  => array(),
-      'cache.autoupdate'              => true,
-      'date.handler'                  => 'date',
-      'tinyurl.enabled'               => true,
-      'tinyurl.folder'                => 'x',
-      'markdown'                      => true,
-      'markdown.extra'                => false,
-      'markdown.breaks'               => true,
-      'smartypants'                   => false,
-      'smartypants.attr'              => 1,
-      'smartypants.doublequote.open'  => '&#8220;',
-      'smartypants.doublequote.close' => '&#8221;',
-      'smartypants.space.emdash'      => ' ',
-      'smartypants.space.endash'      => ' ',
-      'smartypants.space.colon'       => '&#160;',
-      'smartypants.space.semicolon'   => '&#160;',
-      'smartypants.space.marks'       => '&#160;',
-      'smartypants.space.frenchquote' => '&#160;',
-      'smartypants.space.thousand'    => '&#160;',
-      'smartypants.space.unit'        => '&#160;',
-      'smartypants.skip'              => 'pre|code|kbd|script|style|math',
-      'kirbytext.video.class'         => 'video',
-      'kirbytext.video.width'         => false,
-      'kirbytext.video.height'        => false,
-      'kirbytext.image.figure'        => true,
-      'content.file.extension'        => 'txt',
-      'content.file.ignore'           => array(),
-      'content.file.normalize'        => false,
-      'thumbs.driver'                 => 'gd',
-      'thumbs.filename'               => '{safeName}-{hash}.{extension}',
-      'thumbs.destination'            => false,
-      'email.service'                 => 'mail',
-      'email.to'                      => null,
-      'email.replyTo'                 => null,
-      'email.subject'                 => null,
-      'email.body'                    => null,
-      'email.options'                 => array(),
+      'url'                             => false,
+      'timezone'                        => 'UTC',
+      'license'                         => null,
+      'rewrite'                         => true,
+      'error'                           => 'error',
+      'home'                            => 'home',
+      'locale'                          => 'en_US.UTF8',
+      'routes'                          => array(),
+      'headers'                         => array(),
+      'languages'                       => array(),
+      'roles'                           => array(),
+      'cache'                           => false,
+      'debug'                           => 'env',
+      'ssl'                             => false,
+      'cache.driver'                    => 'file',
+      'cache.options'                   => array(),
+      'cache.ignore'                    => array(),
+      'cache.autoupdate'                => true,
+      'date.handler'                    => 'date',
+      'kirbytext.video.class'           => 'video',
+      'kirbytext.video.width'           => false,
+      'kirbytext.video.height'          => false,
+      'kirbytext.video.youtube.options' => array(),
+      'kirbytext.video.vimeo.options'   => array(),
+      'kirbytext.image.figure'          => true,
+      'content.file.extension'          => 'txt',
+      'content.file.ignore'             => array(),
+      'content.file.normalize'          => false,
+      'email.service'                   => 'mail',
+      'email.to'                        => null,
+      'email.replyTo'                   => null,
+      'email.subject'                   => null,
+      'email.body'                      => null,
+      'email.options'                   => array(),
     );
-
-    // default markdown parser callback
-    $defaults['markdown.parser'] = function($text) {
-
-      // initialize the right markdown class
-      $parsedown = kirby::instance()->option('markdown.extra') ? new ParsedownExtra() : new Parsedown();
-
-      // set markdown auto-breaks
-      $parsedown->setBreaksEnabled(kirby::instance()->option('markdown.breaks'));
-
-      // parse it!
-      return $parsedown->text($text);
-
-    };
-
-    // default smartypants parser callback
-    $defaults['smartypants.parser'] = function($text) {
-      $parser = new SmartyPantsTypographer_Parser(kirby::instance()->option('smartypants.attr', 1));
-      return $parser->transform($text);
-    };
-
-    // css handler
-    $defaults['css.handler'] = function($url, $media = null) {
-
-      $kirby = kirby::instance();
-
-      if(is_array($url)) {
-        $css = array();
-        foreach($url as $u) $css[] = call($kirby->option('css.handler'), array($u, $media));
-        return implode(PHP_EOL, $css) . PHP_EOL;
-      }
-
-      // auto template css files
-      if($url == '@auto') {
-
-        $file = $kirby->site()->page()->template() . '.css';
-        $root = $kirby->roots()->autocss() . DS . $file;
-        $url  = $kirby->urls()->autocss() . '/' . $file;
-
-        if(!file_exists($root)) return false;
-
-      }
-
-      return html::tag('link', null, array(
-        'rel'   => 'stylesheet',
-        'href'  => url($url),
-        'media' => $media
-      ));
-
-    };
-
-    // js handler
-    $defaults['js.handler'] = function($src, $async = false) {
-
-      $kirby = kirby::instance();
-
-      if(is_array($src)) {
-        $js = array();
-        foreach($src as $s) $js[] = call($kirby->option('js.handler'), array($s, $async));
-        return implode(PHP_EOL, $js) . PHP_EOL;
-      }
-
-      // auto template css files
-      if($src == '@auto') {
-
-        $file = $kirby->site()->page()->template() . '.js';
-        $root = $kirby->roots()->autojs() . DS . $file;
-        $src  = $kirby->urls()->autojs() . '/' . $file;
-
-        if(!file_exists($root)) return false;
-
-      }
-
-      return html::tag('script', '', array(
-        'src'   => url($src),
-        'async' => $async
-      ));
-
-    };
 
     return $defaults;
 
+  }
+
+  public function roots() {
+    return $this->roots;
+  }
+
+  public function urls() {
+    return $this->urls;
+  }
+
+  public function registry() {
+    return $this->registry;
+  }
+
+  public function url() {
+    return $this->urls->index();
+  }
+
+  public function options() {
+    return $this->options;
   }
 
   public function option($key, $default = null) {
@@ -193,8 +121,26 @@ class Kirby extends Obj {
     return $this->path;
   }
 
-  public function url() {
-    return $this->urls->index();
+  public function page() {
+    return $this->page;
+  }
+
+  public function response() {
+    return $this->response;
+  }
+
+  /**
+   * Install a new entry in the registry
+   */
+  public function set() {
+    return call_user_func_array([$this->registry, 'set'], func_get_args());
+  }
+
+  /**
+   * Retrieve an entry from the registry
+   */
+  public function get() {
+    return call_user_func_array([$this->registry, 'get'], func_get_args());
   }
 
   public function configure() {
@@ -253,13 +199,6 @@ class Kirby extends Obj {
 
     // setup the pagination redirect to the error page
     pagination::$defaults['redirect'] = $this->option('error');
-
-    // setup the thumbnail generator
-    thumb::$defaults['root']        = $this->roots->thumbs();
-    thumb::$defaults['url']         = $this->urls->thumbs();
-    thumb::$defaults['driver']      = $this->option('thumbs.driver');
-    thumb::$defaults['filename']    = $this->option('thumbs.filename');
-    thumb::$defaults['destination'] = $this->option('thumbs.destination');
 
     // setting up the email class
     email::$defaults['service'] = $this->option('email.service');
@@ -353,27 +292,40 @@ class Kirby extends Obj {
     }
 
     // tinyurl handling
-    if($this->options['tinyurl.enabled']) {
-      $routes['tinyurl'] = array(
-        'pattern' => $this->options['tinyurl.folder'] . '/(:any)/(:any?)',
-        'action'  => function($hash, $lang = null) use($site) {          
-          // make sure the language is set
-          $site->visit('/', $lang);
-          // find the page by it's tiny hash
-          if($page = $site->index()->findBy('hash', $hash)) {
-            go($page->url($lang));            
-          } else {
-            return $site->errorPage();            
-          }
+    $routes['tinyurl'] = $this->component('tinyurl')->route();
+
+    // home redirect
+    $routes['homeRedirect'] = array(
+      'pattern' => $this->options['home'],
+      'action'  => function() {
+        redirect::send(page('home')->url(), 307);
+      }
+    );
+
+    // plugin assets
+    $routes['pluginAssets'] = array(
+      'pattern' => 'assets/plugins/(:any)/(:all)',
+      'method'  => 'GET',
+      'action'  => function($plugin, $path) use($kirby) {
+        $root = $kirby->roots()->plugins() . DS . $plugin . DS . 'assets' . DS . $path;
+        $file = new Media($root);
+
+        if($file->exists()) {
+          return new Response(f::read($root), f::extension($root));
+        } else {          
+          return new Response('The file could not be found', f::extension($path), 404);
         }
-      );
-    }
+
+
+      }
+    );
 
     // all other urls
     $routes['others'] = array(
       'pattern' => '(:all)',
       'method'  => 'ALL',
-      'action'  => function($path = null) use($site) {
+      'action'  => function($path = null) use($site, $kirby) {
+
         // visit the currently active page
         $page = $site->visit($path);
 
@@ -381,15 +333,13 @@ class Kirby extends Obj {
         if($page->isErrorPage() and $page->uri() != $path) {
 
           // get the filename
-          $filename = basename($path);
+          $filename = rawurldecode(basename($path));
           $pagepath = dirname($path);
 
           // check if there's a page for the parent path
           if($page = $site->find($pagepath)) {
             // check if there's a file for the last element of the path
             if($file = $page->file($filename)) {
-              // TODO: put asset pipe here
-              // redirect to the real file url to make this snappy
               go($file->url());
             }
           }
@@ -457,9 +407,13 @@ class Kirby extends Obj {
       $file = $this->roots->plugins() . DS . $name . '.php';
     }
 
+    // make the kirby variable available in plugin files
+    $kirby = $this;
+
     if(file_exists($file)) return $this->plugins[$name] = include_once($file);
 
     return false;
+  
   }
 
   /**
@@ -501,33 +455,6 @@ class Kirby extends Obj {
     if(!empty($load)) {
       load($load);
     }
-
-  }
-
-  /**
-   * Tries to find a controller for
-   * the current page and loads the data
-   *
-   * @return array
-   */
-  public function controller($page, $arguments = array()) {
-
-    $file = $this->roots->controllers() . DS . $page->template() . '.php';
-
-    if(file_exists($file)) {
-
-      $callback = include_once($file);
-
-      if(is_callable($callback)) return (array)call_user_func_array($callback, array(
-        $this->site(),
-        $this->site()->children(),
-        $page,
-        $arguments
-      ));
-
-    }
-
-    return array();
 
   }
 
@@ -689,21 +616,7 @@ class Kirby extends Obj {
    * @return string
    */
   public function template(Page $page, $data = array()) {
-
-    // apply the basic template vars
-    tpl::$data = array_merge(tpl::$data, array(
-      'kirby' => $this,
-      'site'  => $this->site(),
-      'pages' => $this->site()->children(),
-      'page'  => $page
-    ), $page->templateData(), $data, $this->controller($page, $data));
-
-    if(!file_exists($page->templateFile())) {
-      throw new Exception('The default template could not be found');
-    }
-
-    return tpl::load($page->templateFile());
-
+    return $this->component('template')->render($page, $data);
   }
 
   public function request() {
@@ -769,26 +682,11 @@ class Kirby extends Obj {
     // otherwise the current language is not yet available
     $this->localize();
 
-    // work with the response
-    if(is_string($response)) {
-      $page = page($response);
-      $this->response = static::render($page);
-    } else if(is_array($response)) {
-      $page = page($response[0]);
-      $this->response = static::render($page, $response[1]);
-    } else if(is_a($response, 'Page')) {
-      $page = $response;
-      $this->response = static::render($page);      
-    } else if(is_a($response, 'Response')) {
-      $page = null;
-      $this->response = $response;
-    } else {
-      $page = null;
-      $this->response = null;
-    }
+    // build the response
+    $this->response = $this->component('response')->make($response);
 
-    if($this->site()->multilang() and $language = $this->site()->language()) {
-      // store the current language in the session
+    // store the current language in the session
+    if($this->site()->multilang() && $language = $this->site()->language()) {
       s::set('language', $language->code());
     }
 
@@ -821,15 +719,12 @@ class Kirby extends Obj {
    */
   public function trigger($hook, $args = null) {
 
-    // store the triggered hooks to avoid duplications
-    static $triggered = array();
-
     if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
       foreach(static::$hooks[$hook] as $key => $callback) {
 
-        if(in_array($key, $triggered)) continue;
+        if(array_key_exists($hook, static::$triggered) && in_array($key, static::$triggered[$hook])) continue;
 
-        $triggered[] = $key;
+        static::$triggered[$hook] = $key;
 
         try {
           call($callback, $args);        
@@ -842,6 +737,49 @@ class Kirby extends Obj {
 
   static public function start() {
     return kirby()->launch();
+  }
+
+  /**
+   * Register and fetch core components
+   */
+  public function component($name, $component = null) {
+    if(is_null($component)) {
+      if(!isset($this->components[$name])) {
+        // load the default component if it exists
+        if(file_exists(__DIR__ . DS . 'kirby' . DS . 'component' . DS . strtolower($name) . '.php')) {
+          $this->component($name, 'Kirby\\Component\\' . $name);
+        } else {
+          throw new Exception('The component "' . $name . '" does not exist');          
+        }
+      }
+      return $this->components[$name];
+    } else {
+
+      if(!is_string($component)) {
+        throw new Exception('Please provide a valid component name');
+      }
+
+      // init the component
+      $object = new $component($this);
+
+      if(!is_a($object, 'Kirby\\Component')) {
+        throw new Exception('The component "' . $name . '" must be an instance of the Kirby\\Component class');
+      }
+
+      if(!is_a($object, 'Kirby\\Component\\' . $name)) {
+        throw new Exception('The component "' . $name . '" must be an instance of the Kirby\\Component\\' . ucfirst($name) . ' class');
+      }
+
+      // add the component defaults
+      $this->options = array_merge($object->defaults(), $this->options);
+
+      // configure the component
+      $object->configure();
+
+      // register the component
+      $this->components[$name] = $object;       
+
+    }
   }
 
 }

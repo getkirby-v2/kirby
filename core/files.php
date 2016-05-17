@@ -11,6 +11,8 @@
  */
 abstract class FilesAbstract extends Collection {
 
+  static public $methods = array();
+
   public $kirby = null;
   public $site  = null;
   public $page  = null;
@@ -27,6 +29,17 @@ abstract class FilesAbstract extends Collection {
     }
   }
 
+  public function __call($method, $arguments) {
+
+    if(isset(static::$methods[$method])) {
+      array_unshift($arguments, clone $this);
+      return call(static::$methods[$method], $arguments);
+    } else {
+      return $this->get($method);
+    }
+
+  }
+
   public function kirby() {
     return $this->kirby;
   }
@@ -40,10 +53,18 @@ abstract class FilesAbstract extends Collection {
   }
 
   public function find() {
+
     $args = func_get_args();
+
     if(!count($args)) {
       return false;
-    } else if(count($args) > 1) {
+    } 
+
+    if(count($args) === 1 and is_array($args[0])) {
+      $args = $args[0];
+    }
+
+    if(count($args) > 1) {
       $files = clone $this;
       $files->data = array();
       foreach($args as $filename) {
@@ -58,6 +79,29 @@ abstract class FilesAbstract extends Collection {
       return isset($this->data[$filename]) ? $this->data[$filename] : null;
     }
 
+  }
+
+  /**
+   * Returns a new collection of files without the given files
+   *
+   * @param args any number of filenames or file objects, passed as individual arguments
+   * @return object a new collection without the files
+   */
+  public function not() {
+    $collection = clone $this;
+    foreach(func_get_args() as $filename) {
+      if(is_array($filename) or $filename instanceof Traversable) {
+        foreach($filename as $f) {
+          $collection = $collection->not($f);
+        }
+      } else if(is_a($filename, 'Media')) {
+        // unset by Media object
+        unset($collection->data[strtolower($filename->filename())]);
+      } else {
+        unset($collection->data[strtolower($filename)]);
+      }
+    }
+    return $collection;
   }
 
   /**

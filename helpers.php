@@ -9,8 +9,7 @@
  * @return string
  */
 function snippet($file, $data = array(), $return = false) {
-  if(is_object($data)) $data = array('item' => $data);
-  return tpl::load(kirby::instance()->roots()->snippets() . DS . $file . '.php', $data, $return);
+  return kirby::instance()->component('snippet')->render($file, $data, $return);
 }
 
 /**
@@ -21,7 +20,7 @@ function snippet($file, $data = array(), $return = false) {
  * @return string
  */
 function css() {
-  return call(kirby::instance()->option('css.handler'), func_get_args());
+  return call([kirby::instance()->component('css'), 'tag'], func_get_args());
 }
 
 /**
@@ -32,7 +31,7 @@ function css() {
  * @return string
  */
 function js($src, $async = false) {
-  return call(kirby::instance()->option('js.handler'), func_get_args());
+  return call([kirby::instance()->component('js'), 'tag'], func_get_args());
 }
 
 /**
@@ -42,7 +41,7 @@ function js($src, $async = false) {
  * @return string
  */
 function markdown($text) {
-  return call(kirby::instance()->option('markdown.parser'), $text);
+  return kirby::instance()->component('markdown')->parse($text);
 }
 
 /**
@@ -52,7 +51,7 @@ function markdown($text) {
  * @return string
  */
 function smartypants($text) {
-  return call(kirby::instance()->option('smartypants.parser'), $text);
+  return kirby::instance()->component('smartypants')->parse($text);
 }
 
 /**
@@ -135,9 +134,7 @@ function excerpt($text, $length = 140, $mode = 'chars') {
  * @param string $lang
  * @return string
  */
-function textfile($uri, $template = null, $lang = null) {
-
-  if(is_null($template)) $template = $this->intendedTemplate();
+function textfile($uri, $template, $lang = null) {
 
   $curi   = '';
   $parts  = str::split($uri, '/');
@@ -278,3 +275,53 @@ function structure($data, $page = null, $key = null) {
   } 
 
 };
+
+
+/**
+ * Return an image from any page
+ * specified by the path
+ * 
+ * Example: 
+ * <?= image('some/page/myimage.jpg') ?>
+ * 
+ * @param string $path
+ * @return File|null
+ */
+function image($path = null) {
+
+  if($path === null) {
+    return page()->image();
+  }
+
+  $uri      = dirname($path);
+  $filename = basename($path);
+
+  if($uri == '.') {
+    $uri = null;
+  }
+  
+  $page = $uri == '/' ? site() : page($uri);
+
+  if($page) {
+    return $page->image($filename);
+  } else {
+    return null;
+  }
+
+}
+
+/**
+ * Shortcut to create a new thumb object
+ *
+ * @param mixed Either a file path or a Media object
+ * @param array An array of additional params for the thumb
+ * @return object Thumb
+ */
+function thumb($image, $params = array(), $obj = true) {
+  if(is_a($image, 'File') || is_a($image, 'Asset')) {
+    return $obj ? $image->thumb($params) : $image->thumb($params)->url();
+  } else {
+    $class = new Thumb($image, $params);
+    return $obj ? $class : $class->url();
+  }
+}

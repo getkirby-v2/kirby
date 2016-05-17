@@ -10,8 +10,9 @@ class Structure extends Collection {
       return $this->data[$key];
     } else {
       $lowerkeys = array_change_key_case($this->data, CASE_LOWER);
-      if(isset($lowerkeys[strtolower($key)])) {
-        return $lowerkeys[$key];
+      $lowerkey  = strtolower($key);
+      if(isset($lowerkeys[$lowerkey])) {
+        return $lowerkeys[$lowerkey];
       }
     }
 

@@ -20,6 +20,8 @@ require_once(dirname(TEST_ROOT) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 require_once(__DIR__ . DS . 'testcase.php');
 
 // dummy classes
+class Asset extends AssetAbstract {}
+class Avatar extends AvatarAbstract {}
 class Page extends PageAbstract {}
 class Pages extends PagesAbstract {}
 class Children extends ChildrenAbstract {}

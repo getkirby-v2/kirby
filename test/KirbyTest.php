@@ -36,18 +36,11 @@ class KirbyTest extends KirbyTestCase {
     $this->assertEquals(array(), $kirby->option('cache.options'));
     $this->assertEquals(array(), $kirby->option('cache.ignore'));
     $this->assertTrue($kirby->option('cache.autoupdate'));
-    $this->assertTrue($kirby->option('tinyurl.enabled'));
-    $this->assertEquals('x', $kirby->option('tinyurl.folder'));
-    $this->assertFalse($kirby->option('markdown.extra'));
-    $this->assertTrue($kirby->option('markdown.breaks'));
-    $this->assertFalse($kirby->option('smartypants'));
     $this->assertEquals('video', $kirby->option('kirbytext.video.class'));
     $this->assertFalse($kirby->option('kirbytext.video.width'));
     $this->assertFalse($kirby->option('kirbytext.video.height'));
     $this->assertEquals('txt', $kirby->option('content.file.extension'));
     $this->assertEquals(array(), $kirby->option('content.file.ignore'));
-    $this->assertEquals('gd', $kirby->option('thumbs.driver'));
-    $this->assertEquals('{safeName}-{hash}.{extension}', $kirby->option('thumbs.filename'));
 
   }
 
@@ -143,10 +136,6 @@ class KirbyTest extends KirbyTestCase {
     $kirby->configure();
 
     $this->assertEquals($kirby->defaults(), $kirby->options());
-    $this->assertEquals(thumb::$defaults['root'], $kirby->roots()->thumbs());
-    $this->assertEquals(thumb::$defaults['url'], $kirby->urls()->thumbs());
-    $this->assertEquals(thumb::$defaults['driver'], $kirby->option('thumbs.driver'));
-    $this->assertEquals(thumb::$defaults['filename'], $kirby->option('thumbs.filename'));
     $this->assertEquals(url::$home, $kirby->urls()->index());
 
     $kirby = $this->kirbyInstance();
@@ -218,5 +207,9 @@ class KirbyTest extends KirbyTestCase {
     $this->assertEquals($kirby->roots()->kirby() . DS . 'branches' . DS . 'multilang.php', $kirby->branch());
 
   }
+
+  public function testRegistry() {
+    $this->assertInstanceOf('Kirby\\Registry', $this->kirbyInstance()->registry());
+  } 
 
 }
