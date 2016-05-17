@@ -311,10 +311,11 @@ class Kirby {
         $file = new Media($root);
 
         if($file->exists()) {
-          $file->show();
+          return new Response(f::read($root), f::extension($root));
+        } else {          
+          return new Response('The file could not be found', f::extension($path), 404);
         }
 
-        return new Response('The file could not be found', f::extension($path), 404);
 
       }
     );
