@@ -4,7 +4,7 @@ if(!defined('KIRBY'))  define('KIRBY', true);
 if(!defined('DS'))     define('DS', DIRECTORY_SEPARATOR);
 
 // load the kirby toolkit
-include(__DIR__ . DS . 'toolkit' . DS . 'bootstrap.php');
+include_once(__DIR__ . DS . 'toolkit' . DS . 'bootstrap.php');
 
 // load all core classes
 load(array(
