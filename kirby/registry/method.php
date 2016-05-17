@@ -23,7 +23,7 @@ class Method extends Entry {
    * 
    * @var array $subtypes
    */
-  protected $subtypes = ['page', 'pages', 'file', 'files', 'field'];
+  protected $subtypes = ['site', 'page', 'pages', 'file', 'files', 'field'];
 
   /**
    * @param Kirby\Registry $registry
