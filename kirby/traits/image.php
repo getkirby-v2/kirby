@@ -38,7 +38,7 @@ trait Image {
    * @param array $params
    * @return Asset
    */
-  public function thumb($params) {
+  public function thumb($params = []) {
     // don't scale thumbs further down
     if($this->original()) {    
       throw new Exception('Thumbnails cannot be modified further');
