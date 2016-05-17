@@ -133,7 +133,7 @@ trait Image {
   public function ratio($ratio = null) {
 
     if($ratio === null) {
-      return $this->ratio();
+      return parent::ratio();
     }
 
     if($this->isLandscape() || $this->isSquare()) {
