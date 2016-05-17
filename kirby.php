@@ -654,11 +654,11 @@ class Kirby {
     // load all extensions
     $this->extensions();
 
-    // load all plugins
-    $this->plugins();
-
     // load all models
     $this->models();
+
+    // load all plugins
+    $this->plugins();
 
     // start the router
     $this->router = new Router($this->routes());
