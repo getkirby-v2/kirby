@@ -163,6 +163,7 @@ kirbytext::$tags['link'] = array(
   'attr' => array(
     'text',
     'class',
+    'role',
     'title',
     'rel',
     'lang',
