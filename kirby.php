@@ -298,7 +298,7 @@ class Kirby {
     $routes['homeRedirect'] = array(
       'pattern' => $this->options['home'],
       'action'  => function() {
-        redirect::send(page('home')->url(), 307);
+        redirect::send(site()->homepage()->url(), 307);
       }
     );
 
