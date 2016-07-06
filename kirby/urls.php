@@ -8,9 +8,21 @@ use URL;
 
 class Urls {
 
+  public $index;
+  public $indexDetected;
+  public $content;
+  public $thumbs;
+  public $assets;
+  public $autocss;
+  public $autojs;
+  public $avatars;
+
   public function index() {
 
     if(isset($this->index)) return $this->index;
+
+    // this value is used by the Panel
+    $this->indexDetected = true;
 
     if(r::cli()) {
       return $this->index = '/';
@@ -21,15 +33,15 @@ class Urls {
   }
 
   public function content() {
-    return isset($this->content) ? $this->content : url::makeAbsolute('content', $this->index);
+    return isset($this->content) ? $this->content : url::makeAbsolute('content', $this->index());
   }
 
   public function thumbs() {
-    return isset($this->thumbs) ? $this->thumbs : url::makeAbsolute('thumbs', $this->index);
+    return isset($this->thumbs) ? $this->thumbs : url::makeAbsolute('thumbs', $this->index());
   }
 
   public function assets() {
-    return isset($this->assets) ? $this->assets : url::makeAbsolute('assets', $this->index);
+    return isset($this->assets) ? $this->assets : url::makeAbsolute('assets', $this->index());
   }
 
   public function autocss() {
