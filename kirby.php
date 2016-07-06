@@ -722,9 +722,10 @@ class Kirby {
     if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
       foreach(static::$hooks[$hook] as $key => $callback) {
 
-        if(array_key_exists($hook, static::$triggered) && in_array($key, static::$triggered[$hook])) continue;
+        if(!array_key_exists($hook, static::$triggered)) static::$triggered[$hook] = array();
+        if(in_array($key, static::$triggered[$hook])) continue;
 
-        static::$triggered[$hook] = $key;
+        static::$triggered[$hook][] = $key;
 
         try {
           call($callback, $args);        
