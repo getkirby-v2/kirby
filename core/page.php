@@ -797,14 +797,16 @@ abstract class PageAbstract {
   /**
    * Alternative for $this->equals()
    */
-  public function is(Page $page) {
+  public function is($page) {
+    if(!is_a($page, 'Page')) $page = page($page);
+
     return $this->id() == $page->id();
   }
 
   /**
    * Alternative for $this->is()
    */
-  public function equals(Page $page) {
+  public function equals($page) {
     return $this->is($page);
   }
 
@@ -884,7 +886,9 @@ abstract class PageAbstract {
    * @param object Page the page object to check
    * @return boolean
    */
-  public function isChildOf(Page $page) {
+  public function isChildOf($page) {
+    if(!is_a($page, 'Page')) $page = page($page);
+
     return $this->is($page) ? false : $this->parent->is($page);
   }
 
@@ -894,7 +898,9 @@ abstract class PageAbstract {
    * @param object Page the page object to check
    * @return boolean
    */
-  public function isParentOf(Page $page) {
+  public function isParentOf($page) {
+    if(!is_a($page, 'Page')) $page = page($page);
+
     return $this->is($page) ? false : $page->parent->is($this);
   }
 
@@ -904,7 +910,9 @@ abstract class PageAbstract {
    * @param object Page the page object to check
    * @return boolean
    */
-  public function isDescendantOf(Page $page) {
+  public function isDescendantOf($page) {
+    if(!is_a($page, 'Page')) $page = page($page);
+
     return $this->is($page) ? false : $this->parents()->has($page);
   }
 
