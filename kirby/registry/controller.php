@@ -54,24 +54,43 @@ class Controller extends Entry {
    */
   public function get($name) {
 
+    // get from cache
+    if(isset(static::$controllers[$name]) && is_a(static::$controllers[$name], 'Closure')) {
+      return static::$controllers[$name];
+    }
+
+    // get from main controller directory
     $name = strtolower($name);    
     $file = $this->kirby->roots()->controllers() . DS . $name . '.php';
+    if($controller = static::loadFile($name, $file)) return $controller;
 
-    if(file_exists($file)) {
-      return include_once $file;
-    } 
+    // get from registry
+    if(isset(static::$controllers[$name]) && $controller = static::loadFile($name, static::$controllers[$name])) return $controller;
 
-    if(isset(static::$controllers[$name])) {      
-      if(is_a(static::$controllers[$name], 'Closure')) {
-        return static::$controllers[$name];  
-      } else if(file_exists(static::$controllers[$name])) {
-        return include_once static::$controllers[$name];
-      }      
-    } 
-
-    if(file_exists($this->kirby->roots()->controllers() . DS . 'site.php')) {
-      return include_once $this->kirby->roots()->controllers() . DS . 'site.php';            
+    // fall back to site controller
+    if(isset(static::$controllers['site']) && is_a(static::$controllers['site'], 'Closure')) {
+      return static::$controllers['site'];
     }
+    if($controller = static::loadFile($name, $this->kirby->roots()->controllers() . DS . 'site.php')) return $controller;
+
+    // no match
+    return false;
+
+  }
+
+  /**
+   * Loads a controller from file and returns the closure
+   *
+   * @param string $name
+   * @param string $path
+   * @return Closure
+   */
+  protected static function loadFile($name, $path) {
+
+    if(!is_file($path)) return false;
+
+    static::$controllers[$name] = require_once($path);
+    return static::$controllers[$name];
 
   }
 
