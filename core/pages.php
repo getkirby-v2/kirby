@@ -84,14 +84,14 @@ abstract class PagesAbstract extends Collection {
 
     $args = func_get_args();
 
-    if(!count($args)) {
-      return false;
-    } 
-        
     if(count($args) === 1 and is_array($args[0])) {
       $args = $args[0];
     }
-    
+
+    if(!count($args)) {
+      return false;
+    }
+
     if(count($args) > 1) {
       $pages = new static();
       foreach($args as $id) {
