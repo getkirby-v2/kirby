@@ -184,7 +184,7 @@ field::$methods['pages'] = field::$methods['toPages'] = function($field, $sep = 
     $array = $field->yaml();
   }
 
-  return $field->site()->pages()->find($array);
+  return pages($array);
 
 };
 
