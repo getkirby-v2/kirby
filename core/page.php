@@ -194,7 +194,7 @@ abstract class PageAbstract {
    * @return string
    */
   public function tinyurl() {
-    if(!$this->kirby->options['tinyurl.enabled']) {
+    if(!isset($this->kirby->options['tinyurl.enabled']) || !$this->kirby->options['tinyurl.enabled']) {
       return $this->url();
     } else {
       return url($this->kirby->options['tinyurl.folder'] . '/' . $this->hash());
