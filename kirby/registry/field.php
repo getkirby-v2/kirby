@@ -29,9 +29,10 @@ class Field extends Entry {
    * 
    * @param string $name
    * @param string $root valid field directory path
+   * @param boolean $automatic Whether the field is registered automatically (true) or by a plugin (false)
    * @return Obj generic Kirby object with info about the field
    */
-  public function set($name, $root) {
+  public function set($name, $root, $automatic = false) {
     
     $name = strtolower($name);
     $file = $root . DS . $name . '.php';
@@ -45,7 +46,7 @@ class Field extends Entry {
       ]);
     } 
 
-    throw new Exception('The field does not exist at the specified path: ' . $root);
+    if(!$automatic) throw new Exception('The field does not exist at the specified path: ' . $root);
 
   }
 
