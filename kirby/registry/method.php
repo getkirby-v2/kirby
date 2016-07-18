@@ -48,13 +48,20 @@ class Method extends Entry {
    * The first part of the name is the subtype.
    * The second part of the name is the main type (`method` in this case)
    * 
-   * @param string $name
+   * @param string/array $name
    * @param Closure $callback
    * @return Closure
    */
   public function set($name, $callback) {
+
+    if(is_array($name)) {
+      foreach($name as $n) $this->set($n, $callback);
+      return;
+    }
+
     $class = $this->subtype;
     return $class::$methods[$name] = $callback;
+
   }
 
   /**

@@ -47,11 +47,16 @@ class Model extends Entry {
    * The first part of the name is the subtype.
    * The second part of the name is the main type (`model` in this case)
    * 
-   * @param string $name
+   * @param string/array $name
    * @param string $classname Must be a valid classname of a loaded/auto-loaded class
    * @return string
    */  
   public function set($name, $classname) {
+
+    if(is_array($name)) {
+      foreach($name as $n) $this->set($n, $classname);
+      return;
+    }
 
     $class = $this->subtype;
 

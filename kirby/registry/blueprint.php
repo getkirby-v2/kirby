@@ -30,11 +30,16 @@ class Blueprint extends Entry {
    * Pass a path to an existing blueprint file
    * to add it to the registry
    * 
-   * @param string $name
+   * @param string/array $name
    * @param string $path
    * @return $path 
    */
   public function set($name, $path) {
+
+    if(is_array($name)) {
+      foreach($name as $n) $this->set($n, $path);
+      return;
+    }
 
     if(!$this->kirby->option('debug') || file_exists($path)) {    
       return static::$blueprints[$name] = $path;

@@ -28,11 +28,16 @@ class Template extends Entry {
    * 
    * Must be an existing file
    * 
-   * @param string $name
+   * @param string/array $name
    * @param string $path
    */
   public function set($name, $path) {
-    
+
+    if(is_array($name)) {
+      foreach($name as $n) $this->set($n, $path);
+      return;
+    }
+
     if(!$this->kirby->option('debug') || file_exists($path)) {    
       return static::$templates[$name] = $path;
     } 

@@ -26,12 +26,17 @@ class Controller extends Entry {
   /**
    * Adds a new controller to the registry
    * 
-   * @param string $name
+   * @param string/array $name
    * @param Closure $callback Must be a valid controller callback
    * @return Closure 
    */
   public function set($name, $callback) {
-    
+
+    if(is_array($name)) {
+      foreach($name as $n) $this->set($n, $callback);
+      return;
+    }
+
     $name = strtolower($name);
 
     if($name === 'site') {
