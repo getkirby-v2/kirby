@@ -17,14 +17,15 @@ abstract class KirbytextAbstract {
 
   public $field;
 
-  public function __construct($field) {
+  public function __construct($field, $page = null) {
 
     if(is_a($field, 'Field')) {
       $this->field = $field;
     } else if(is_array($field)) {
       throw new Exception('Kirbytext cannot handle arrays');
     } else if(empty($field) or is_string($field)) {
-      $this->field = new Field(page(), null, $field);
+      if(!$page) $page = page();
+      $this->field = new Field($page, null, $field);
     }
 
   }
