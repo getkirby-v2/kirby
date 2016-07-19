@@ -56,6 +56,16 @@ field::$methods['markdown'] = field::$methods['md'] = function($field) {
 };
 
 /**
+ * Parses the field value with SmartyPants
+ * @param Field $field The calling Kirby Field instance
+ * @return Field
+ */
+field::$methods['smartypants'] = field::$methods['sp'] = function($field) {
+  $field->value = smartypants($field->value);
+  return $field;
+};
+
+/**
  * Converts the field value to lower case
  * @param Field $field The calling Kirby Field instance
  * @return Field
