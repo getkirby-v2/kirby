@@ -29,16 +29,17 @@ class Widget extends Entry {
    * You must pass an existing widget directory
    * 
    * @param string $name
-   * @param string $path
+   * @param string $path valid widget directory path
+   * @param boolean $automatic Whether the field is registered automatically (true) or by a plugin (false)
    * @return string
    */
-  public function set($name, $path) {
+  public function set($name, $path, $automatic = false) {
     
     if(!$this->kirby->option('debug') || is_dir($path)) {    
       return static::$widgets[$name] = $path;
     } 
 
-    throw new Exception('The widget does not exist at the specified path: ' . $path);
+    if(!$automatic) throw new Exception('The widget does not exist at the specified path: ' . $path);
 
   }
 
