@@ -9,7 +9,6 @@ use URL;
 class Urls {
 
   public $index;
-  public $indexDetected;
   public $content;
   public $thumbs;
   public $assets;
@@ -21,14 +20,15 @@ class Urls {
 
     if(isset($this->index)) return $this->index;
 
-    // this value is used by the Panel
-    $this->indexDetected = true;
-
     if(r::cli()) {
-      return $this->index = '/';
+      $index = '/';
     } else {
-      return $this->index = url::base() . preg_replace('!\/index\.php$!i', '', server::get('SCRIPT_NAME'));
+      $index = url::base() . preg_replace('!\/index\.php$!i', '', server::get('SCRIPT_NAME'));
     }
+
+    // fix index URL for the Panel
+    if(function_exists('panel')) $index = dirname($index);
+    return $this->index = $index;
 
   }
 
