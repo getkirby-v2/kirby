@@ -70,6 +70,7 @@ class Kirby {
       'cache.driver'                    => 'file',
       'cache.options'                   => array(),
       'cache.ignore'                    => array(),
+      'cache.whitelist'                 => array(),
       'cache.autoupdate'                => true,
       'date.handler'                    => 'date',
       'kirbytext.video.class'           => 'video',
