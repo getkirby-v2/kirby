@@ -686,7 +686,7 @@ class Kirby {
     $this->response = $this->component('response')->make($response);
 
     // store the current language in the session, if set in option
-    if($kirby->option('language.cookie')) {
+    if(c::get('language.cookie')) {
       if($this->site()->multilang() && $language = $this->site()->language()) {
         s::set('language', $language->code());
       }
