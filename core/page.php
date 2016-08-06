@@ -243,7 +243,7 @@ abstract class PageAbstract {
       return false;
     }
 
-    $lang = ($this->site->defaultLanguage)? $this->site->defaultLanguage->code : null;
+    $lang = ($this->site->defaultLanguage())? $this->site->defaultLanguage()->code : null;
     foreach($this->kirby->option('cache.ignore') as $pattern) {
       if(fnmatch($pattern, $this->uri($lang)) === true) {
         return false;
