@@ -1,0 +1,29 @@
+{
+  "name": "getkirby/kirby",
+  "description": "The Kirby 2 core.",
+  "keywords": ["core", "kirby"],
+  "homepage": "https://getkirby.com",
+  "license": "https://getkirby.com/license",
+  "authors": [
+    {
+      "name": "Bastian Allgeier",
+      "email": "bastian@getkirby.com",
+      "homepage": "http://bastianallgeier.com"
+    }
+  ],
+  "support": {
+    "email": "support@getkirby.com",
+    "issues": "https://github.com/getkirby/toolkit/issues",
+    "forum": "http://forum.getkirby.com",
+    "source": "https://github.com/getkirby/toolkit"
+  },
+  "autoload": {
+    "files": ["bootstrap.php"]
+  },
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "archive": {
+    "exclude": ["/.gitmodules", "/.gitignore", "/.travis.yml", "/test"]
+  }
+}
