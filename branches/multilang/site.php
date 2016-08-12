@@ -166,13 +166,22 @@ class Site extends SiteAbstract {
     // clean the uri
     $uri = trim($uri, '/');
 
+    // alternate version without file extension
+    $baseUri = f::name($uri);
+    $parent  = dirname($uri);
+    if($parent !== '.') $baseUri = $parent . '/' . $baseUri;
+
+    // store the representation for $page->representation()
+    if($uri !== $baseUri) $this->representation = f::extension($uri);
+
     if(empty($uri)) {
       return $this->page = $this->homePage();
     } else {
-
       if($lang == $this->defaultLanguage->code and $page = $this->children()->find($uri)) {
         return $this->page = $page;
       } else if($page = $this->children()->findByURI($uri)) {
+        return $this->page = $page;
+      } else if($page = $this->children()->findByURI($baseUri)) {
         return $this->page = $page;
       } else {
         return $this->page = $this->errorPage();

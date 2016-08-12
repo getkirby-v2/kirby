@@ -2,7 +2,9 @@
 
 namespace Kirby\Component;
 
+use Dir;
 use Exception;
+use F;
 use Page;
 use Tpl;
 
@@ -42,6 +44,21 @@ class Template extends \Kirby\Component {
       'page'  => $page
     ), $data);
 
+  }
+
+  /**
+   * Returns all available template files
+   *
+   * @return array
+   */
+  public function files() {
+    $files = dir::read($this->kirby->roots()->templates());
+    $files = array_filter($files, function($file) {
+      return f::extension($file) === 'php';
+    });
+    return array_map(function($file) {
+      return f::name($file);
+    }, $files);
   }
 
   /**

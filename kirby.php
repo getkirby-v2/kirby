@@ -81,6 +81,7 @@ class Kirby {
       'content.file.extension'          => 'txt',
       'content.file.ignore'             => array(),
       'content.file.normalize'          => false,
+      'representations.accept'          => false,
       'email.service'                   => 'mail',
       'email.to'                        => null,
       'email.replyTo'                   => null,

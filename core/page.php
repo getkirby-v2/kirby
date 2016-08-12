@@ -1016,15 +1016,78 @@ abstract class PageAbstract {
   }
 
   /**
+   * Returns the representation file extension for the page
+   *
+   * @param string $template Template name to use as base
+   * @return string/false
+   */
+  public function representation($template = null) {
+    if(!$template) $template = $this->template();
+    $cacheKey = 'representation.' . $template;
+
+    // check for a cached representation
+    if(isset($this->cache[$cacheKey])) return $this->cache[$cacheKey];
+
+    // check for a representation from the URL
+    if($this->site->representation && $this->kirby->registry->get('template', $template . '.' . $this->site->representation)) {
+      return $this->cache[$cacheKey] = $this->site->representation;
+    }
+
+    // try to get a representation from the Accept header
+    // this feature is disabled by default because some browsers
+    // have strange Accept headers (e.g. WebKit)
+    if($this->kirby->option('representations.accept')) {
+      // manually add the normal template to the mix as HTML representation
+      $representations = ['__default' => visitor::acceptance('text/html')];
+
+      // add each other available representation
+      foreach($this->kirby->registry->get('template', $template, true) as $representation) {
+        $representation = f::extension($representation);
+        $mime           = f::extensionToMime($representation);
+
+        $representations[$representation] = visitor::acceptance($mime);
+      }
+
+      // return the highest accepted representation
+      if(!empty($representations) && ($max = max($representations)) > 0) {
+        $representation = array_search($max, $representations);
+        if($representation === '__default') $representation = false;
+        return $this->cache[$cacheKey] = $representation;
+      }
+    }
+
+    return $this->cache[$cacheKey] = false;
+  }
+
+  /**
    * Returns the full path to the used template file
    *
    * @return string
    */
   public function templateFile() {
-    if($template = $this->kirby->registry->get('template', $this->intendedTemplate())) {
-      return $template;  
+    return $this->_templateFile($this->intendedTemplate());
+  }
+
+  /**
+   * Internal helper method
+   *
+   * @param string $template Template name to use as base
+   * @return string
+   */
+  protected function _templateFile($template) {
+    $representation = $this->representation($template);
+
+    if($representation) {
+      return $this->kirby->registry->get('template', $template . '.' . $representation);
     } else {
-      return $this->kirby->registry->get('template', 'default');
+      if($template = $this->kirby->registry->get('template', $template)) {
+        return $template;
+      } else if($template !== 'default') {
+        // try to get a representation of the default template
+        return $this->_templateFile('default');
+      } else {
+        return $this->kirby->registry->get('template', 'default');
+      }
     }
   }
 
@@ -1087,6 +1150,11 @@ abstract class PageAbstract {
 
     } else if($this->isErrorPage()) {
       header::notfound();
+    }
+
+    // send the header of the representation
+    if($representation = $this->representation()) {
+      if($mime = f::extensionToMime($representation)) header::type($mime);
     }
 
   }
