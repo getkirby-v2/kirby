@@ -22,6 +22,18 @@ class Language extends Obj {
   public function url() {
     return url::makeAbsolute($this->url, $this->site->url());
   }
+  
+  public function path() {
+    return url::path($this->url);
+  }
+  
+  public function isRoot() {
+    return $this->path() === '';
+  }
+  
+  public function host() {
+    return (url::isAbsolute($this->url))? url::host($this->url) : false;
+  }
 
   public function isDefault() {
     return $this->default;    

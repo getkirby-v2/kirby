@@ -238,17 +238,54 @@ class Kirby {
     $kirby  = $this;
     $site   = $this->site();
 
+    // fallback route for both single and multilang branches
+    $otherRoute = function($path = null) use($site, $kirby) {
+
+      // get the language code from the route
+      $lang = ($kirby->route->lang)? $kirby->route->lang->code() : false;
+
+      // visit the currently active page
+      $page = ($lang)? $site->visit($path, $lang) : $site->visit($path);
+
+      // redirections for files and invalid representations
+      if($site->representation !== null) {
+
+        // get the filename
+        $filename = rawurldecode(basename($path));
+        $pagepath = dirname($path);
+
+        // check if there's a page for the parent path
+        if($parent = $site->find($pagepath)) {
+          // check if there's a file for the last element of the path
+          if($file = $parent->file($filename)) {
+            return go($file->url());
+          }
+        }
+
+        // prevent invalid representation routes
+        if($site->representation === '' || $site->representation != $page->representation()) {
+          return go($page->url());
+        }
+
+      }
+
+      return $page;
+
+    };
+
     if($site->multilang()) {
 
-      foreach($site->languages() as $lang) {
-
+      // first register all languages that are not at the root of the domain
+      // otherwise they would capture all requests
+      foreach($site->languages()->sortBy('isRoot', 'asc') as $lang) {
+        
+        $pattern = ($lang->path())? $lang->path() . '/(:all?)' : '(:all)';
         $routes[] = array(
-          'pattern' => ltrim($lang->url . '/(:all?)', '/'),
+          'pattern' => $pattern,
+          'host'    => $lang->host(),
           'method'  => 'ALL',
           'lang'    => $lang,
-          'action'  => function($path = null) use($kirby, $site) {
-            return $site->visit($path, $kirby->route->lang->code());
-          }
+          'action'  => $otherRoute
         );
 
       }
@@ -329,37 +366,8 @@ class Kirby {
     $routes['others'] = array(
       'pattern' => '(:all)',
       'method'  => 'ALL',
-      'action'  => function($path = null) use($site, $kirby) {
-
-        // visit the currently active page
-        $page = $site->visit($path);
-
-        // redirections for files and invalid representations
-        if($site->representation !== null) {
-
-          // get the filename
-          $filename = rawurldecode(basename($path));
-          $pagepath = dirname($path);
-
-          // check if there's a page for the parent path
-          if($parent = $site->find($pagepath)) {
-            // check if there's a file for the last element of the path
-            if($file = $parent->file($filename)) {
-              return go($file->url());
-            }
-          }
-
-          // prevent invalid representation routes
-          if($site->representation === '' || $site->representation != $page->representation()) {
-            return go($page->url());
-          }
-
-        }
-
-        return $page;
-
-      }
-
+      'lang'    => false,
+      'action'  => $otherRoute
     );
 
     return $routes;
