@@ -1482,8 +1482,15 @@ abstract class PageAbstract {
    */
   public function controller($arguments = array()) {
 
-    $controller = $this->kirby->registry->get('controller', $this->template());
-      
+    // first try to get a controller for the representation
+    $controller = null;
+    if($representation = $this->representation()) {
+      $controller = $this->kirby->registry->get('controller', $this->template() . '.' . $representation);
+    }
+
+    // no representation or no special controller: try the normal one
+    if(!$controller) $controller = $this->kirby->registry->get('controller', $this->template());
+
     if(is_a($controller, 'Closure')) {
       return (array)call_user_func_array($controller, array(
         $this->site,
