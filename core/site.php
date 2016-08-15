@@ -154,15 +154,17 @@ abstract class SiteAbstract extends Page {
     $parent  = dirname($uri);
     if($parent !== '.') $baseUri = $parent . '/' . $baseUri;
 
-    // store the representation for $page->representation()
-    if($uri !== $baseUri) $this->representation = f::extension($uri);
-
     if(empty($uri)) {
       return $this->page = $this->homePage();
     } else {
       if($page = $this->children()->find($uri)) {
         return $this->page = $page;
-      } else if($page = $this->children()->find($baseUri)) {
+      }
+
+      // store the representation for $page->representation()
+      if($uri !== $baseUri) $this->representation = f::extension($uri);
+
+      if($page = $this->children()->find($baseUri)) {
         return $this->page = $page;
       } else {
         return $this->page = $this->errorPage();

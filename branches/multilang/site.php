@@ -171,9 +171,6 @@ class Site extends SiteAbstract {
     $parent  = dirname($uri);
     if($parent !== '.') $baseUri = $parent . '/' . $baseUri;
 
-    // store the representation for $page->representation()
-    if($uri !== $baseUri) $this->representation = f::extension($uri);
-
     if(empty($uri)) {
       return $this->page = $this->homePage();
     } else {
@@ -181,7 +178,12 @@ class Site extends SiteAbstract {
         return $this->page = $page;
       } else if($page = $this->children()->findByURI($uri)) {
         return $this->page = $page;
-      } else if($page = $this->children()->findByURI($baseUri)) {
+      }
+
+      // store the representation for $page->representation()
+      if($uri !== $baseUri) $this->representation = f::extension($uri);
+
+      if($page = $this->children()->findByURI($baseUri)) {
         return $this->page = $page;
       } else {
         return $this->page = $this->errorPage();
