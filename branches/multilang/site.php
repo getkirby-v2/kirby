@@ -182,6 +182,9 @@ class Site extends SiteAbstract {
       } else if($page = $this->children()->findByURI($uri)) {
         return $this->page = $page;
       } else if($page = $this->children()->findByURI($baseUri)) {
+        // check if the representation exists
+        if(!$page->representation()) return go($page);
+
         return $this->page = $page;
       } else {
         return $this->page = $this->errorPage();

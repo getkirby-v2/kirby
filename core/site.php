@@ -163,6 +163,9 @@ abstract class SiteAbstract extends Page {
       if($page = $this->children()->find($uri)) {
         return $this->page = $page;
       } else if($page = $this->children()->find($baseUri)) {
+        // check if the representation exists
+        if(!$page->representation()) return go($page);
+
         return $this->page = $page;
       } else {
         return $this->page = $this->errorPage();
