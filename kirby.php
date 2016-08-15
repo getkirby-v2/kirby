@@ -330,24 +330,26 @@ class Kirby {
         // visit the currently active page
         $page = $site->visit($path);
 
-        // react on errors for invalid URLs
-        if($page->isErrorPage() and $page->uri() != $path) {
+        // magic file route
+        if($site->representation || $page->isErrorPage() && $page->uri() != $path) {
 
           // get the filename
           $filename = rawurldecode(basename($path));
           $pagepath = dirname($path);
 
           // check if there's a page for the parent path
-          if($page = $site->find($pagepath)) {
+          if($parent = $site->find($pagepath)) {
             // check if there's a file for the last element of the path
-            if($file = $page->file($filename)) {
-              go($file->url());
+            if($file = $parent->file($filename)) {
+              return go($file->url());
             }
           }
 
-          // return the error page if there's no such page
-          return $site->errorPage();
+        }
 
+        // prevent invalid representation routes
+        if($site->representation && $site->representation != $page->representation()) {
+          return go($page->url());
         }
 
         return $page;
