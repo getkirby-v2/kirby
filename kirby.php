@@ -330,8 +330,8 @@ class Kirby {
         // visit the currently active page
         $page = $site->visit($path);
 
-        // magic file route
-        if($site->representation || $page->isErrorPage() && $page->uri() != $path) {
+        // redirections for files and invalid representations
+        if($site->representation !== null) {
 
           // get the filename
           $filename = rawurldecode(basename($path));
@@ -345,11 +345,11 @@ class Kirby {
             }
           }
 
-        }
+          // prevent invalid representation routes
+          if($site->representation === '' || $site->representation != $page->representation()) {
+            return go($page->url());
+          }
 
-        // prevent invalid representation routes
-        if($site->representation && $site->representation != $page->representation()) {
-          return go($page->url());
         }
 
         return $page;
