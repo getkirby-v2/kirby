@@ -164,7 +164,9 @@ abstract class SiteAbstract extends Page {
       // store the representation for $page->representation()
       if($uri !== $baseUri) $this->representation = f::extension($uri);
 
-      if($page = $this->children()->find($baseUri)) {
+      if($baseUri === '') {
+        return $this->page = $this->homePage();
+      } else if($page = $this->children()->find($baseUri)) {
         return $this->page = $page;
       } else {
         return $this->page = $this->errorPage();

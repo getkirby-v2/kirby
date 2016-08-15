@@ -183,7 +183,9 @@ class Site extends SiteAbstract {
       // store the representation for $page->representation()
       if($uri !== $baseUri) $this->representation = f::extension($uri);
 
-      if($page = $this->children()->findByURI($baseUri)) {
+      if($baseUri === '') {
+        return $this->page = $this->homePage();
+      } else if($page = $this->children()->findByURI($baseUri)) {
         return $this->page = $page;
       } else {
         return $this->page = $this->errorPage();

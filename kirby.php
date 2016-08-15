@@ -297,9 +297,13 @@ class Kirby {
 
     // home redirect
     $routes['homeRedirect'] = array(
-      'pattern' => $this->options['home'],
-      'action'  => function() {
-        redirect::send(site()->homepage()->url(), 307);
+      'pattern' => $this->options['home'] . '(\..*)?',
+      'action'  => function($extension = null) {
+        // ignore invalid extensions
+        if($extension === '.') $extension = '';
+        if($extension) $extension = '/' . $extension;
+
+        redirect::send(site()->homepage()->url() . $extension, 307);
       }
     );
 
