@@ -35,4 +35,13 @@ abstract class UsersAbstract extends Collection {
     return $this->findBy('username', $username);
   }
 
+  /**
+   * Improved @var_dump output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return array_keys($this->data);
+  }
+
 }
