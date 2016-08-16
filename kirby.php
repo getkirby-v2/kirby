@@ -803,4 +803,24 @@ class Kirby {
     }
   }
 
+  /**
+   * Improved var_dump() output
+   */
+  public function __debuginfo() {
+    return [
+      'version'    => $this->version(),
+      'request'    => $this->request(),
+      'site'       => $this->site(),
+      'urls'       => $this->urls(),
+      'roots'      => $this->roots(),
+      'options'    => $this->options(),
+      'components' => array_keys($this->components),
+      'plugins'    => array_keys($this->plugins),
+      'hooks'      => array_keys(static::$hooks),
+      'routes'     => array_values(array_map(function($route) {
+        return $route['pattern'];
+      }, $this->routes())),
+    ];
+  }
+
 }
