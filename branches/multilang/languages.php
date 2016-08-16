@@ -25,4 +25,8 @@ class Languages extends Collection {
     return $this->site->defaultLanguage();
   }
 
+  public function __debuginfo() {
+    return array_keys($this->data);
+  }
+
 }
