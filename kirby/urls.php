@@ -56,4 +56,21 @@ class Urls {
     return isset($this->avatars) ? $this->avatars : $this->assets() . '/avatars';
   }
 
+  /**
+   * Improved var_dump() output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return [
+      'index'   => $this->index(),
+      'content' => $this->content(),
+      'thumbs'  => $this->thumbs(),
+      'assets'  => $this->assets(),
+      'autocss' => $this->autocss(),
+      'autojs'  => $this->autojs(),
+      'avatars' => $this->avatars(),
+    ];
+  }
+
 }
