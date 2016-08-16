@@ -24,6 +24,6 @@
     "php": ">=5.4.0"
   },
   "archive": {
-    "exclude": ["/.gitmodules", "/.gitignore", "/.travis.yml", "/test"]
+    "exclude": ["/.gitmodules", "/.gitignore", "/.travis.yml", "phpunit.xml", "/test"]
   }
 }
