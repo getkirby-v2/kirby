@@ -1444,27 +1444,35 @@ abstract class PageAbstract {
    */
   public function toArray($callback = null) {
 
-    $data = array(
-      'id'               => $this->id(),
+    $data = [
       'title'            => $this->title()->toString(),
+      'id'               => $this->id(),
+      'uid'              => $this->uid(),
+      'slug'             => $this->slug(),
       'parent'           => $this->parent()->uri(),
-      'dirname'          => $this->dirname(),
-      'diruri'           => $this->diruri(),
+      'uri'              => $this->uri(),
       'url'              => $this->url(),
       'contentUrl'       => $this->contentUrl(),
       'tinyUrl'          => $this->tinyUrl(),
-      'depth'            => $this->depth(),
-      'uri'              => $this->uri(),
       'root'             => $this->root(),
-      'uid'              => $this->uid(),
-      'slug'             => $this->slug(),
+      'dirname'          => $this->dirname(),
+      'diruri'           => $this->diruri(),
+      'depth'            => $this->depth(),
       'num'              => $this->num(),
       'hash'             => $this->hash(),
-      'modified'         => $this->modified(),
+      'modified'         => $this->modified('c'),
       'template'         => $this->template(),
       'intendedTemplate' => $this->intendedTemplate(),
+      'isVisible'        => $this->isVisible(),
+      'isOpen'           => $this->isOpen(),
+      'isActive'         => $this->isActive(),
+      'isHomePage'       => $this->isHomePage(),
+      'isErrorPage'      => $this->isErrorPage(),
+      'isCachable'       => $this->isCachable(),
+      'isWritable'       => $this->isWritable(),
       'content'          => $this->content()->toArray(),
-    );
+      'headers'          => $this->headers(),
+    ];
 
     if(is_null($callback)) {
       return $data;
@@ -1522,6 +1530,23 @@ abstract class PageAbstract {
    */
   public function __toString() {
     return (string)$this->id();
+  }
+
+  /**
+   * Improved var_dump() output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+
+    $data = $this->toArray();
+
+    return array_merge($data, [
+      'content'    => $this->content(),
+      'children'   => $this->children(),
+      'siblings'   => $this->siblings(false),
+      'files'      => $this->files(),
+    ]);
   }
 
 }
