@@ -81,4 +81,13 @@ abstract class RolesAbstract extends Collection {
     return $this->default = $this->findBy('isDefault', true);
   }
 
+  /**
+   * Improved @var_dump output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return array_keys($this->data);
+  }
+
 }
