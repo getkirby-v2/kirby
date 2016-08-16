@@ -366,8 +366,6 @@ abstract class SiteAbstract extends Page {
       'files'      => $this->files(),
       'multilang'  => $this->multilang(),
       'locale'     => $this->locale(),
-      'language'   => $this->language() ? $this->language()->code() : false,
-      'languages'  => $this->languages(),
       'user'       => $this->user() ? $this->user()->username() : false,
       'users'      => $this->users(),
       'roles'      => $this->roles(),

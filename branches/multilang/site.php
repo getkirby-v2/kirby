@@ -203,4 +203,20 @@ class Site extends SiteAbstract {
     return $this->language->locale;
   }
 
+  /**
+   * Improved var_dump() output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return array_merge(parent::__debuginfo(), [
+      'languages'        => $this->languages(),
+      'language'         => (string)$this->language(),
+      'defaultLanguage'  => (string)$this->defaultLanguage(),
+      'detectedLanguage' => (string)$this->detectedLanguage(),
+      'visitorLanguage'  => (string)$this->visitorLanguage(),
+      'sessionLanguage'  => (string)$this->sessionLanguage(),
+    ]);
+  }
+
 }
