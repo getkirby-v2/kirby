@@ -351,4 +351,27 @@ abstract class SiteAbstract extends Page {
     return dir::wasModifiedAfter($this->root(), $time);
   }
 
+  /**
+   * Improved var_dump() output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return [
+      'title'      => $this->title()->toString(),
+      'url'        => $this->url(),      
+      'page'       => $this->page() ? $this->page()->id() : false,
+      'content'    => $this->content(),
+      'children'   => $this->pages(),
+      'files'      => $this->files(),
+      'multilang'  => $this->multilang(),
+      'locale'     => $this->locale(),
+      'language'   => $this->language() ? $this->language()->code() : false,
+      'languages'  => $this->languages(),
+      'user'       => $this->user() ? $this->user()->username() : false,
+      'users'      => $this->users(),
+      'roles'      => $this->roles(),
+    ];
+  }
+
 }
