@@ -342,8 +342,34 @@ abstract class UserAbstract {
 
   }
 
+  /**
+   * Converts the user object to an array
+   * 
+   * @return array
+   */
+  public function toArray() {
+    return [
+      'username'  => $this->username(),
+      'email'     => $this->email(),
+      'role'      => $this->role()->id(),
+      'language'  => $this->language(),
+      'avatar'    => $this->avatar() ? $this->avatar()->url() : false,
+      'gravatar'  => $this->gravatar(),
+      'isCurrent' => $this->isCurrent()
+    ];
+  }
+
   public function __toString() {
     return (string)$this->username;
+  }
+
+  /**
+   * Improved @var_dump output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return $this->toArray();
   }
 
 }
