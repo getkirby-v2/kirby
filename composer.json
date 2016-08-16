@@ -1,7 +1,7 @@
 {
   "name": "getkirby/kirby",
   "description": "The Kirby 2 core.",
-  "keywords": ["core", "kirby"],
+  "keywords": ["core", "kirby", "cms"],
   "homepage": "https://getkirby.com",
   "license": "https://getkirby.com/license",
   "authors": [
@@ -13,9 +13,9 @@
   ],
   "support": {
     "email": "support@getkirby.com",
-    "issues": "https://github.com/getkirby/toolkit/issues",
-    "forum": "http://forum.getkirby.com",
-    "source": "https://github.com/getkirby/toolkit"
+    "issues": "https://github.com/getkirby/kirby/issues",
+    "forum": "https://forum.getkirby.com",
+    "source": "https://github.com/getkirby/kirby"
   },
   "autoload": {
     "files": ["bootstrap.php"]
