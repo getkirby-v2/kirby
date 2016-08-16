@@ -96,4 +96,24 @@ class Roots extends Obj {
     return isset($this->languages) ? $this->languages : $this->site() . DS . 'languages';
   }
 
+  /**
+   * Improved var_dump() output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return [
+      'index'   => $this->index(),
+      'kirby'   => $this->kirby(),
+      'content' => $this->content(),
+      'site'    => $this->site(),
+      'cache'   => $this->cache(),
+      'thumbs'  => $this->thumbs(),
+      'assets'  => $this->assets(),
+      'autocss' => $this->autocss(),
+      'autojs'  => $this->autojs(),
+      'avatars' => $this->avatars(),
+    ];
+  }
+
 }
