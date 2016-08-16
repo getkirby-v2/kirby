@@ -83,10 +83,21 @@ abstract class FileAbstract extends Media {
     return $this->page->textfile($this->filename());
   }
 
+  /**
+   * Returns all siblings as Files collection
+   * 
+   * @return Files
+   */
   public function siblings() {
     return $this->files->not($this->filename);
   }
 
+  /**
+   * Returns the next file object 
+   * if available
+   * 
+   * @return File|false
+   */
   public function next() {
     $siblings = $this->files;
     $index    = $siblings->indexOf($this);
@@ -94,10 +105,22 @@ abstract class FileAbstract extends Media {
     return $this->files->nth($index+1);
   }
 
+  /**
+   * Checks if there's a next file 
+   * in the siblings collection
+   * 
+   * @return boolean
+   */  
   public function hasNext() {
     return $this->next();
   }
 
+  /**
+   * Returns the previous file object 
+   * if available
+   * 
+   * @return File|false
+   */
   public function prev() {
     $siblings = $this->files;
     $index    = $siblings->indexOf($this);
@@ -105,6 +128,12 @@ abstract class FileAbstract extends Media {
     return $this->files->nth($index-1);
   }
 
+  /**
+   * Checks if there's a previous file 
+   * in the siblings collection
+   * 
+   * @return boolean
+   */
   public function hasPrev() {
     return $this->prev();
   }
@@ -252,6 +281,12 @@ abstract class FileAbstract extends Media {
 
   }
 
+  /**
+   * Updates the file meta 
+   * 
+   * @param array $data
+   * @return boolean
+   */
   public function update($data = array()) {
 
     $data = array_merge((array)$this->meta()->toArray(), $data);
@@ -275,6 +310,12 @@ abstract class FileAbstract extends Media {
 
   }
 
+  /**
+   * Deletes the file from the content folder
+   * and also removes the corresponding meta file
+   * 
+   * @return boolean
+   */
   public function delete() {
 
     // delete the meta file
@@ -328,6 +369,19 @@ abstract class FileAbstract extends Media {
       return array_map($callback, $data);
     }
 
+  }
+
+  /**
+   * Improved var_dump() output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return array_merge(parent::__debuginfo(), [
+      'page'     => $this->page()->id(),
+      'meta'     => $this->meta(),
+      'siblings' => $this->siblings(),
+    ]);
   }
 
 }
