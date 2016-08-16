@@ -39,8 +39,23 @@ class Language extends Obj {
     return $this->default;    
   }
 
+  public function toArray() {
+    return [
+      'code'      => $this->code(),
+      'name'      => $this->name(),
+      'url'       => $this->url(),
+      'locale'    => $this->locale(),
+      'direction' => $this->direction(),
+      'isDefault' => $this->isDefault(),
+    ];
+  }
+
   public function __toString() {
     return $this->code;
+  }
+
+  public function __debuginfo() {
+    return $this->toArray();
   }
 
 }
