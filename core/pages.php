@@ -327,4 +327,13 @@ abstract class PagesAbstract extends Collection {
     return json_encode($this->toArray($callback));
   }
 
+  /**
+   * Improved var_dump() output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return $this->pluck('id');
+  }
+
 }
