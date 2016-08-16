@@ -20,6 +20,9 @@ abstract class ContentAbstract {
 
   /**
    * Constructor
+   * 
+   * @param Page $page
+   * @param string $root
    */
   public function __construct($page, $root) {
 
@@ -138,14 +141,38 @@ abstract class ContentAbstract {
     return isset($this->data[strtolower($key)]);
   }
 
+  /**
+   * Magic getter
+   * 
+   * @param string $method
+   * @param array $arguments Not used
+   * @return Field
+   */
   public function __call($method, $arguments = null) {
     return $this->get($method, $arguments);
   }
 
+  /**
+   * Returns all fields as plain array
+   * 
+   * @return array
+   */
   public function toArray() {
     return array_map(function($item) {
       return $item->value;
     }, $this->data);
+  }
+
+  /**
+   * Improved var_dump() output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return [
+      'root'   => $this->root(),
+      'fields' => $this->toArray(),
+    ];
   }
 
 }
