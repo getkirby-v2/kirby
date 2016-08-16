@@ -99,4 +99,29 @@ abstract class RoleAbstract {
     return (string)$this->id;
   }
 
+  /**
+   * Converts the object data to an array
+   * 
+   * @return array
+   */
+  public function toArray() {
+    return [
+      'id'             => $this->id(),
+      'name'           => $this->name(),
+      'isDefault'      => $this->isDefault(),
+      'hasPanelAccess' => $this->hasPanelAccess(),
+    ];    
+  }
+
+  /**
+   * Improved var_dump() output
+   * 
+   * @return array
+   */
+  public function __debuginfo() {
+    return array_merge($this->toArray(), [
+      'users' => $this->users()
+    ]);
+  }
+
 }
