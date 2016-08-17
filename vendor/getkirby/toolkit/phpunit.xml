@@ -1,0 +1,7 @@
+<phpunit>
+  <testsuites>
+    <testsuite name="Kirby_Toolkit">
+      <directory>test</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

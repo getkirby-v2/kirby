@@ -827,9 +827,9 @@ class Kirby {
       'urls'       => $this->urls(),
       'roots'      => $this->roots(),
       'options'    => $this->options(),
-      'components' => array_keys($this->components),
-      'plugins'    => array_keys($this->plugins),
-      'hooks'      => array_keys(static::$hooks),
+      'components' => array_keys((array)$this->components),
+      'plugins'    => array_keys((array)$this->plugins),
+      'hooks'      => array_keys((array)static::$hooks),
       'routes'     => array_values(array_map(function($route) {
         return $route['pattern'];
       }, $this->routes())),
