@@ -136,15 +136,21 @@
         "source": {
             "type": "git",
             "url": "https://github.com/getkirby/smartypants.git",
-            "reference": "025ca4102be567ea93de57b43386dc691f9c03bf"
+            "reference": "e81fda920cb547381fa1d599dfb0d7cd8e9b53b4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/getkirby/smartypants/zipball/025ca4102be567ea93de57b43386dc691f9c03bf",
-            "reference": "025ca4102be567ea93de57b43386dc691f9c03bf",
+            "url": "https://api.github.com/repos/getkirby/smartypants/zipball/e81fda920cb547381fa1d599dfb0d7cd8e9b53b4",
+            "reference": "e81fda920cb547381fa1d599dfb0d7cd8e9b53b4",
             "shasum": ""
         },
-        "time": "2016-08-17 19:58:57",
+        "require": {
+            "getkirby/toolkit": "*"
+        },
+        "require-dev": {
+            "getkirby/toolkit": "dev-develop"
+        },
+        "time": "2016-08-17 20:23:17",
         "type": "library",
         "installation-source": "source",
         "autoload": {

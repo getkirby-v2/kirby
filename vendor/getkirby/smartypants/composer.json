@@ -4,5 +4,11 @@
   "keywords": ["smartypants"],
   "autoload": {
     "files": ["smartypants.php"]
+  },
+  "require": {
+    "getkirby/toolkit": "*"
+  },
+  "require-dev": {
+    "getkirby/toolkit": "dev-develop"
   }
 }
