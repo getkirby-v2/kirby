@@ -6,4 +6,8 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Parsedown' => $vendorDir . '/erusev/parsedown/Parsedown.php',
+    'ParsedownExtra' => $vendorDir . '/erusev/parsedown-extra/ParsedownExtra.php',
+    'ParsedownExtraTest' => $vendorDir . '/erusev/parsedown-extra/test/ParsedownExtraTest.php',
+    'ParsedownTest' => $vendorDir . '/erusev/parsedown/test/ParsedownTest.php',
 );

@@ -26,10 +26,18 @@ class ComposerStaticInitf5a857c9e4c52bed0abd021c7daaa7b8
         ),
     );
 
+    public static $classMap = array (
+        'Parsedown' => __DIR__ . '/..' . '/erusev/parsedown/Parsedown.php',
+        'ParsedownExtra' => __DIR__ . '/..' . '/erusev/parsedown-extra/ParsedownExtra.php',
+        'ParsedownExtraTest' => __DIR__ . '/..' . '/erusev/parsedown-extra/test/ParsedownExtraTest.php',
+        'ParsedownTest' => __DIR__ . '/..' . '/erusev/parsedown/test/ParsedownTest.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixesPsr0 = ComposerStaticInitf5a857c9e4c52bed0abd021c7daaa7b8::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitf5a857c9e4c52bed0abd021c7daaa7b8::$classMap;
 
         }, null, ClassLoader::class);
     }
