@@ -749,13 +749,15 @@ class Kirby {
       throw new Error('Invalid event.');
     }
 
-    if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
-      foreach(static::$hooks[$hook] as $key => $callback) {
+    foreach(static::$hooks as $pattern => $hooks) {
+      if(!is_array($hooks)) continue;
+      if(!fnmatch($pattern, $hook)) continue;
 
-        if(!array_key_exists($hook, static::$triggered)) static::$triggered[$hook] = array();
-        if(in_array($key, static::$triggered[$hook])) continue;
+      foreach($hooks as $key => $callback) {
+        if(!array_key_exists($pattern, static::$triggered)) static::$triggered[$pattern] = array();
+        if(in_array($key, static::$triggered[$pattern])) continue;
 
-        static::$triggered[$hook][] = $key;
+        static::$triggered[$pattern][] = $key;
 
         try {
           $callback = $callback->bindTo($event);
