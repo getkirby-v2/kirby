@@ -1,6 +1,7 @@
 <?php
 
 use Kirby\Component;
+use Kirby\Event;
 use Kirby\Pipe;
 use Kirby\Registry;
 use Kirby\Request;
@@ -733,11 +734,20 @@ class Kirby {
   /**
    * Trigger a hook
    * 
-   * @param string $hook The name of the hook
+   * @param Event $event Event object or a string with the event name
    * @param mixed $args Additional arguments for the hook
    * @return mixed
    */
-  public function trigger($hook, $args = null) {
+  public function trigger($event, $args = null) {
+
+    if(is_string($event)) {
+      $hook = $event;
+      $event = new Event($hook);
+    } else if(is_a($event, 'Kirby\\Event')) {
+      $hook = $event->type();
+    } else {
+      throw new Error('Invalid event.');
+    }
 
     if(isset(static::$hooks[$hook]) and is_array(static::$hooks[$hook])) {
       foreach(static::$hooks[$hook] as $key => $callback) {
@@ -748,6 +758,7 @@ class Kirby {
         static::$triggered[$hook][] = $key;
 
         try {
+          $callback = $callback->bindTo($event);
           call($callback, $args);        
         } catch(Exception $e) {
           // caught callback error

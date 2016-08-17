@@ -11,14 +11,15 @@ load(array(
 
   // kirby class and subclasses
   'kirby'                  => __DIR__ . DS . 'kirby.php',
-  'kirby\\roots'           => __DIR__ . DS . 'kirby' . DS . 'roots.php',
-  'kirby\\urls'            => __DIR__ . DS . 'kirby' . DS . 'urls.php',
   'kirby\\component'       => __DIR__ . DS . 'kirby' . DS . 'component.php',
+  'kirby\\event'           => __DIR__ . DS . 'kirby' . DS . 'event.php',
   'kirby\\registry'        => __DIR__ . DS . 'kirby' . DS . 'registry.php',
   'kirby\\request'         => __DIR__ . DS . 'kirby' . DS . 'request.php',
   'kirby\\request\\params' => __DIR__ . DS . 'kirby' . DS . 'request' . DS . 'params.php',
   'kirby\\request\\query'  => __DIR__ . DS . 'kirby' . DS . 'request' . DS . 'query.php',
   'kirby\\request\\path'   => __DIR__ . DS . 'kirby' . DS . 'request' . DS . 'path.php',
+  'kirby\\roots'           => __DIR__ . DS . 'kirby' . DS . 'roots.php',
+  'kirby\\urls'            => __DIR__ . DS . 'kirby' . DS . 'urls.php',
 
   // core components
   'kirby\\component\\template'    => __DIR__ . DS . 'kirby' . DS . 'component' . DS . 'template.php',
