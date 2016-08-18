@@ -32,7 +32,8 @@
     "ext-gd": "*",
     "erusev/parsedown-extra": "*",
     "getkirby/toolkit": "*",
-    "getkirby/smartypants": "dev-master"
+    "getkirby/smartypants": "dev-master",
+    "filp/whoops": "*"   
   },
   "require-dev": {
     "getkirby/toolkit": "dev-develop"

@@ -4,6 +4,7 @@ return [
   // kirby class and subclasses
   'kirby'                  => __DIR__ . DS . 'kirby.php',
   'kirby\\component'       => __DIR__ . DS . 'kirby' . DS . 'component.php',
+  'kirby\\errorhandling'   => __DIR__ . DS . 'kirby' . DS . 'errorhandling.php',
   'kirby\\event'           => __DIR__ . DS . 'kirby' . DS . 'event.php',
   'kirby\\registry'        => __DIR__ . DS . 'kirby' . DS . 'registry.php',
   'kirby\\request'         => __DIR__ . DS . 'kirby' . DS . 'request.php',
