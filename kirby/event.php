@@ -38,6 +38,7 @@ class Event extends Obj {
   }
 
   public function user() {
+    if(isset($this->user) && is_a($this->user, 'User')) return $this->user;
     return site()->user();
   }
 
