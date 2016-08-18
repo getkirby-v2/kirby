@@ -7,6 +7,7 @@ use R;
 use Response;
 use Toolkit;
 use Tpl;
+use Visitor;
 
 use Whoops\Run;
 use Whoops\Handler\Handler;
@@ -24,7 +25,7 @@ class ErrorHandling {
     $this->kirby  = $kirby;
     $this->whoops = new Run;
 
-    if(r::ajax()) {
+    if(r::ajax() || visitor::acceptance('application/json') > visitor::acceptance('text/html')) {
       $this->json();
     } else if(r::cli()) {
       $this->cli();
@@ -79,8 +80,8 @@ class ErrorHandling {
       $handler->setPageTitle('Kirby CMS Debugger');
       $handler->addDataTableCallback('Kirby', function() {
         return [
-          'Kirby Toolkit' => toolkit::$version,
-          'Kirby CMS'     => kirby::$version,
+          'Kirby Toolkit' => 'v' . toolkit::$version,
+          'Kirby CMS'     => 'v' . kirby::$version,
         ];
       });
 
