@@ -1,8 +1,8 @@
 <?php
 
 use Kirby\Component;
+use Kirby\ErrorHandling;
 use Kirby\Event;
-use Kirby\Pipe;
 use Kirby\Registry;
 use Kirby\Request;
 use Kirby\Roots;
@@ -30,6 +30,7 @@ class Kirby {
   public $request;
   public $components = [];
   public $registry;
+  public $errorHandling;
 
   static public function instance($class = null) {
     if(!is_null(static::$instance)) return static::$instance;
@@ -41,6 +42,7 @@ class Kirby {
   }
 
   public function __construct($options = array()) {
+
     $this->roots    = new Roots(dirname(__DIR__));
     $this->urls     = new Urls();
     $this->registry = new Registry($this);
@@ -49,6 +51,7 @@ class Kirby {
 
     // make sure the instance is stored / overwritten
     static::$instance = $this;
+
   }
 
   public function defaults() {
@@ -211,14 +214,12 @@ class Kirby {
     email::$defaults['body']    = $this->option('email.body');
     email::$defaults['options'] = $this->option('email.options');
 
-    // simple error handling
-    if($this->options['debug'] === true) {
-      error_reporting(E_ALL);
-      ini_set('display_errors', 1);
-    } else if($this->options['debug'] === false) {
-      error_reporting(0);
-      ini_set('display_errors', 0);
-    }
+    // start the error handler
+    $this->errorHandling = new ErrorHandling($this);
+
+  }
+
+  public function errorHandler() {
 
   }
 
@@ -827,9 +828,9 @@ class Kirby {
       'urls'       => $this->urls(),
       'roots'      => $this->roots(),
       'options'    => $this->options(),
-      'components' => array_keys($this->components),
-      'plugins'    => array_keys($this->plugins),
-      'hooks'      => array_keys(static::$hooks),
+      'components' => array_keys((array)$this->components),
+      'plugins'    => array_keys((array)$this->plugins),
+      'hooks'      => array_keys((array)static::$hooks),
       'routes'     => array_values(array_map(function($route) {
         return $route['pattern'];
       }, $this->routes())),

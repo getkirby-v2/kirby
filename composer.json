@@ -18,10 +18,25 @@
     "source": "https://github.com/getkirby/kirby"
   },
   "autoload": {
-    "files": ["bootstrap.php"]
+    "files": ["composer.php"]
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/getkirby/smartypants"
+    }
+  ],  
   "require": {
-    "php": ">=5.4.0"
+    "php": ">=5.4.0",
+    "ext-mbstring": "*",
+    "ext-gd": "*",
+    "erusev/parsedown-extra": "*",
+    "getkirby/toolkit": "*",
+    "getkirby/smartypants": "dev-master",
+    "filp/whoops": "*"   
+  },
+  "require-dev": {
+    "getkirby/toolkit": "dev-develop"
   },
   "archive": {
     "exclude": ["/.gitmodules", "/.gitignore", "/.travis.yml", "phpunit.xml", "/test"]
