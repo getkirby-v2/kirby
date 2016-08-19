@@ -16,21 +16,24 @@ abstract class RoleAbstract {
   protected $panel       = false;
   protected $permissions = array(
       'panel.access'         => true,
-      'panel.site.update'    => true,
       'panel.page.create'    => true,
       'panel.page.update'    => true,
-      'panel.page.move'      => true,
+      'panel.page.delete'    => true,
       'panel.page.sort'      => true,
       'panel.page.hide'      => true,
-      'panel.page.delete'    => true,
+      'panel.page.move'      => true,
+      'panel.site.update'    => true,
       'panel.file.upload'    => true,
       'panel.file.replace'   => true,
+      'panel.file.rename'    => true,
       'panel.file.update'    => true,
+      'panel.file.sort'      => true,
       'panel.file.delete'    => true,
-      'panel.user.add'       => true,
-      'panel.user.edit'      => true,
-      'panel.user.role'      => true,
+      'panel.user.create'    => true,
+      'panel.user.update'    => true,
       'panel.user.delete'    => true,
+      'panel.avatar.upload'  => true,
+      'panel.avatar.delete'  => true,
     );
 
   public $default = false;
