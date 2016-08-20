@@ -67,6 +67,7 @@ class Kirby {
       'routes'                          => array(),
       'headers'                         => array(),
       'languages'                       => array(),
+      'language.cookie'                 => true,
       'roles'                           => array(),
       'cache'                           => false,
       'debug'                           => 'env',
@@ -703,7 +704,7 @@ class Kirby {
     $this->response = $this->component('response')->make($response);
 
     // store the current language in the session
-    if($this->site()->multilang() && $language = $this->site()->language()) {
+    if($this->site()->multilang() && $language = $this->site()->language() && c::get('language.cookie')) {
       s::set('language', $language->code());
     }
 
