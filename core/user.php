@@ -166,7 +166,8 @@ abstract class UserAbstract {
       }
     }
 
-    // create a new session id
+    // start a new session with a new session ID
+    s::restart();
     s::regenerateId();
 
     // copy over the old session stuff
