@@ -208,6 +208,10 @@ class Html {
   public static function a($href, $text = null, $attr = array()) {
     $attr = array_merge(array('href' => $href), $attr);
     if(empty($text)) $text = $href;
+    // add rel=noopener to target blank links to improve security
+    if(a::get($attr, 'target') === '_blank' && empty($attr['rel'])) {
+      $attr['rel'] = 'noopener';
+    }
     return static::tag('a', $text, $attr);
   }
 
