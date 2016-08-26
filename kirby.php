@@ -301,7 +301,7 @@ class Kirby {
           // check if the language detector is activated
           if($kirby->option('language.detect')) {
 
-            if(s::get('language') and $language = $kirby->site()->sessionLanguage()) {
+            if(s::get('kirby_language') and $language = $kirby->site()->sessionLanguage()) {
               // $language is already set but the user wants to 
               // select the default language
               $referer = r::referer();
@@ -703,8 +703,12 @@ class Kirby {
     $this->response = $this->component('response')->make($response);
 
     // store the current language in the session
-    if($this->site()->multilang() && $language = $this->site()->language()) {
-      s::set('language', $language->code());
+    if(
+        $this->option('language.detect') &&
+        $this->site()->multilang() && 
+        $this->site()->language()
+      ) {      
+      s::set('kirby_language', $this->site()->language()->code());
     }
 
     return $this->response;
