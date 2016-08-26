@@ -144,12 +144,29 @@ abstract class UserAbstract {
 
   public function login($password) {
 
-    static::logout();
-
     if(!password::match($password, $this->password)) return false;
+
+    // get all the current session data
+    $data = s::get();
+
+    // remove anything kirby related from 
+    // the current session data
+    foreach($data as $key => $value) {
+      if(str::startsWith($key, 'kirby_')) {
+        unset($data[$key]);
+      }
+    }
+
+    // logout active users first
+    if(static::current()) {
+      static::logout();      
+    }
 
     // create a new session id
     s::regenerateId();
+
+    // copy over the old session stuff
+    s::set($data);
 
     $key    = $this->generateKey();
     $secret = $this->generateSecret($key);
@@ -172,8 +189,12 @@ abstract class UserAbstract {
   }
 
   static public function logout() {
+
     s::destroy();    
+
+    // remove the session cookie
     cookie::remove(s::$name . '_auth');
+
   }
 
   public function is($user) {
@@ -311,9 +332,12 @@ abstract class UserAbstract {
   }
 
   static public function unauthorize() {
+
     s::remove('kirby_auth_secret');
     s::remove('kirby_auth_username');
+
     cookie::remove('kirby_auth');
+
   }
 
   static public function current() {
