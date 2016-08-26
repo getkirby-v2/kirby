@@ -146,20 +146,24 @@ abstract class UserAbstract {
 
     if(!password::match($password, $this->password)) return false;
 
-    // get all the current session data
-    $data = s::get();
-
-    // remove anything kirby related from 
-    // the current session data
-    foreach($data as $key => $value) {
-      if(str::startsWith($key, 'kirby_')) {
-        unset($data[$key]);
-      }
-    }
-
-    // logout active users first
+    $data = array();
     if(static::current()) {
-      static::logout();      
+      // logout active users first
+      static::logout();
+      
+      // don't preserve current session data
+      // because of privilege level change
+    } else {
+      // get all the current session data
+      $data = s::get();
+
+      // remove anything kirby related from 
+      // the current session data
+      foreach($data as $key => $value) {
+        if(str::startsWith($key, 'kirby_')) {
+          unset($data[$key]);
+        }
+      }
     }
 
     // create a new session id
