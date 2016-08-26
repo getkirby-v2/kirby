@@ -219,10 +219,6 @@ class Kirby {
 
   }
 
-  public function errorHandler() {
-
-  }
-
   /**
    * Registers all routes
    *
