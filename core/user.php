@@ -93,11 +93,49 @@ abstract class UserAbstract {
 
   // support for old 'panel' role permission
   public function hasPanelAccess() {
-    return $this->role()->hasPermission('panel.access');
+    return $this->can('panel.access');
   }
 
-  public function hasPermission($target) {
-    return $this->role()->hasPermission($target);
+  /**
+   * Checks if the user has permission for the specified event
+   *
+   * @param Event $event Event object or a string with the event name
+   * @param mixed $args Additional arguments for the permission callbacks
+   * @return Obj Object with status() and message() methods
+   */
+  public function permission($event, $args = []) {
+    if(is_string($event)) {
+      $event = new Kirby\Event($event);
+    } else if(!is_a($event, 'Kirby\\Event')) {
+      throw new Error('Invalid event.');
+    }
+
+    // make sure that the user is set correctly
+    $event->user = $this;
+
+    return $this->role()->permission($event, $args);
+  }
+
+  /**
+   * Returns true if the user has permission for the specified event
+   *
+   * @param Event $event Event object or a string with the event name
+   * @param mixed $args Additional arguments for the permission callbacks
+   * @return boolean
+   */
+  public function can($event, $args = []) {
+    return $this->permission($event, $args)->status() === true;
+  }
+
+  /**
+   * Returns true if the user has *no* permission for the specified event
+   *
+   * @param Event $event Event object or a string with the event name
+   * @param mixed $args Additional arguments for the permission callbacks
+   * @return boolean
+   */
+  public function cannot($event, $args = []) {
+    return $this->permission($event, $args)->status() === false;
   }
 
   public function isAdmin() {

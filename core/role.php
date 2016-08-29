@@ -14,27 +14,7 @@ abstract class RoleAbstract {
   protected $id          = null;
   protected $name        = null;
   protected $panel       = false;
-  protected $permissions = array(
-      'panel.access'         => true,
-      'panel.page.create'    => true,
-      'panel.page.update'    => true,
-      'panel.page.delete'    => true,
-      'panel.page.sort'      => true,
-      'panel.page.hide'      => true,
-      'panel.page.move'      => true,
-      'panel.site.update'    => true,
-      'panel.file.upload'    => true,
-      'panel.file.replace'   => true,
-      'panel.file.rename'    => true,
-      'panel.file.update'    => true,
-      'panel.file.sort'      => true,
-      'panel.file.delete'    => true,
-      'panel.user.create'    => true,
-      'panel.user.update'    => true,
-      'panel.user.delete'    => true,
-      'panel.avatar.upload'  => true,
-      'panel.avatar.delete'  => true,
-    );
+  protected $permissions = array('*' => true);
 
   public $default = false;
 
@@ -49,10 +29,14 @@ abstract class RoleAbstract {
 
     if(isset($data['permissions']) and is_array($data['permissions'])) {
       $this->permissions = a::merge($this->permissions, $data['permissions']);
+
+      // sort the permissions by key length, most specific rule comes first
+      $keys = array_map('strlen', array_keys($this->permissions));
+      array_multisort($keys, SORT_DESC, $this->permissions);
     } else if(isset($data['permissions']) and $data['permissions'] === false) {
-      $this->permissions = array_fill_keys(array_keys($this->permissions), false);
+      $this->permissions = array('*' => false);
     } else {
-      $this->permissions = $this->permissions;
+      // use the default permissions
     }
 
     // fallback permissions support for old 'panel' role variable
@@ -77,17 +61,80 @@ abstract class RoleAbstract {
 
   // support for old 'panel' role permission
   public function hasPanelAccess() {
-    return $this->hasPermission('panel.access');
+    return $this->can('panel.access');
   }
 
-  public function hasPermission($target) {
-    if($this->id == 'admin') {
-      return true;
-    } else if(isset($this->permissions[$target]) and $this->permissions[$target] === true) {
-      return true;
+  /**
+   * Checks if the role has permission for the specified event
+   *
+   * @param Event $event Event object or a string with the event name
+   * @param mixed $args Additional arguments for the permission callbacks
+   * @return Obj Object with status() and message() methods
+   */
+  public function permission($event, $args = []) {
+
+    if(is_string($event)) {
+      $action = $event;
+      $event = new Kirby\Event($action);
+    } else if(is_a($event, 'Kirby\\Event')) {
+      $action = $event->type();
     } else {
-      return false;
+      throw new Error('Invalid event.');
     }
+
+    // admins always have full access
+    if($this->id == 'admin') return new Obj(['status' => true, 'message' => null]);
+
+    foreach($this->permissions as $pattern => $value) {
+      // check if the permission matches the event
+      if(!fnmatch($pattern, $action)) continue;
+
+      if(is_bool($value)) {
+        // simple definition, return it directly
+        return new Obj(['status' => $value, 'message' => null]);
+      } else if(is_a($value, 'Closure')) {
+        // closure, call with args and bound event, expect a boolean or string
+        $value = $value->bindTo($event);
+        $result = call($value, $args);
+        if(is_bool($result)) {
+          return new Obj(['status' => $result, 'message' => null]);
+        } else if(is_string($result)) {
+          // error message
+          return new Obj(['status' => false, 'message' => $result]);
+        } else {
+          throw new Error('Permission ' . $pattern . ' of role ' . $this->id . ' must return a boolean or error string.');
+        }
+      } else {
+        // not boolean or closure, invalid definition
+        throw new Error('Permission ' . $pattern . ' of role ' . $this->id . ' is invalid.');
+      }
+    }
+
+    // no match, no access by default
+    return new Obj(['status' => false, 'message' => null]);
+
+  }
+
+  /**
+   * Returns true if the role has permission for the specified event
+   *
+   * @param Event $event Event object or a string with the event name
+   * @param mixed $args Additional arguments for the permission callbacks
+   * @return boolean
+   */
+  public function can($event, $args = []) {
+    return $this->permission($event, $args)->status() === true;
+  }
+
+  /**
+   * Returns true if the role has *no* permission for the specified event
+   *
+   * @param Event $event Event object or a string with the event name
+   * @param mixed $args Additional arguments for the permission callbacks
+   * @return boolean
+   */
+  public function cannot($event, $args = []) {
+    return $this->permission($event, $args)->status() === false;
   }
 
   public function isDefault() {
