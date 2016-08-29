@@ -165,10 +165,15 @@ class Thumb extends Component {
     $string = [];
 
     foreach($keys as $long => $key) {
-
       $value = a::get($thumb->options, $long);
-
-      if($value === true) {
+      if($key === 'blur') {
+        $value = a::get($thumb->options, 'blurpx');
+        if($value == generator::$defaults['blurpx']) {
+          $string[] = $key;
+        } else {
+          $string[] = $key . $value;
+        }
+      } else if($value === true) {
         $string[] = $key;
       } else if($value === false) {
         continue;

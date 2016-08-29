@@ -167,10 +167,19 @@ trait Image {
   /**
    * Blurs the image
    * 
+   * @param boolean|int $px
    * @return Asset
    */
-  public function blur() {
-    return $this->thumb(['blur' => true]);
+  public function blur($px = false) {
+
+    $options = ['blur' => true];
+
+    if($px) {
+      $options['blurpx'] = $px;
+    }
+    
+    return $this->thumb($options);
+  
   }
 
   /**
