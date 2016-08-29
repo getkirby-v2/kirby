@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Users
+ * User
  *
  * @package   Kirby CMS
  * @author    Bastian Allgeier <bastian@getkirby.com>
@@ -101,7 +101,7 @@ abstract class UserAbstract {
   }
 
   public function isAdmin() {
-    return $this->role()->id() == 'admin';
+    return $this->role()->id() === 'admin';
   }
 
   public function avatar() {
