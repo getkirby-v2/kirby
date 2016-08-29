@@ -491,9 +491,13 @@ class Kirby {
     // additional language variables for multilang sites
     if($site->multilang()) {
       // path for the language file
-      $file = $this->roots()->languages() . DS . $site->language()->code() . '.php';
-      // load the file if it exists
-      if(file_exists($file)) include_once($file);
+      $path = $this->roots()->languages() . DS . $site->language()->code();
+
+      // load .php file if it exists
+      if(f::exists($path . '.php')) include_once($path . '.php');
+
+      // load .yml file and set as language variables if it exists
+      if(f::exists($path . '.yml')) l::set(data::read($path . '.yml', 'yaml'));
     }
 
   }
