@@ -74,12 +74,12 @@ class Role extends Entry {
     // get from main role directory
     $name = strtolower($name);    
     $file = $this->kirby->roots()->roles() . DS . $name . '.php';
-    if(is_array($role = static::loadFile($name, $file))) return $role;
+    if(is_array($role = $this->loadFile($name, $file))) return $role;
 
     // get from registry
     if(isset(static::$roles[$name])) {
       if(is_array(static::$roles[$name])) return static::$cache[$name] = static::$roles[$name];
-      if(is_array($role = static::loadFile($name, static::$roles[$name]))) return $role;
+      if(is_array($role = $this->loadFile($name, static::$roles[$name]))) return $role;
     }
 
     // no match
@@ -89,12 +89,16 @@ class Role extends Entry {
 
   /**
    * Loads a role from file and returns the array
+   * 
+   * This function can't be static because of an issue
+   * with closure binding in PHP < 7
+   * ("Cannot bind an instance to a static closure")
    *
    * @param string $name
    * @param string $path
    * @return array
    */
-  protected static function loadFile($name, $path) {
+  protected function loadFile($name, $path) {
 
     if(!is_file($path)) return false;
 
