@@ -52,6 +52,10 @@ class Roots extends Obj {
     return isset($this->accounts) ? $this->accounts : $this->site() . DS . 'accounts';
   }
 
+  public function roles() {
+    return isset($this->roles) ? $this->roles : $this->site() . DS . 'roles';
+  }
+
   public function blueprints() {
     return isset($this->blueprints) ? $this->blueprints : $this->site() . DS . 'blueprints';
   }

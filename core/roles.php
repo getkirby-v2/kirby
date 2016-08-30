@@ -19,39 +19,49 @@ abstract class RolesAbstract extends Collection {
    */
   public function __construct() {
 
-    $roles = kirby::instance()->option('roles');
+    $kirby = kirby();
 
-    // set the default set of roles, if roles are not configured
-    if(empty($roles)) {
-      $roles = array(
-        array(
-          'id'          => 'admin',
-          'name'        => 'Admin',
-          'default'     => true
-        ),
-        array(
-          'id'          => 'editor',
-          'name'        => 'Editor',
-          'permissions' => array(
-            '*'                 => true,
-            'panel.site.update' => false,
-            'panel.user.*'      => false,
-            'panel.user.update' => function($user) {
-              return site()->user()->username() === $user->username();
-            }
-          )
-        )
-      );
+    // fetch a list of roles from roles dir & registry
+    foreach($kirby->get('role') as $roleName) {
+      $role = $kirby->get('role', $roleName);
+      if(is_array($role)) {
+        $role['id'] = $roleName;
+        $role = new Role($role);
+        $this->data[$role->id()] = $role;
+      }
     }
 
-    foreach($roles as $role) {
-      $role = new Role($role);
-      $this->data[$role->id()] = $role;
+    // fetch roles from the Kirby "roles" option (deprecated)
+    foreach($kirby->option('roles') as $role) {
+      if(is_array($role)) {
+        $role = new Role($role);
+        $this->data[$role->id()] = $role;
+      }
     }
 
-    // check for a valid admin role
+    // set the default set of roles if roles are not configured
+    if(empty($this->data)) {
+      $editor = new Role([
+        'id'          => 'editor',
+        'name'        => 'Editor',
+        'permissions' => [
+          '*'                 => true,
+          'panel.site.update' => false,
+          'panel.user.*'      => false,
+          'panel.user.update' => function($user) {
+            return site()->user()->username() === $user->username();
+          }
+        ]
+      ]);
+      $this->data = ['editor' => $editor];
+    }
+
+    // check for a valid admin role and provide a default one otherwise
     if(!isset($this->data['admin'])) {
-      throw new Exception('There must be an admin role');
+      $this->data['admin'] = new Role([
+        'id'   => 'admin',
+        'name' => 'Admin'
+      ]);
     }
 
     // check for a valid default role

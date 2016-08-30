@@ -23,6 +23,7 @@ class RootsTest extends KirbyTestCase {
     $this->assertEquals(__DIR__ . DS . 'site' . DS . 'languages', $roots->languages());
     $this->assertEquals(__DIR__ . DS . 'site' . DS . 'blueprints', $roots->blueprints());
     $this->assertEquals(__DIR__ . DS . 'site' . DS . 'accounts', $roots->accounts());
+    $this->assertEquals(__DIR__ . DS . 'site' . DS . 'roles', $roots->roles());
     $this->assertEquals(__DIR__ . DS . 'site' . DS . 'cache', $roots->cache());
     $this->assertEquals(__DIR__ . DS . 'assets', $roots->assets());
     $this->assertEquals(__DIR__ . DS . 'assets' . DS . 'css' . DS . 'templates', $roots->autocss());
@@ -75,6 +76,7 @@ class RootsTest extends KirbyTestCase {
     $this->assertEquals(__DIR__ . DS . 'mysite' . DS . 'languages', $roots->languages());
     $this->assertEquals(__DIR__ . DS . 'mysite' . DS . 'blueprints', $roots->blueprints());
     $this->assertEquals(__DIR__ . DS . 'mysite' . DS . 'accounts', $roots->accounts());
+    $this->assertEquals(__DIR__ . DS . 'mysite' . DS . 'roles', $roots->roles());
     $this->assertEquals(__DIR__ . DS . 'mysite' . DS . 'cache', $roots->cache());
 
   }

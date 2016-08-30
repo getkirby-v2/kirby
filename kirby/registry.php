@@ -42,6 +42,7 @@ class Registry {
       'kirby\\registry\\method'     => __DIR__ . DS . 'registry' . DS . 'method.php',
       'kirby\\registry\\model'      => __DIR__ . DS . 'registry' . DS . 'model.php',
       'kirby\\registry\\option'     => __DIR__ . DS . 'registry' . DS . 'option.php',
+      'kirby\\registry\\role'       => __DIR__ . DS . 'registry' . DS . 'role.php',      
       'kirby\\registry\\route'      => __DIR__ . DS . 'registry' . DS . 'route.php',      
       'kirby\\registry\\snippet'    => __DIR__ . DS . 'registry' . DS . 'snippet.php',      
       'kirby\\registry\\template'   => __DIR__ . DS . 'registry' . DS . 'template.php',      
