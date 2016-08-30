@@ -90,9 +90,10 @@ class Role extends Entry {
   /**
    * Loads a role from file and returns the array
    * 
-   * This function can't be static because of an issue
+   * This method can't be static because of an issue
    * with closure binding in PHP < 7
    * ("Cannot bind an instance to a static closure")
+   * See https://bugs.php.net/bug.php?id=68792
    *
    * @param string $name
    * @param string $path
