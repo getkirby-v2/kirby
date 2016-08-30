@@ -29,10 +29,6 @@ abstract class RoleAbstract {
 
     if(isset($data['permissions']) and is_array($data['permissions'])) {
       $this->permissions = a::merge($this->permissions, $data['permissions']);
-
-      // sort the permissions by key length, most specific rule comes first
-      $keys = array_map('strlen', array_keys($this->permissions));
-      array_multisort($keys, SORT_DESC, $this->permissions);
     } else if(isset($data['permissions']) and $data['permissions'] === false) {
       $this->permissions = array('*' => false);
     } else {
@@ -43,6 +39,10 @@ abstract class RoleAbstract {
     if(isset($data['panel']) and is_bool($data['panel'])) {
       $this->permissions['panel.access'] = $data['panel'];
     }
+
+    // sort the permissions by key length, most specific rule comes first
+    $keys = array_map('strlen', array_keys($this->permissions));
+    array_multisort($keys, SORT_DESC, $this->permissions);
 
     // is this role the default role?
     if(isset($data['default'])) {
