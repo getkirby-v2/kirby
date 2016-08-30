@@ -21,7 +21,7 @@ abstract class RoleAbstract {
   public function __construct($data = array()) {
 
     if(!isset($data['id']))   throw new Exception('The role id is missing');
-    if(!isset($data['name'])) throw new Exception('The role name is missing');
+    if(!isset($data['name'])) throw new Exception('The role name is missing (' . $data['id'] . ')');
 
     // required data
     $this->id   = $data['id'];
