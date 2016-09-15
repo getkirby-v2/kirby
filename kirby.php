@@ -145,21 +145,17 @@ class Kirby {
 
   public function configure() {
 
-    // load all available config files
     $root    = $this->roots()->config();
-    $configs = array(
+    $configs = [
       'main' => 'config.php',
       'host' => 'config.' . server::get('SERVER_NAME') . '.php',
       'addr' => 'config.' . server::get('SERVER_ADDR') . '.php',
-    );
+    ];
 
-    $allowed = array_filter(dir::read($root), function($file) {
-      return substr($file, 0, 7) === 'config.' and substr($file, -4) === '.php';
-    });
-
+    // load all available config files
     foreach($configs as $config) {
       $file = $root . DS . $config;
-      if(in_array($config, $allowed, true) and file_exists($file)) include_once($file);
+      if(file_exists($file)) include_once($file);
     } 
 
     // apply the options
