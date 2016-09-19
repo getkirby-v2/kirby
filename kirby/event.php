@@ -13,7 +13,13 @@ use Obj;
  * @copyright Bastian Allgeier
  * @license   http://getkirby.com/license
  */
-class Event extends Obj {
+class Event {
+
+  public $type;
+  public $kirby;
+  public $site;
+  public $target;
+  public $user;
 
   /**
    * Constructs a new event
@@ -21,30 +27,47 @@ class Event extends Obj {
    * @param string $type Name of the event
    * @param array  $data Additional data
    */
-  public function __construct($type, $data = []) {
-    $this->type = $type;
-    parent::__construct($data);
+  public function __construct($type, $target = []) {
+    $this->type   = $type;
+    $this->target = new Obj($target);
   }
 
-  /**
-   * Helper methods
-   */
+  public function type() {
+    return $this->type;
+  }
+
+  public function target() {
+    return $this->target;
+  }
+
   public function kirby() {
     return kirby();
   }
 
   public function site() {
-    return site();
+    if(is_a($this->site, 'Site')) {
+      return $this->site;
+    } else {
+      return $this->site = site();
+    }
   }
 
   public function user() {
-    if(isset($this->user) && is_a($this->user, 'User')) return $this->user;
-    return site()->user();
+    if(is_a($this->user, 'User')) {
+      return $this->user;
+    } else {
+      return $this->user = $this->site()->user();      
+    }
   }
 
   public function username() {
     $user = $this->user();
-    return ($user)? $user->username() : null;
+    return $user ? $user->username() : null;
+  }
+
+  public function role() {
+    $user = $this->user();
+    return $user ? $user->role() : null;
   }
 
 }
