@@ -18,10 +18,9 @@ class Controller extends Entry {
 
   /**
    * Store of registered controllers
-   * 
-   * @var array $controllers
    */
   protected static $controllers = [];
+  protected static $cache       = [];
 
   /**
    * Adds a new controller to the registry
@@ -44,6 +43,7 @@ class Controller extends Entry {
     }
 
     if(!$this->kirby->option('debug') || is_a($callback, 'Closure') || file_exists($callback)) {
+      static::$cache = []; // clear cache
       return static::$controllers[$name] = $callback;      
     } else {
       throw new Exception('Invalid controller. You must pass a closure or an existing file');
@@ -60,8 +60,8 @@ class Controller extends Entry {
   public function get($name) {
 
     // get from cache
-    if(isset(static::$controllers[$name]) && is_a(static::$controllers[$name], 'Closure')) {
-      return static::$controllers[$name];
+    if(isset(static::$cache[$name]) && is_a(static::$cache[$name], 'Closure')) {
+      return static::$cache[$name];
     }
 
     // get from main controller directory
@@ -70,11 +70,14 @@ class Controller extends Entry {
     if($controller = static::loadFile($name, $file)) return $controller;
 
     // get from registry
-    if(isset(static::$controllers[$name]) && $controller = static::loadFile($name, static::$controllers[$name])) return $controller;
+    if(isset(static::$controllers[$name])) {
+      if(is_a(static::$controllers[$name], 'Closure')) return static::$cache[$name] = static::$controllers[$name];
+      if($controller = static::loadFile($name, static::$controllers[$name])) return $controller;
+    }
 
     // fall back to site controller
-    if(isset(static::$controllers['site']) && is_a(static::$controllers['site'], 'Closure')) {
-      return static::$controllers['site'];
+    if(isset(static::$cache['site']) && is_a(static::$cache['site'], 'Closure')) {
+      return static::$cache['site'];
     }
     if($controller = static::loadFile($name, $this->kirby->roots()->controllers() . DS . 'site.php')) return $controller;
 
@@ -94,8 +97,8 @@ class Controller extends Entry {
 
     if(!is_file($path)) return false;
 
-    static::$controllers[$name] = require_once($path);
-    return static::$controllers[$name];
+    static::$cache[$name] = require_once($path);
+    return static::$cache[$name];
 
   }
 

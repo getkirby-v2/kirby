@@ -26,7 +26,7 @@ class Field extends FieldAbstract {
     $field        = $current->get($this->key);
     $untranslated = $default->get($this->key)->value();
 
-    return $field->isNotEmpty() and $field->value() !== $untranslated;
+    return $field->isNotEmpty() && $field->value() !== $untranslated;
 
   }
 
