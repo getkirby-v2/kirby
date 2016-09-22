@@ -442,21 +442,58 @@ class Str {
   }
 
   /**
-   * Generates a random string
+   * Generates a random string that may be used for cryptographic purposes
+   * 
+   * WARNING (PHP < 7.0): This function does *not* produce secure random
+   * strings and falls back to str::quickRandom with PHP < 7.0!
    *
-   * @param  int  $length The length of the random string
+   * @param int $length The length of the random string
+   * @param string $type Pool type (type of allowed characters)
    * @return string
    */
   public static function random($length = false, $type = 'alphaNum') {
-    $length = $length ? $length : rand(5,10);
-    $pool   = static::pool($type);
-    shuffle($pool);
-    $size   = count($pool) - 1;
-    $hash   = '';
-    for($x = 0; $x < $length; $x++) {
-      $hash .= $pool[rand(0, $size)];
+    // fall back to insecure str::quickRandom() on PHP < 7
+    if(!function_exists('random_int') || !function_exists('random_bytes')) {
+      return static::quickRandom($length, $type);
     }
-    return $hash;
+
+    if(!$length) $length = random_int(5, 10);
+    $pool = static::pool($type, false);
+
+    // catch invalid pools
+    if(!$pool) return false;
+
+    // regex that matches all characters *not* in the pool of allowed characters
+    $regex = '/[^' . $pool . ']/';
+
+    // collect characters until we have our required length
+    $result = '';
+    while(($currentLength = strlen($result)) < $length) {
+      $missing = $length - $currentLength;
+      $bytes = random_bytes($missing);
+      $result .= substr(preg_replace($regex, '', base64_encode($bytes)), 0, $missing);
+    }
+
+    return $result;
+  }
+
+  /**
+   * Quickly generates a random string
+   *
+   * WARNING: Should not be considered sufficient for cryptography, etc.
+   *
+   * @param int $length The length of the random string
+   * @param string $type Pool type (type of allowed characters)
+   * @return string
+   */
+  public static function quickRandom($length = false, $type = 'alphaNum') {
+    if(!$length) $length = rand(5, 10);
+    $pool = static::pool($type, false);
+
+    // catch invalid pools
+    if(!$pool) return false;
+
+    return substr(str_shuffle(str_repeat($pool, $length)), 0, $length);
   }
 
   /**

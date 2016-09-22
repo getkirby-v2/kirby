@@ -64,17 +64,11 @@ class Escape {
    * <body>...ESCAPE UNTRUSTED DATA BEFORE PUTTING HERE...</body>
    * <div>...ESCAPE UNTRUSTED DATA BEFORE PUTTING HERE...</div>
    * 
-   * @uses ENT_SUBSTITUE if available (PHP >= 5.4)
-   * 
    * @param  string $string
    * @return string
    */
   public static function html($string) {
-    $flags = ENT_QUOTES;
-    if(defined('ENT_SUBSTITUTE')) {
-      $flags |= ENT_SUBSTITUTE;
-    }
-    return htmlspecialchars($string, $flags, 'UTF-8');
+    return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
   }
   
   /**
@@ -91,17 +85,11 @@ class Escape {
    * < is replaced with &lt;
    * > is replaced with &gt;
    * 
-   * @uses ENT_XML1 if available (PHP >= 5.4)
-   * 
    * @param  string $string
    * @return string 
    */
   public static function xml($string) {
-    if (defined('ENT_XML1')) {
-      return htmlspecialchars($string, ENT_QUOTES | ENT_XML1, 'UTF-8');
-    } else {
-      return str_replace('&#039;', '&apos;', htmlspecialchars($string, ENT_QUOTES, 'UTF-8'));
-    }
+    return htmlspecialchars($string, ENT_QUOTES | ENT_XML1, 'UTF-8');
   }
   
   /**

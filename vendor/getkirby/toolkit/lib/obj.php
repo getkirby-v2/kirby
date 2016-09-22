@@ -20,6 +20,7 @@ class Obj extends stdClass {
    */
   public function __construct($data = array()) {
     foreach($data as $key => $val) {
+      if(!is_string($key) || str::length($key) === 0) continue;
       $this->{$key} = $val;
     }
   }

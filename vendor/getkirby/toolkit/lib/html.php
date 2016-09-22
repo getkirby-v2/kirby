@@ -185,14 +185,14 @@ class Html {
       return implode(' ', $attributes);
     }
 
-    if(empty($value) && $value !== '0' && $value !== 0) {
+    if($value === null || $value === '' || $value === []) {
       return false;
     } else if($value === ' ') {
       return strtolower($name) . '=""';      
     } else if(is_bool($value)) {
       return $value === true ? strtolower($name) : '';
     } else {
-      return strtolower($name) . '="' . ( is_array($value) ? implode(' ', $value) : $value ) . '"';      
+      return strtolower($name) . '="' . htmlspecialchars(is_array($value) ? implode(' ', $value) : $value) . '"';      
     }
 
   }
