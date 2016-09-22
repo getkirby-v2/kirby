@@ -70,4 +70,9 @@ class Event {
     return $user ? $user->role() : null;
   }
 
+  public function language() {
+    $user = $this->user();
+    return $user ? $user->language() : null;
+  }
+
 }
