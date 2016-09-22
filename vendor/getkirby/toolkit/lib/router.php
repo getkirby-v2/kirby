@@ -171,10 +171,10 @@ class Router {
    *
    * @param mixed $filters
    */
-  protected function filterer($filters) {
+  protected function filterer($filters, $route) {
     foreach((array)$filters as $filter) {
       if(array_key_exists($filter, $this->filters) && is_callable($this->filters[$filter])) {
-        call_user_func($this->filters[$filter]);
+        call_user_func($this->filters[$filter], $route);
       }
     }
   }
@@ -240,7 +240,7 @@ class Router {
 
     }
 
-    if($this->route && $this->filterer($this->route->filter) !== false) {
+    if($this->route && $this->filterer($this->route->filter, $this->route) !== false) {
       return $this->route;
     } else {
       return null;
