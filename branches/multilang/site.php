@@ -129,7 +129,7 @@ class Site extends SiteAbstract {
    * @return Language
    */
   public function sessionLanguage() {
-    if($code = s::get('language') and $language = $this->languages()->find($code)) {
+    if($code = s::get('kirby_language') and $language = $this->languages()->find($code)) {
       return $language;
     } else {
       return null;
@@ -138,7 +138,7 @@ class Site extends SiteAbstract {
 
   public function switchLanguage(Language $language) {
 
-    s::set('language', $language->code());
+    s::set('kirby_language', $language->code());
 
     if($this->language()->code() != $language->code()) {
       go($this->page()->url($language->code()));
