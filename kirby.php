@@ -262,7 +262,7 @@ class Kirby {
 
         // prevent invalid representation routes
         if($site->representation === '' || $site->representation != $page->representation()) {
-          return go($page->url());
+          return $site->errorPage();
         }
 
       }
