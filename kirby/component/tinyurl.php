@@ -21,7 +21,8 @@ class TinyUrl extends \Kirby\Component {
   public function defaults() {
     return [
       'tinyurl.enabled' => true,
-      'tinyurl.folder'  => 'x',    
+      'tinyurl.folder'  => 'x',
+      'tinyurl.url'     => null
     ];
   }
 
