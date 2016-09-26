@@ -361,12 +361,14 @@ class Kirby {
     );
 
     // all other urls
-    $routes['others'] = array(
-      'pattern' => '(:all)',
-      'method'  => 'ALL',
-      'lang'    => false,
-      'action'  => $otherRoute
-    );
+    if(!$site->multilang()) {
+      $routes['others'] = array(
+        'pattern' => '(:all)',
+        'method'  => 'ALL',
+        'lang'    => false,
+        'action'  => $otherRoute
+      );
+    }
 
     return $routes;
 
