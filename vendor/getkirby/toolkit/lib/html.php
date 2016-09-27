@@ -210,7 +210,7 @@ class Html {
     if(empty($text)) $text = $href;
     // add rel=noopener to target blank links to improve security
     if(a::get($attr, 'target') === '_blank' && empty($attr['rel'])) {
-      $attr['rel'] = 'noopener';
+      $attr['rel'] = 'noopener noreferrer';
     }
     return static::tag('a', $text, $attr);
   }
