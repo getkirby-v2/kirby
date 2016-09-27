@@ -193,18 +193,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/getkirby/toolkit.git",
-            "reference": "e2a10e56df1ecd94c11f844000022bafc1065864"
+            "reference": "35cf92695741ea75e258671b664aa94dbfa23474"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/getkirby/toolkit/zipball/e2a10e56df1ecd94c11f844000022bafc1065864",
-            "reference": "e2a10e56df1ecd94c11f844000022bafc1065864",
+            "url": "https://api.github.com/repos/getkirby/toolkit/zipball/35cf92695741ea75e258671b664aa94dbfa23474",
+            "reference": "35cf92695741ea75e258671b664aa94dbfa23474",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2016-09-27 15:52:00",
+        "time": "2016-09-27 16:05:48",
         "type": "library",
         "installation-source": "source",
         "autoload": {
