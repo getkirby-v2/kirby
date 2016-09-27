@@ -50,7 +50,7 @@ abstract class RolesAbstract extends Collection {
           'panel.user.*'      => false,
           'panel.user.read'   => true,
           'panel.user.update' => function() {
-            return $this->username() === $this->target()->user()->username();
+            return $this->user()->is($this->target()->user());
           }
         ]
       ]);
