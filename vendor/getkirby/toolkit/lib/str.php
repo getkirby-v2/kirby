@@ -735,18 +735,43 @@ class Str {
   }
 
   /**
-   * Returns a part of a string until a certain character
+   * Returns the beginning of a string before the given character
+   * 
+   * @param string $string
+   * @param string $char
+   * @return string
+   */
+  public static function before($string, $char) {
+    $pos = strpos($string, $char);
+    return static::substr($string, 0, $pos);
+  }
+
+  /**
+   * Returns the beginning of a string until the given character
    * 
    * @param string $string
    * @param string $char
    * @return string
    */
   public static function until($string, $char) {
-    return a::first(static::split($string, $char));
+    $pos = strpos($string, $char);
+    return static::substr($string, 0, $pos + str::length($char));
   }
 
   /**
-   * Returns a part of a string starting from a certain character
+   * Returns the rest of the string after the given character
+   * 
+   * @param string $string
+   * @param string $char
+   * @return string
+   */
+  public static function after($string, $char) {
+    $pos = strpos($string, $char);
+    return static::substr($string, $pos+1);
+  }
+
+  /**
+   * Returns the rest of the string starting from the given character
    * 
    * @param string $string
    * @param string $char
@@ -754,7 +779,8 @@ class Str {
    */
   public static function from($string, $char) {
     $pos = strpos($string, $char);
-    return static::substr($string, $pos+1);
+    return static::substr($string, $pos);
   }
+
 
 }

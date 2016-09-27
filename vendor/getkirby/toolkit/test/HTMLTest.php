@@ -26,7 +26,7 @@ class HTMLTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testAWithTargetBlank() {
-    $expected = '<a href="http://google.com" target="_blank" rel="noopener">Google</a>';
+    $expected = '<a href="http://google.com" target="_blank" rel="noopener noreferrer">Google</a>';
     $this->assertEquals($expected, html::a('http://google.com', 'Google', array('target' => '_blank')));
   }
 
