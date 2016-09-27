@@ -192,12 +192,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby/toolkit.git",
-                "reference": "a5b12a00b2ad8d2763dd69e22d12a8962118dac6"
+                "reference": "ea53560189874320cbc022fb46782e1b3dff49b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/a5b12a00b2ad8d2763dd69e22d12a8962118dac6",
-                "reference": "a5b12a00b2ad8d2763dd69e22d12a8962118dac6",
+                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/ea53560189874320cbc022fb46782e1b3dff49b3",
+                "reference": "ea53560189874320cbc022fb46782e1b3dff49b3",
                 "shasum": ""
             },
             "require": {
@@ -225,7 +225,7 @@
             "keywords": [
                 "toolkit"
             ],
-            "time": "2016-09-27 16:08:35"
+            "time": "2016-09-27 16:30:43"
         }
     ],
     "packages-dev": [],

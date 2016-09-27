@@ -1,48 +1,5 @@
 [
     {
-        "name": "getkirby/toolkit",
-        "version": "dev-develop",
-        "version_normalized": "dev-develop",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/getkirby/toolkit.git",
-            "reference": "a5b12a00b2ad8d2763dd69e22d12a8962118dac6"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/getkirby/toolkit/zipball/a5b12a00b2ad8d2763dd69e22d12a8962118dac6",
-            "reference": "a5b12a00b2ad8d2763dd69e22d12a8962118dac6",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4.0"
-        },
-        "time": "2016-09-27 16:08:35",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "files": [
-                "bootstrap.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Bastian Allgeier",
-                "email": "bastian@getkirby.com",
-                "homepage": "http://bastianallgeier.com"
-            }
-        ],
-        "description": "The Kirby 2 toolkit is a set of handy classes and helpers which make your life with PHP easier.",
-        "homepage": "http://toolkit.getkirby.com",
-        "keywords": [
-            "toolkit"
-        ]
-    },
-    {
         "name": "getkirby/smartypants",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -227,6 +184,49 @@
             "library",
             "whoops",
             "zf2"
+        ]
+    },
+    {
+        "name": "getkirby/toolkit",
+        "version": "dev-develop",
+        "version_normalized": "dev-develop",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/getkirby/toolkit.git",
+            "reference": "ea53560189874320cbc022fb46782e1b3dff49b3"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/getkirby/toolkit/zipball/ea53560189874320cbc022fb46782e1b3dff49b3",
+            "reference": "ea53560189874320cbc022fb46782e1b3dff49b3",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0"
+        },
+        "time": "2016-09-27 16:30:43",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "files": [
+                "bootstrap.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Bastian Allgeier",
+                "email": "bastian@getkirby.com",
+                "homepage": "http://bastianallgeier.com"
+            }
+        ],
+        "description": "The Kirby 2 toolkit is a set of handy classes and helpers which make your life with PHP easier.",
+        "homepage": "http://toolkit.getkirby.com",
+        "keywords": [
+            "toolkit"
         ]
     }
 ]
