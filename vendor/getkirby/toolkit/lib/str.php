@@ -734,4 +734,27 @@ class Str {
 
   }
 
+  /**
+   * Returns a part of a string until a certain character
+   * 
+   * @param string $string
+   * @param string $char
+   * @return string
+   */
+  public static function until($string, $char) {
+    return a::first(static::split($string, $char));
+  }
+
+  /**
+   * Returns a part of a string starting from a certain character
+   * 
+   * @param string $string
+   * @param string $char
+   * @return string
+   */
+  public static function from($string, $char) {
+    $pos = strpos($string, $char);
+    return static::substr($string, $pos+1);
+  }
+
 }
