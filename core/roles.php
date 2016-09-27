@@ -48,8 +48,9 @@ abstract class RolesAbstract extends Collection {
           '*'                 => true,
           'panel.site.update' => false,
           'panel.user.*'      => false,
-          'panel.user.update' => function($user) {
-            return site()->user()->username() === $user->username();
+          'panel.user.read'   => true,
+          'panel.user.update' => function() {
+            return $this->username() === $this->target()->user()->username();
           }
         ]
       ]);
