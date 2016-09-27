@@ -197,7 +197,10 @@ abstract class PageAbstract {
     if(!isset($this->kirby->options['tinyurl.enabled']) || !$this->kirby->options['tinyurl.enabled']) {
       return $this->url();
     } else {
-      return url($this->kirby->options['tinyurl.folder'] . '/' . $this->hash());
+      // try to use tinyurl.url first, otherwise use tinyurl.folder
+      $base = a::get($this->kirby->options, 'tinyurl.url');
+      if(!$base) $base = a::get($this->kirby->options, 'tinyurl.folder');
+      return url($base . '/' . $this->hash());
     }
   }
 
