@@ -39,6 +39,13 @@
     "getkirby/toolkit": "dev-develop"
   },
   "archive": {
-    "exclude": ["/.gitmodules", "/.gitignore", "/.travis.yml", "phpunit.xml", "/test"]
+    "exclude": [
+      "/.gitmodules", 
+      "/.gitignore", 
+      "/.travis.yml", 
+      "phpunit.xml", 
+      "/test",
+      "/vendor"
+    ]
   }
 }
