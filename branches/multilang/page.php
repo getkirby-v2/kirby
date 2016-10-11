@@ -203,7 +203,7 @@ class Page extends PageAbstract {
 
         // replace all missing fields with values from the default content
         foreach($defaultContent->data as $key => $field) {
-          if(empty($content->data[$key]->value)) {
+          if($content->data[$key]->value == '') {
             $content->data[$key] = $field;
           }
         }
