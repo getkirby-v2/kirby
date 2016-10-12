@@ -23,14 +23,14 @@ class PrettyPageHandler extends Handler
      *
      * @var array
      */
-    private $searchPaths = array();
+    private $searchPaths = [];
 
     /**
      * Fast lookup cache for known resource locations.
      *
      * @var array
      */
-    private $resourceCache = array();
+    private $resourceCache = [];
 
     /**
      * The name of the custom css file.
@@ -42,7 +42,7 @@ class PrettyPageHandler extends Handler
     /**
      * @var array[]
      */
-    private $extraTables = array();
+    private $extraTables = [];
 
     /**
      * @var bool
@@ -53,6 +53,11 @@ class PrettyPageHandler extends Handler
      * @var string
      */
     private $pageTitle = "Whoops! There was an error.";
+
+    /**
+     * @var array[]
+     */
+    private $applicationPaths;
 
     /**
      * A string identifier for a known IDE/text editor, or a closure
@@ -70,13 +75,14 @@ class PrettyPageHandler extends Handler
      * A list of known editor strings
      * @var array
      */
-    protected $editors = array(
+    protected $editors = [
         "sublime"  => "subl://open?url=file://%file&line=%line",
         "textmate" => "txmt://open?url=file://%file&line=%line",
         "emacs"    => "emacs://open?url=file://%file&line=%line",
         "macvim"   => "mvim://open/?url=file://%file&line=%line",
         "phpstorm" => "phpstorm://open?file=%file&line=%line",
-    );
+        "idea"     => "idea://open?file=%file&line=%line",
+    ];
 
     /**
      * Constructor.
@@ -86,7 +92,7 @@ class PrettyPageHandler extends Handler
         if (ini_get('xdebug.file_link_format') || extension_loaded('xdebug')) {
             // Register editor using xdebug's file_link_format option.
             $this->editors['xdebug'] = function ($file, $line) {
-                return str_replace(array('%f', '%l'), array($file, $line), ini_get('xdebug.file_link_format'));
+                return str_replace(['%f', '%l'], [$file, $line], ini_get('xdebug.file_link_format'));
             };
         }
 
@@ -158,8 +164,21 @@ class PrettyPageHandler extends Handler
             $code = Misc::translateErrorCode($inspector->getException()->getSeverity());
         }
 
+        // Detect frames that belong to the application.
+        if ($this->applicationPaths) {
+            /* @var \Whoops\Exception\Frame $frame */
+            foreach ($frames as $frame) {
+                foreach ($this->applicationPaths as $path) {
+                    if (substr($frame->getFile(), 0, strlen($path)) === $path) {
+                        $frame->setApplication(true);
+                        break;
+                    }
+                }
+            }
+        }
+
         // List of variables that will be passed to the layout template.
-        $vars = array(
+        $vars = [
             "page_title" => $this->getPageTitle(),
 
             // @todo: Asset compiler
@@ -184,16 +203,19 @@ class PrettyPageHandler extends Handler
             "handler"        => $this,
             "handlers"       => $this->getRun()->getHandlers(),
 
-            "tables"      => array(
+            "active_frames_tab" => count($frames) && $frames->offsetGet(0)->isApplication() ?  'application' : 'all',
+            "has_frames_tabs"   => $this->getApplicationPaths(),
+
+            "tables"      => [
                 "GET Data"              => $_GET,
                 "POST Data"             => $_POST,
                 "Files"                 => $_FILES,
                 "Cookies"               => $_COOKIE,
-                "Session"               => isset($_SESSION) ? $_SESSION :  array(),
+                "Session"               => isset($_SESSION) ? $_SESSION :  [],
                 "Server/Request Data"   => $_SERVER,
                 "Environment Variables" => $_ENV,
-            ),
-        );
+            ],
+        ];
 
         if (isset($customCssFile)) {
             $vars["stylesheet"] .= file_get_contents($customCssFile);
@@ -201,14 +223,19 @@ class PrettyPageHandler extends Handler
 
         // Add extra entries list of data tables:
         // @todo: Consolidate addDataTable and addDataTableCallback
-        $extraTables = array_map(function ($table) {
-            return $table instanceof \Closure ? $table() : $table;
+        $extraTables = array_map(function ($table) use ($inspector) {
+            return $table instanceof \Closure ? $table($inspector) : $table;
         }, $this->getDataTables());
         $vars["tables"] = array_merge($extraTables, $vars["tables"]);
 
         if (\Whoops\Util\Misc::canSendHeaders()) {
             header('Content-Type: text/html');
         }
+
+        $plainTextHandler = new PlainTextHandler();
+        $plainTextHandler->setException($this->getException());
+        $plainTextHandler->setInspector($this->getInspector());
+        $vars["preface"] = "<!--\n\n\n" . $plainTextHandler->generateResponse() . "\n\n\n\n\n\n\n\n\n\n\n-->";
 
         $helper->setVariables($vars);
         $helper->render($templateFile);
@@ -244,15 +271,15 @@ class PrettyPageHandler extends Handler
             throw new InvalidArgumentException('Expecting callback argument to be callable');
         }
 
-        $this->extraTables[$label] = function () use ($callback) {
+        $this->extraTables[$label] = function (\Whoops\Exception\Inspector $inspector = null) use ($callback) {
             try {
-                $result = call_user_func($callback);
+                $result = call_user_func($callback, $inspector);
 
                 // Only return the result if it can be iterated over by foreach().
-                return is_array($result) || $result instanceof \Traversable ? $result : array();
+                return is_array($result) || $result instanceof \Traversable ? $result : [];
             } catch (\Exception $e) {
                 // Don't allow failure to break the rendering of the original exception.
-                return array();
+                return [];
             }
         };
     }
@@ -268,7 +295,7 @@ class PrettyPageHandler extends Handler
     {
         if ($label !== null) {
             return isset($this->extraTables[$label]) ?
-                   $this->extraTables[$label] : array();
+                   $this->extraTables[$label] : [];
         }
 
         return $this->extraTables;
@@ -411,10 +438,10 @@ class PrettyPageHandler extends Handler
         }
         else if(is_string($this->editor) && isset($this->editors[$this->editor]) && !is_callable($this->editors[$this->editor]))
         {
-           return array(
+           return [
                 'ajax' => false,
                 'url' => $this->editors[$this->editor],
-            );
+            ];
         }
         else if(is_callable($this->editor) || (isset($this->editors[$this->editor]) && is_callable($this->editors[$this->editor])))
         {
@@ -427,10 +454,10 @@ class PrettyPageHandler extends Handler
                 $callback = call_user_func($this->editors[$this->editor], $filePath, $line);
             }
 
-            return array(
+            return [
                 'ajax' => isset($callback['ajax']) ? $callback['ajax'] : false,
                 'url' => (is_array($callback) ? $callback['url'] : $callback),
-            );
+            ];
         }
 
         return false;
@@ -552,5 +579,25 @@ class PrettyPageHandler extends Handler
     public function setResourcesPath($resourcesPath)
     {
         $this->addResourcePath($resourcesPath);
+    }
+
+    /**
+     * Return the application paths.
+     *
+     * @return array
+     */
+    public function getApplicationPaths()
+    {
+        return $this->applicationPaths;
+    }
+
+    /**
+     * Set the application paths.
+     *
+     * @param array $applicationPaths
+     */
+    public function setApplicationPaths($applicationPaths)
+    {
+        $this->applicationPaths = $applicationPaths;
     }
 }

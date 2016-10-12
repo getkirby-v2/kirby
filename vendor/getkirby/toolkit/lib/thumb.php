@@ -299,6 +299,9 @@ thumb::$drivers['im'] = function($thumb) {
   $command[] = '-resize';
 
   if($thumb->options['crop']) {
+    if(empty($thumb->options['height'])) {
+      $thumb->options['height'] = $thumb->options['width'];
+    }
     $command[] = $thumb->options['width'] . 'x' . $thumb->options['height'] . '^';
     $command[] = '-gravity Center -crop ' . $thumb->options['width'] . 'x' . $thumb->options['height'] . '+0+0';
   } else {

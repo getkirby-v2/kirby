@@ -24,6 +24,7 @@ class Remote {
     'encoding' => 'utf-8',
     'agent'    => null,
     'body'     => true,
+    'progress' => null,
   );
 
   // store for the response object
@@ -66,18 +67,24 @@ class Remote {
 
     // curl options
     $params = array(
-      CURLOPT_URL             => $this->options['url'],
-      CURLOPT_ENCODING        => $this->options['encoding'],
-      CURLOPT_CONNECTTIMEOUT  => $this->options['timeout'],
-      CURLOPT_TIMEOUT         => $this->options['timeout'],
-      CURLOPT_AUTOREFERER     => true,
-      CURLOPT_RETURNTRANSFER  => $this->options['body'],
-      CURLOPT_FOLLOWLOCATION  => true,
-      CURLOPT_MAXREDIRS       => 10,
-      CURLOPT_SSL_VERIFYPEER  => false,
-      CURLOPT_HEADER          => false,
-      CURLOPT_HEADERFUNCTION  => array($this, 'header'),
+      CURLOPT_URL              => $this->options['url'],
+      CURLOPT_ENCODING         => $this->options['encoding'],
+      CURLOPT_CONNECTTIMEOUT   => $this->options['timeout'],
+      CURLOPT_TIMEOUT          => $this->options['timeout'],
+      CURLOPT_AUTOREFERER      => true,
+      CURLOPT_RETURNTRANSFER   => $this->options['body'],
+      CURLOPT_FOLLOWLOCATION   => true,
+      CURLOPT_MAXREDIRS        => 10,
+      CURLOPT_SSL_VERIFYPEER   => false,
+      CURLOPT_HEADER           => false,
+      CURLOPT_HEADERFUNCTION   => array($this, 'header')
     );
+
+    // add the progress 
+    if(is_callable($this->options['progress'])) {
+      $params[CURLOPT_NOPROGRESS]       = false;
+      $params[CURLOPT_PROGRESSFUNCTION] = $this->options['progress'];
+    }
 
     // add all headers
     if(!empty($this->options['headers'])) $params[CURLOPT_HTTPHEADER] = $this->options['headers'];

@@ -3,7 +3,7 @@
 * Layout template file for Whoops's pretty error output.
 */
 ?>
-<!DOCTYPE html>
+<!DOCTYPE html><?php echo $preface; ?>
 <html>
   <head>
     <meta charset="utf-8">
@@ -15,20 +15,37 @@
 
     <div class="Whoops container">
       <div class="stack-container">
-        <div class="left-panel cf <?php echo (!$has_frames ? 'empty' : '') ?>">
+        <div class="panel left-panel cf <?php echo (!$has_frames ? 'empty' : '') ?>">
           <header>
             <?php $tpl->render($header) ?>
           </header>
 
-          <div class="frames-description">
-            Stack frames (<?php echo count($frames) ?>):
+          <div class="frames-description <?php echo $has_frames_tabs ? 'frames-description-application' : '' ?>">
+            <?php if ($has_frames_tabs): ?>
+              <?php if ($active_frames_tab == 'application'): ?>
+                <a href="#" id="application-frames-tab" class="frames-tab frames-tab-active">
+                  Application frames (<?php echo $frames->countIsApplication() ?>)
+                </a>
+              <?php else: ?>
+                <span href="#" id="application-frames-tab" class="frames-tab">
+                  Application frames (<?php echo $frames->countIsApplication() ?>)
+                </span>
+              <?php endif; ?>
+              <a href="#" id="all-frames-tab" class="frames-tab <?php echo $active_frames_tab == 'all' ? 'frames-tab-active' : '' ?>">
+                All frames (<?php echo count($frames) ?>)
+              </a>
+            <?php else: ?>
+              <span>
+                  Stack frames (<?php echo count($frames) ?>)
+              </span>
+            <?php endif; ?>
           </div>
 
-          <div class="frames-container">
+          <div class="frames-container <?php echo $active_frames_tab == 'application' ? 'frames-container-application' : '' ?>">
             <?php $tpl->render($frame_list) ?>
           </div>
         </div>
-        <div class="details-container cf">
+        <div class="panel details-container cf">
           <?php $tpl->render($frame_code) ?>
           <?php $tpl->render($env_details) ?>
         </div>

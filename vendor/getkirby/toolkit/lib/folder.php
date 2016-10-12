@@ -395,6 +395,15 @@ class Folder {
   }
 
   /**
+   * Zip the current directory
+   * 
+   * @param string $to The path to the zip file
+   */
+  public function zip($to) {
+    return dir::zip($this->root(), $to);
+  }
+
+  /**
    * Makes it possible to echo the entire object
    * 
    * @return string

@@ -791,4 +791,29 @@ class F {
     return false;
   }
 
+  /**
+   * Unzips a zip file 
+   * 
+   * @param string $file
+   * @param string $to
+   * @return boolean
+   */
+  public static function unzip($file, $to) {
+
+    if(!class_exists('ZipArchive')) {
+      throw new Exception('The ZipArchive class is not available');
+    }
+
+    $zip = new ZipArchive;
+
+    if($zip->open($file) === true) {
+      $zip->extractTo($to);
+      $zip->close();
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
 }

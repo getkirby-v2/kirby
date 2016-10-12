@@ -112,9 +112,9 @@ class Escape {
    *                        which is necessary in case of unquoted HTML attributes.
    * @return string
    */
-  public static function attr($string, $strict = false) {
+  public static function attr($string, $strict = true) {
     if(static::noNeedToEscape($string)) return $string;
-    if($strict !== true) {
+    if($strict === true) {
       return preg_replace_callback('/[^a-z0-9,\.\-_]/iSu', 'static::escapeAttrChar', $string);
     }
     return static::html($string);

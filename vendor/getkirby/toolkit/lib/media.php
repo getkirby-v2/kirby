@@ -401,6 +401,22 @@ class Media {
   }
 
   /**
+   * Unzip the current file to the given directory
+   * 
+   * @param string $dir
+   * @return boolean
+   */
+  public function unzip($dir) {
+
+    if(strtolower($this->extension()) !== 'zip') {
+      return false;
+    }
+
+    f::unzip($this->root(), $dir);
+
+  }
+
+  /**
    * Returns the exif object for this file (if image)
    *
    * @return Exif
