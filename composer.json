@@ -3,7 +3,7 @@
   "description": "The Kirby 2 core.",
   "keywords": ["core", "kirby", "cms"],
   "homepage": "https://getkirby.com",
-  "license": "https://getkirby.com/license",
+  "license": "license.md",
   "authors": [
     {
       "name": "Bastian Allgeier",
