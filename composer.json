@@ -20,23 +20,13 @@
   "autoload": {
     "files": ["composer.php"]
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/getkirby/smartypants"
-    }
-  ],  
   "require": {
     "php": ">=5.4.0",
     "ext-mbstring": "*",
     "ext-gd": "*",
-    "erusev/parsedown-extra": "*",
-    "getkirby/toolkit": "*",
-    "getkirby/smartypants": "dev-master",
-    "filp/whoops": "*"   
-  },
-  "require-dev": {
-    "getkirby/toolkit": "dev-develop"
+    "erusev/parsedown-extra": "0.7.*",
+    "getkirby/smartypants": "1.0.*",
+    "filp/whoops": "2.1.*"   
   },
   "archive": {
     "exclude": [

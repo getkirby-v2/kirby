@@ -6,9 +6,6 @@
     "files": ["smartypants.php"]
   },
   "require": {
-    "getkirby/toolkit": "*"
-  },
-  "require-dev": {
-    "getkirby/toolkit": "dev-develop"
+    "getkirby/toolkit": "2.4.*"
   }
 }

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1b1e28f2ae7923fabb7bc8a065989013",
-    "content-hash": "5a04ca1074b292c92414b4acf5f6974b",
+    "hash": "2680bb0a8416f620a9d5b6353eb30ae1",
+    "content-hash": "365082a13ca47f73a117e3a1fcc4c5cc",
     "packages": [
         {
             "name": "erusev/parsedown",
@@ -152,20 +152,20 @@
         },
         {
             "name": "getkirby/smartypants",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby/smartypants.git",
-                "reference": "e81fda920cb547381fa1d599dfb0d7cd8e9b53b4"
+                "reference": "e8be42ba5e44d571aeaf773104e2729d76bf6949"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/smartypants/zipball/e81fda920cb547381fa1d599dfb0d7cd8e9b53b4",
-                "reference": "e81fda920cb547381fa1d599dfb0d7cd8e9b53b4",
+                "url": "https://api.github.com/repos/getkirby/smartypants/zipball/e8be42ba5e44d571aeaf773104e2729d76bf6949",
+                "reference": "e8be42ba5e44d571aeaf773104e2729d76bf6949",
                 "shasum": ""
             },
             "require": {
-                "getkirby/toolkit": "*"
+                "getkirby/toolkit": "2.4.*"
             },
             "require-dev": {
                 "getkirby/toolkit": "dev-develop"
@@ -176,28 +176,25 @@
                     "smartypants.php"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "description": "The Kirby SmartyPants Fork",
             "keywords": [
                 "smartypants"
             ],
-            "support": {
-                "source": "https://github.com/getkirby/smartypants/tree/master",
-                "issues": "https://github.com/getkirby/smartypants/issues"
-            },
-            "time": "2016-08-17 20:23:17"
+            "time": "2016-11-03 10:35:44"
         },
         {
             "name": "getkirby/toolkit",
-            "version": "dev-develop",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby/toolkit.git",
-                "reference": "f3bede7385ff04f5d4834028a6bb6fade741349f"
+                "reference": "79a1b171cbbf7200a9c9cee917f17034845c8138"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/f3bede7385ff04f5d4834028a6bb6fade741349f",
-                "reference": "f3bede7385ff04f5d4834028a6bb6fade741349f",
+                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/79a1b171cbbf7200a9c9cee917f17034845c8138",
+                "reference": "79a1b171cbbf7200a9c9cee917f17034845c8138",
                 "shasum": ""
             },
             "require": {
@@ -225,16 +222,13 @@
             "keywords": [
                 "toolkit"
             ],
-            "time": "2016-10-17 12:14:29"
+            "time": "2016-11-03 10:23:28"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "getkirby/smartypants": 20,
-        "getkirby/toolkit": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
