@@ -764,6 +764,11 @@ class Kirby {
 
         static::$triggered[$pattern][] = $key;
 
+        // make sure that we always have a Closure object
+        if(is_string($callback)) {
+          $callback = (new ReflectionFunction($callback))->getClosure();
+        }
+
         try {
           $callback = $callback->bindTo($event);
           call($callback, $args);        
