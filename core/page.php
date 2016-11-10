@@ -1085,7 +1085,7 @@ abstract class PageAbstract {
     } else {
       if($template = $this->kirby->registry->get('template', $template)) {
         return $template;
-      } else if($template !== 'default') {
+      } else if($template !== 'default' && $template !== null) {
         // try to get a representation of the default template
         return $this->_templateFile('default');
       } else {
