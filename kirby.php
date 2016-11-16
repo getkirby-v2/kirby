@@ -297,6 +297,9 @@ class Kirby {
 
     };
 
+    // tinyurl handling
+    $routes['tinyurl'] = $this->component('tinyurl')->route();
+
     if($site->multilang()) {
 
       // first register all languages that are not at the root of the domain
@@ -324,9 +327,6 @@ class Kirby {
       );
 
     }
-
-    // tinyurl handling
-    $routes['tinyurl'] = $this->component('tinyurl')->route();
 
     // home redirect
     $routes['homeRedirect'] = array(
