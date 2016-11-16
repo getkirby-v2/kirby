@@ -22,6 +22,20 @@ class ErrorHandling {
 
   public function __construct(Kirby $kirby) {
 
+    if($kirby->options['whoops'] === false) {
+
+      if($kirby->options['debug'] === true) {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+      } else if($kirby->options['debug'] === false) {
+        error_reporting(0);
+        ini_set('display_errors', 0);
+      }
+
+      return;
+
+    }
+
     $this->kirby  = $kirby;
     $this->whoops = new Run;
 

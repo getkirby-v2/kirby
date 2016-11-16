@@ -70,6 +70,7 @@ class Kirby {
       'roles'                           => array(),
       'cache'                           => false,
       'debug'                           => 'env',
+      'whoops'                          => true,
       'ssl'                             => false,
       'cache.driver'                    => 'file',
       'cache.options'                   => array(),
