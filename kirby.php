@@ -30,7 +30,6 @@ class Kirby {
   public $request;
   public $components = [];
   public $registry;
-  public $errorHandling;
 
   static public function instance($class = null) {
     if(!is_null(static::$instance)) return static::$instance;
@@ -214,9 +213,6 @@ class Kirby {
     email::$defaults['subject'] = $this->option('email.subject');
     email::$defaults['body']    = $this->option('email.body');
     email::$defaults['options'] = $this->option('email.options');
-
-    // start the error handler
-    $this->errorHandling = new ErrorHandling($this);
 
   }
 
@@ -659,6 +655,9 @@ class Kirby {
 
     // this will trigger the configuration
     $site = $this->site();
+
+    // start the error handler
+    new ErrorHandling($this);
 
     // force secure connections if enabled
     if($this->option('ssl') and !r::secure()) {
