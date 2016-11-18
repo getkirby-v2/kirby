@@ -505,8 +505,8 @@ class Str {
    */
   public static function slug($string, $separator = null, $allowed = null) {
 
-    $separator = $separator ?: static::$defaults['slug']['separator'];
-    $allowed   = $allowed   ?: static::$defaults['slug']['allowed'];
+    $separator = $separator !== null ? $separator : static::$defaults['slug']['separator'];
+    $allowed   = $allowed   !== null ? $allowed   : static::$defaults['slug']['allowed'];
 
     $string = trim($string);
     $string = static::lower($string);
@@ -514,10 +514,15 @@ class Str {
 
     // replace spaces with simple dashes
     $string = preg_replace('![^' . $allowed . ']!i', $separator, $string);
-    // remove double dashes
-    $string = preg_replace('![' . preg_quote($separator) . ']{2,}!', $separator, $string);
+    
+    if(strlen($separator) > 0) {
+      // remove double separators
+      $string = preg_replace('![' . preg_quote($separator) . ']{2,}!', $separator, $string);
+    }
+
     // trim trailing and leading dashes
     $string = trim($string, $separator);
+
     // replace slashes with dashes
     $string = str_replace('/', $separator, $string);
 

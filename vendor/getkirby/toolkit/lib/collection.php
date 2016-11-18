@@ -340,7 +340,7 @@ class Collection extends I implements Countable {
         } else {
           ${"param_$i"} = array();
           foreach($array as $index => $row) {
-            ${"param_$i"}[$index] = str::ascii(is_array($row) ? str::lower($row[$param]) : str::lower($row->$param()));
+            ${"param_$i"}[$index] = is_array($row) ? str::lower($row[$param]) : str::lower($row->$param());
           }
         }
       } else {
