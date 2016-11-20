@@ -314,15 +314,6 @@ class Kirby {
 
       }
 
-      // fallback if no language is at the root
-      $routes[] = array(
-        'pattern' => '/',
-        'method'  => 'ALL',
-        'action'  => function() use($site) {
-          return go($site->defaultLanguage()->url());
-        }
-      );
-
     }
 
     // home redirect
@@ -362,6 +353,14 @@ class Kirby {
         'method'  => 'ALL',
         'lang'    => false,
         'action'  => $otherRoute
+      );
+    } else {
+      $routes['others'] = array(
+        'pattern' => '(:all)',
+        'method'  => 'ALL',
+        'action'  => function() use($site) {
+          return go($site->defaultLanguage()->url());
+        }
       );
     }
 
