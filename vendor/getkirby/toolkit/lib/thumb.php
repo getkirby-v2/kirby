@@ -33,7 +33,9 @@ class Thumb extends Obj {
     'grayscale'   => false,
     'overwrite'   => false,
     'autoOrient'  => false,
-    'interlace'   => false
+    'interlace'   => false,
+	'icc.profile' => false,
+    'meta.data'   => false
   );
 
   public $source      = null;
@@ -278,7 +280,10 @@ thumb::$drivers['im'] = function($thumb) {
 
   $command[] = isset($thumb->options['bin']) ? $thumb->options['bin'] : 'convert';
   $command[] = '"' . $thumb->source->root() . '"';
-  $command[] = '-strip';
+
+  if(!$thumb->options['icc.profile'] && !$thumb->options['meta.data']) {
+    $command[] = '-strip';
+  }
 
   if($thumb->options['interlace']) {
     $command[] = '-interlace line';
@@ -296,7 +301,11 @@ thumb::$drivers['im'] = function($thumb) {
     $command[] = '-auto-orient';
   }
 
-  $command[] = '-resize';
+  if($thumb->options['icc.profile'] && !$thumb->options['meta.data']) {
+    $command[] = '-thumbnail';
+  } else {
+    $command[] = '-resize';
+  }
 
   if($thumb->options['crop']) {
     if(empty($thumb->options['height'])) {

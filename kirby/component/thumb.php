@@ -39,6 +39,8 @@ class Thumb extends Component {
       'thumbs.bin'         => 'convert',
       'thumbs.interlace'   => false,
       'thumbs.quality'     => 90,
+      'thumbs.icc.profile' => false,
+      'thumbs.meta.data'   => false,
       'thumbs.memory'      => '128M',
       'thumbs.filename'    => false,
       'thumbs.destination' => function($thumb) use($self) {
@@ -69,6 +71,8 @@ class Thumb extends Component {
     generator::$defaults['driver']      = $this->kirby->option('thumbs.driver');
     generator::$defaults['bin']         = $this->kirby->option('thumbs.bin');
     generator::$defaults['quality']     = $this->kirby->option('thumbs.quality');
+    generator::$defaults['icc.profile'] = $this->kirby->option('thumbs.icc.profile');
+    generator::$defaults['meta.data']   = $this->kirby->option('thumbs.meta.data');
     generator::$defaults['interlace']   = $this->kirby->option('thumbs.interlace');
     generator::$defaults['memory']      = $this->kirby->option('thumbs.memory');
     generator::$defaults['destination'] = $this->kirby->option('thumbs.destination');
@@ -157,9 +161,11 @@ class Thumb extends Component {
   protected function options(Generator $thumb) {
 
     $keys = [
-      'blur'      => 'blur',
-      'grayscale' => 'bw',
-      'quality'   => 'q',
+      'blur'       => 'blur',
+      'grayscale'  => 'bw',
+      'quality'    => 'q',
+      'icc.profile'=> 'icc',
+      'meta.data'  => 'meta',
     ];
 
     $string = [];
@@ -181,6 +187,16 @@ class Thumb extends Component {
         } else {
           $string[] = $key . $value;
         }
+
+      } else if($key === 'icc') {
+
+          $value = a::get($thumb->options, 'meta.data');
+
+          if($value == false) {
+              $string[] = $key;
+          } else {
+              continue;
+          }
 
       } else if($value === true) {
         $string[] = $key;
