@@ -34,7 +34,7 @@ class Thumb extends Obj {
     'overwrite'   => false,
     'autoOrient'  => false,
     'interlace'   => false,
-	'icc.profile' => false,
+    'icc.profile' => false,
     'meta.data'   => false
   );
 
