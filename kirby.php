@@ -255,9 +255,14 @@ class Kirby {
           $language = $site->detectedLanguage();
         }
 
+        // build language homepage URL including params and/or query
+        $url = $language->url();
+        if($params = url::params()) $url .= '/' . url::paramsToString($params);
+        if($query  = url::query())  $url .= '?' . url::queryToString($query);
+
         // redirect to the language homepage
-        if($language && rtrim(url::current(), '/') !== rtrim($language->url(), '/')) {
-          return go($language->url());
+        if($language && rtrim(url::current(), '/') !== rtrim($url, '/')) {
+          return go($url);
         }
 
       }
