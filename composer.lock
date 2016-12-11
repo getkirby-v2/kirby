@@ -4,22 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2680bb0a8416f620a9d5b6353eb30ae1",
+    "hash": "d6155ffea5babbaf330e1c1b25138526",
     "content-hash": "365082a13ca47f73a117e3a1fcc4c5cc",
     "packages": [
         {
             "name": "erusev/parsedown",
-            "version": "1.6.0",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "3ebbd730b5c2cf5ce78bc1bf64071407fc6674b7"
+                "reference": "20ff8bbb57205368b4b42d094642a3e52dac85fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/3ebbd730b5c2cf5ce78bc1bf64071407fc6674b7",
-                "reference": "3ebbd730b5c2cf5ce78bc1bf64071407fc6674b7",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/20ff8bbb57205368b4b42d094642a3e52dac85fb",
+                "reference": "20ff8bbb57205368b4b42d094642a3e52dac85fb",
                 "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
             },
             "type": "library",
             "autoload": {
@@ -44,7 +47,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2015-10-04 16:44:32"
+            "time": "2016-11-02 15:56:58"
         },
         {
             "name": "erusev/parsedown-extra",
@@ -185,16 +188,16 @@
         },
         {
             "name": "getkirby/toolkit",
-            "version": "2.4.0",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby/toolkit.git",
-                "reference": "79a1b171cbbf7200a9c9cee917f17034845c8138"
+                "reference": "97ec59f2ccdac789f15188bfbd67e2484beca3f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/79a1b171cbbf7200a9c9cee917f17034845c8138",
-                "reference": "79a1b171cbbf7200a9c9cee917f17034845c8138",
+                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/97ec59f2ccdac789f15188bfbd67e2484beca3f6",
+                "reference": "97ec59f2ccdac789f15188bfbd67e2484beca3f6",
                 "shasum": ""
             },
             "require": {
@@ -222,7 +225,7 @@
             "keywords": [
                 "toolkit"
             ],
-            "time": "2016-11-03 10:23:28"
+            "time": "2016-12-11 12:08:36"
         }
     ],
     "packages-dev": [],
