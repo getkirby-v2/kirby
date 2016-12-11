@@ -255,9 +255,14 @@ class Kirby {
           $language = $site->detectedLanguage();
         }
 
+        // build language homepage URL including params and/or query
+        $url = $language->url();
+        if($params = url::params()) $url .= '/' . url::paramsToString($params);
+        if($query  = url::query())  $url .= '?' . url::queryToString($query);
+
         // redirect to the language homepage
-        if($language && rtrim(url::current(), '/') !== rtrim($language->url(), '/')) {
-          return go($language->url());
+        if($language && rtrim(url::current(), '/') !== rtrim($url, '/')) {
+          return go($url);
         }
 
       }
@@ -297,34 +302,6 @@ class Kirby {
     // tinyurl handling
     $routes['tinyurl'] = $this->component('tinyurl')->route();
 
-    if($site->multilang()) {
-
-      // first register all languages that are not at the root of the domain
-      // otherwise they would capture all requests
-      foreach($site->languages()->sortBy('isRoot', 'asc') as $lang) {
-        
-        $pattern = ($lang->path())? $lang->path() . '/(:all?)' : '(:all)';
-        $routes[] = array(
-          'pattern' => $pattern,
-          'host'    => $lang->host(),
-          'method'  => 'ALL',
-          'lang'    => $lang,
-          'action'  => $otherRoute
-        );
-
-      }
-
-      // fallback if no language is at the root
-      $routes[] = array(
-        'pattern' => '/',
-        'method'  => 'ALL',
-        'action'  => function() use($site) {
-          return go($site->defaultLanguage()->url());
-        }
-      );
-
-    }
-
     // home redirect
     $routes['homeRedirect'] = array(
       'pattern' => $this->options['home'] . '(\..*)?',
@@ -350,19 +327,44 @@ class Kirby {
         } else {          
           return new Response('The file could not be found', f::extension($path), 404);
         }
-
-
       }
     );
 
     // all other urls
-    if(!$site->multilang()) {
+    if($site->multilang()) {
+
+      // first register all languages that are not at the root of the domain
+      // otherwise they would capture all requests
+      foreach($site->languages()->sortBy('isRoot', 'asc') as $lang) {
+        $pattern = ($lang->path())? $lang->path() . '/(:all?)' : '(:all)';
+        $routes[] = array(
+          'pattern' => $pattern,
+          'host'    => $lang->host(),
+          'method'  => 'ALL',
+          'lang'    => $lang,
+          'action'  => $otherRoute
+        );
+      }
+
+      // fallback if no language is at the root
+      $routes['others'] = array(
+        'pattern' => '(.*)', // this can't be (:all) to avoid overriding the actual language route
+        'method'  => 'ALL',
+        'action'  => function() use($site) {
+          return go($site->defaultLanguage()->url());
+        }
+      );
+
+    } else {
+
+      // all other urls for single-language installations
       $routes['others'] = array(
         'pattern' => '(:all)',
         'method'  => 'ALL',
         'lang'    => false,
         'action'  => $otherRoute
       );
+
     }
 
     return $routes;
