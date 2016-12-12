@@ -11,12 +11,13 @@
  */
 abstract class ContentAbstract {
 
-  public $page   = null;
-  public $root   = null;
-  public $raw    = null;
-  public $data   = array();
-  public $fields = array();
-  public $name   = null;
+  public $page     = null;
+  public $root     = null;
+  public $raw      = null;
+  public $data     = array();
+  public $fields   = array();
+  public $computed = array();
+  public $name     = null;
 
   /**
    * Constructor
@@ -52,6 +53,11 @@ abstract class ContentAbstract {
 
       // add the key object
       $this->data[$key] = new Field($this->page, $key, trim(substr($field, $pos+1)));
+    }
+
+    // include computed fields function
+    if (file_exists(kirby::instance()->roots()->computed() . DS . $this->name . '.php')) {
+      $this->computed = include(kirby::instance()->roots()->computed() . DS . $this->name . '.php');
     }
 
   }
@@ -124,6 +130,8 @@ abstract class ContentAbstract {
 
     if(isset($this->data[$key])) {
       return $this->data[$key];
+    } elseif (isset($this->computed[$key])) {
+      return $this->computed[$key]($this->page);
     } else {
       // return an empty field as default
       return new Field($this->page, $key);

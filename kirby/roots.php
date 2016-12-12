@@ -76,6 +76,10 @@ class Roots extends Obj {
     return isset($this->fields) ? $this->fields : $this->site() . DS . 'fields';
   }
 
+  public function computed() {
+    return $this->site() . DS . 'computed';
+  }
+
   public function widgets() {
     return isset($this->widgets) ? $this->widgets : $this->site() . DS . 'widgets';
   }
