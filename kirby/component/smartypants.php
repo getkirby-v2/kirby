@@ -3,6 +3,7 @@
 namespace Kirby\Component;
 
 use SmartyPantsTypographer_Parser;
+use Field;
 
 /**
  * Kirby Smartypants Parser Component
@@ -44,9 +45,10 @@ class Smartypants extends \Kirby\Component {
    * the given text. 
    * 
    * @param string $text
+   * @param Field $text
    * @return string
    */
-  public function parse($text) {
+  public function parse($text, Field $field = null) {
     if(!$this->kirby->options['smartypants']) {
       return $text;
     } else {
