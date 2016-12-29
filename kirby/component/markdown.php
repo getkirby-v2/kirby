@@ -35,7 +35,7 @@ class Markdown extends \Kirby\Component {
    * transforms the given markdown to HTML
    * 
    * @param string $markdown
-   * @param Field $text
+   * @param Field $field
    * @return string
    */
   public function parse($markdown, Field $field = null) {

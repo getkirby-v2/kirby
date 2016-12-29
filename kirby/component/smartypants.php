@@ -45,7 +45,7 @@ class Smartypants extends \Kirby\Component {
    * the given text. 
    * 
    * @param string $text
-   * @param Field $text
+   * @param Field $field
    * @return string
    */
   public function parse($text, Field $field = null) {
