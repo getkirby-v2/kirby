@@ -3,6 +3,7 @@
 namespace Kirby\Component;
 
 use SmartyPantsTypographer_Parser;
+use Field;
 
 /**
  * Kirby Smartypants Parser Component
@@ -16,11 +17,11 @@ use SmartyPantsTypographer_Parser;
 class Smartypants extends \Kirby\Component {
 
   /**
-   * Returns the default options for 
+   * Returns the default options for
    * the smartypants parser
-   * 
+   *
    * @return array
-   */  
+   */
   public function defaults() {
     return [
       'smartypants'                   => false,
@@ -35,18 +36,19 @@ class Smartypants extends \Kirby\Component {
       'smartypants.space.frenchquote' => '&#160;',
       'smartypants.space.thousand'    => '&#160;',
       'smartypants.space.unit'        => '&#160;',
-      'smartypants.skip'              => 'pre|code|kbd|script|style|math',    
+      'smartypants.skip'              => 'pre|code|kbd|script|style|math',
     ];
   }
 
   /**
-   * Initializes the parser and transforms 
-   * the given text. 
-   * 
+   * Initializes the parser and transforms
+   * the given text.
+   *
    * @param string $text
+   * @param Field $field
    * @return string
    */
-  public function parse($text) {
+  public function parse($text, Field $field) {
     if(!$this->kirby->options['smartypants']) {
       return $text;
     } else {
@@ -54,7 +56,7 @@ class Smartypants extends \Kirby\Component {
       $text = str_replace('&quot;', '"', $text);
       // run the parser
       $parser = new SmartyPantsTypographer_Parser($this->kirby->options['smartypants.attr']);
-      return $parser->transform($text);      
+      return $parser->transform($text);
     }
   }
 
