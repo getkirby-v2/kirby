@@ -48,7 +48,7 @@ class Smartypants extends \Kirby\Component {
    * @param Field $field
    * @return string
    */
-  public function parse($text, Field $field = null) {
+  public function parse($text, Field $field) {
     if(!$this->kirby->options['smartypants']) {
       return $text;
     } else {

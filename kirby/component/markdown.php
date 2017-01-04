@@ -38,7 +38,7 @@ class Markdown extends \Kirby\Component {
    * @param Field $field
    * @return string
    */
-  public function parse($markdown, Field $field = null) {
+  public function parse($markdown, Field $field) {
 
     if(!$this->kirby->options['markdown']) {
       return $markdown;
