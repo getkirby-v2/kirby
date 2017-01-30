@@ -1269,7 +1269,7 @@ abstract class PageAbstract {
       throw new Exception('The page could not be updated');
     }
 
-    $this->kirby->cache()->flush();
+    $this->kirby->cache()->remove(md5($this->url()));
     $this->reset();
     $this->touch();
     return true;
