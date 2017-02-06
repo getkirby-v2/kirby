@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d6155ffea5babbaf330e1c1b25138526",
-    "content-hash": "365082a13ca47f73a117e3a1fcc4c5cc",
+    "hash": "0c6716ab326983a0867be8bafdd5c067",
+    "content-hash": "b0a795e8b885bcb3e717ec5b15b61686",
     "packages": [
         {
             "name": "erusev/parsedown",
@@ -95,16 +95,16 @@
         },
         {
             "name": "filp/whoops",
-            "version": "2.1.4",
+            "version": "2.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filp/whoops.git",
-                "reference": "3f5cbd0e6a2fc17bc40b0238025ef1ff4c8c3efa"
+                "reference": "2abce9d956589122c6443d6265f01cf7e9388e3c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filp/whoops/zipball/3f5cbd0e6a2fc17bc40b0238025ef1ff4c8c3efa",
-                "reference": "3f5cbd0e6a2fc17bc40b0238025ef1ff4c8c3efa",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/2abce9d956589122c6443d6265f01cf7e9388e3c",
+                "reference": "2abce9d956589122c6443d6265f01cf7e9388e3c",
                 "shasum": ""
             },
             "require": {
@@ -151,40 +151,7 @@
                 "whoops",
                 "zf2"
             ],
-            "time": "2016-10-11 15:32:23"
-        },
-        {
-            "name": "getkirby/smartypants",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/getkirby/smartypants.git",
-                "reference": "e8be42ba5e44d571aeaf773104e2729d76bf6949"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/smartypants/zipball/e8be42ba5e44d571aeaf773104e2729d76bf6949",
-                "reference": "e8be42ba5e44d571aeaf773104e2729d76bf6949",
-                "shasum": ""
-            },
-            "require": {
-                "getkirby/toolkit": "2.4.*"
-            },
-            "require-dev": {
-                "getkirby/toolkit": "dev-develop"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "smartypants.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "description": "The Kirby SmartyPants Fork",
-            "keywords": [
-                "smartypants"
-            ],
-            "time": "2016-11-03 10:35:44"
+            "time": "2016-12-26 16:13:31"
         },
         {
             "name": "getkirby/toolkit",
@@ -226,6 +193,56 @@
                 "toolkit"
             ],
             "time": "2016-12-11 12:08:36"
+        },
+        {
+            "name": "michelf/php-smartypants",
+            "version": "1.8.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/michelf/php-smartypants.git",
+                "reference": "47d17c90a4dfd0ccf1f87e25c65e6c8012415aad"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/michelf/php-smartypants/zipball/47d17c90a4dfd0ccf1f87e25c65e6c8012415aad",
+                "reference": "47d17c90a4dfd0ccf1f87e25c65e6c8012415aad",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Michelf": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Michel Fortin",
+                    "email": "michel.fortin@michelf.ca",
+                    "homepage": "https://michelf.ca/",
+                    "role": "Developer"
+                },
+                {
+                    "name": "John Gruber",
+                    "homepage": "https://daringfireball.net/"
+                }
+            ],
+            "description": "PHP SmartyPants",
+            "homepage": "https://michelf.ca/projects/php-smartypants/",
+            "keywords": [
+                "dashes",
+                "quotes",
+                "spaces",
+                "typographer",
+                "typography"
+            ],
+            "time": "2016-12-13 01:01:17"
         }
     ],
     "packages-dev": [],

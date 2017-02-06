@@ -88,9 +88,9 @@ class Brick {
     }
   }
 
-
   public function removeAttr($key) {
     unset($this->attr[$key]);
+    return $this;
   }
 
   public function classNames() {
@@ -185,7 +185,7 @@ class Brick {
 
   public function __toString() {
     try {
-      return $this->toString();      
+      return $this->toString();
     } catch(Exception $e) {
       return 'Error: ' . $e->getMessage();
     }

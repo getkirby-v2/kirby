@@ -747,8 +747,12 @@ class Str {
    * @return string
    */
   public static function before($string, $char) {
-    $pos = strpos($string, $char);
-    return static::substr($string, 0, $pos);
+    $pos = strpos($string, $char);    
+    if($pos !== false) {
+      return static::substr($string, 0, $pos);      
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -760,7 +764,11 @@ class Str {
    */
   public static function until($string, $char) {
     $pos = strpos($string, $char);
-    return static::substr($string, 0, $pos + str::length($char));
+    if($pos !== false) {
+      return static::substr($string, 0, $pos + str::length($char));      
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -772,7 +780,11 @@ class Str {
    */
   public static function after($string, $char) {
     $pos = strpos($string, $char);
-    return static::substr($string, $pos+1);
+    if($pos !== false) {
+      return static::substr($string, $pos+1);      
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -784,7 +796,11 @@ class Str {
    */
   public static function from($string, $char) {
     $pos = strpos($string, $char);
-    return static::substr($string, $pos);
+    if($pos !== false) {
+      return static::substr($string, $pos);      
+    } else {
+      return false;
+    }
   }
 
 

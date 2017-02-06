@@ -227,6 +227,35 @@ class StrTest extends PHPUnit_Framework_TestCase {
     // no test yet
   }
      
+  public function testBefore() {
+
+    $this->assertEquals('str', str::before('string', 'i'), 'string before i should be str');
+    $this->assertEquals(false, str::before('string', '.'), 'function with non-existing character should return false');
+
+  }
+
+  public function testUntil() {
+
+    $this->assertEquals('stri', str::until('string', 'i'), 'string until i should be stri');
+    $this->assertEquals(false, str::until('string', '.'), 'function with non-existing character should return false');
+
+  }
+
+  public function testAfter() {
+
+    $this->assertEquals('ng', str::after('string', 'i'), 'string after i should be ng');
+    $this->assertEquals(false, str::after('string', '.'), 'function with non-existing character should return false');
+
+  }
+
+  public function testFrom() {
+
+    $this->assertEquals('ing', str::from('string', 'i'), 'string from i should be ing');
+    $this->assertEquals(false, str::from('string', '.'), 'function with non-existing character should return false');
+
+  }
+
+
 }
 
 ?>

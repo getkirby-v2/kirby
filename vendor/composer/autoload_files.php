@@ -7,6 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'f485627b283286104bbc2461f512799f' => $vendorDir . '/getkirby/toolkit/bootstrap.php',
-    'fec9f9cdcb32da181d64dfa6a9d8347b' => $vendorDir . '/getkirby/smartypants/smartypants.php',
     '4d43cb4a92fc9083dc76dd8887c0a0ef' => $baseDir . '/composer.php',
 );

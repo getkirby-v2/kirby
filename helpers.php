@@ -51,7 +51,7 @@ function markdown($text) {
  * @return string
  */
 function smartypants($text) {
-  return kirby::instance()->component('smartypants')->parse($text);
+  return kirby::instance()->component('smartypants')->parse($text, true);
 }
 
 /**

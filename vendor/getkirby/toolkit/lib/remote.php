@@ -110,6 +110,10 @@ class Remote {
         }
 
         break;
+      case 'patch':
+        $params[CURLOPT_CUSTOMREQUEST] = 'PATCH';
+        $params[CURLOPT_POSTFIELDS]    = $this->postfields($this->options['data']);
+        break;
       case 'delete':
         $params[CURLOPT_CUSTOMREQUEST] = 'DELETE';
         $params[CURLOPT_POSTFIELDS]    = $this->postfields($this->options['data']);

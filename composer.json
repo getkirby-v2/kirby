@@ -25,7 +25,8 @@
     "ext-mbstring": "*",
     "ext-gd": "*",
     "erusev/parsedown-extra": "0.7.*",
-    "getkirby/smartypants": "1.0.*",
+    "michelf/php-smartypants": "1.8.*",
+    "getkirby/toolkit": "2.4.*",
     "filp/whoops": "2.1.*"   
   },
   "archive": {
