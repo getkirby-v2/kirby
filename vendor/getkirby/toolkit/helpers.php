@@ -150,7 +150,7 @@ function h($text, $keepTags = true) {
 
 /**
  * Shortcut for xml::encode()
- * 
+ *
  * @param $text
  * @return string
  */
@@ -160,7 +160,7 @@ function xml($text) {
 
 /**
  * Escape context specific output
- * 
+ *
  * @param  string  $string  Untrusted data
  * @param  string  $context Location of output
  * @param  boolean $strict  Whether to escape an extended set of characters (HTML attributes only)
@@ -272,7 +272,7 @@ function call($function, $arguments = array()) {
 
 /**
  * Parses yaml structured text
- * 
+ *
  * @param $string
  * @return array
  */
@@ -292,7 +292,7 @@ function email($params = array()) {
 
 /**
  * Shortcut for the upload class
- * 
+ *
  * @param $to
  * @param array $params
  * @return Upload
@@ -307,27 +307,56 @@ function upload($to, $params = array()) {
  * @param array $data
  * @param array $rules
  * @param array $messages
- * @return mixed
+ * @return array
  */
-function invalid($data, $rules, $messages = array()) {
-  $errors = array();
-  foreach($rules as $field => $validations) {
-    foreach($validations as $method => $options) {
-      if(is_numeric($method)) $method = $options;
-      if($method == 'required') {
-        if(!isset($data[$field]) || (empty($data[$field]) && $data[$field] !== 0)) {
-          $errors[$field] = a::get($messages, $field, $field);
+function invalid($data, $rules, $messages = []) {
+  $errors = [];
+
+  foreach ($rules as $field => $validations) {
+    $validationIndex = -1;
+    // See: http://php.net/manual/en/types.comparisons.php
+    // only false for: null, undefined variable, '', []
+    $filled = isset($data[$field]) && $data[$field] !== '' && $data[$field] !== [];
+
+    $message = a::get($messages, $field, $field);
+    // True if there is an error message for each validation method.
+    $messageArray = is_array($message);
+
+    foreach ($validations as $method => $options) {
+      if (is_numeric($method)) {
+        $method = $options;
+      }
+      $validationIndex++;
+
+      if ($method === 'required') {
+        if ($filled) {
+          // Field is required and filled.
+          continue;
         }
-      } else if(!empty($data[$field]) || $data[$field] === 0) {
-        if(!is_array($options)) $options = array($options);
+      } else if ($filled) {
+        if (!is_array($options)) {
+            $options = [$options];
+        }
         array_unshift($options, a::get($data, $field));
-        if(!call(array('v', $method), $options)) {
-          $errors[$field] = a::get($messages, $field, $field);
+        if (call(['v', $method], $options)) {
+          // Field is filled and passes validation method.
+          continue;
         }
+      } else {
+        // If a field is not required and not filled, no validation should be done.
+        continue;
+      }
+
+      // If no continue was called we have a failed validation.
+      if ($messageArray) {
+        $errors[$field][] = a::get($message, $validationIndex, $field);
+      } else {
+        $errors[$field] = $message;
       }
     }
   }
-  return array_unique($errors);
+
+  return $errors;
 }
 
 

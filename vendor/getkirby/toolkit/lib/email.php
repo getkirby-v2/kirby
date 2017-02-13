@@ -18,16 +18,20 @@ class Email extends Obj {
   const ERROR_INVALID_RECIPIENT = 0;
   const ERROR_INVALID_SENDER = 1;
   const ERROR_INVALID_REPLY_TO = 2;
-  const ERROR_INVALID_SUBJECT = 3;
-  const ERROR_INVALID_BODY = 4;
-  const ERROR_INVALID_SERVICE = 5;
-  const ERROR_DISABLED = 6;
+  const ERROR_INVALID_CC = 3;
+  const ERROR_INVALID_BCC = 4;
+  const ERROR_INVALID_SUBJECT = 5;
+  const ERROR_INVALID_BODY = 6;
+  const ERROR_INVALID_SERVICE = 7;
+  const ERROR_DISABLED = 8;
 
   public static $defaults = array(
     'service' => 'mail',
     'options' => array(),
     'to'      => null,
     'from'    => null,
+    'cc'      => null,
+    'bcc'     => null,
     'replyTo' => null,
     'subject' => null,
     'body'    => null
@@ -59,11 +63,35 @@ class Email extends Obj {
    * to make sure it can be sent at all
    */
   public function validate() {
-    if(!v::email($this->extractAddress($this->to)))      throw new Error('Invalid recipient', static::ERROR_INVALID_RECIPIENT);
-    if(!v::email($this->extractAddress($this->from)))    throw new Error('Invalid sender', static::ERROR_INVALID_SENDER);
-    if(!v::email($this->extractAddress($this->replyTo))) throw new Error('Invalid reply address', static::ERROR_INVALID_REPLY_TO);
-    if(empty($this->subject))    throw new Error('Missing subject', static::ERROR_INVALID_SUBJECT);
-    if(empty($this->body))       throw new Error('Missing body', static::ERROR_INVALID_BODY);
+
+    if(!v::email($this->extractAddress($this->to))) {
+      throw new Error('Invalid recipient', static::ERROR_INVALID_RECIPIENT);
+    } 
+
+    if(!v::email($this->extractAddress($this->from))) {
+      throw new Error('Invalid sender', static::ERROR_INVALID_SENDER);
+    }    
+
+    if(!v::email($this->extractAddress($this->replyTo))) {
+      throw new Error('Invalid reply address', static::ERROR_INVALID_REPLY_TO);
+    }
+
+    if(!empty($this->cc) && !v::email($this->extractAddress($this->cc))) {
+      throw new Error('Invalid CC address', static::ERROR_INVALID_CC);
+    }
+
+    if(!empty($this->bcc) && !v::email($this->extractAddress($this->bcc))) {
+      throw new Error('Invalid BCC address', static::ERROR_INVALID_BCC);
+    }
+
+    if(empty($this->subject)) {
+      throw new Error('Missing subject', static::ERROR_INVALID_SUBJECT);
+    } 
+    
+    if(empty($this->body)) {
+      throw new Error('Missing body', static::ERROR_INVALID_BODY);
+    } 
+  
   }
 
   /**
@@ -145,18 +173,27 @@ class Email extends Obj {
  */
 email::$services['mail'] = function($email) {
 
-  $headers = array(
-    'From: ' . $email->from,
-    'Reply-To: ' . $email->replyTo,
-    'Return-Path: ' . $email->replyTo,
-    'Message-ID: <' . time() . '-' . $email->from . '>',
-    'X-Mailer: PHP v' . phpversion(),
-    'Content-Type: text/plain; charset=utf-8',
-    'Content-Transfer-Encoding: 8bit',
-  );
+  $headers = header::create([
+    'From'                      => $email->from,
+    'Reply-To'                  => $email->replyTo,
+    'Cc'                        => $email->cc,
+    'Bcc'                       => $email->bcc,
+    'Return-Path'               => $email->replyTo,
+    'Message-ID'                => '<' . time() . '-' . $email->from . '>',
+    'X-Mailer'                  => 'PHP v' . phpversion(),
+    'Content-Type'              => 'text/plain; charset=utf-8',
+    'Content-Transfer-Encoding' => '8bit',
+  ]);
 
   ini_set('sendmail_from', $email->from);
-  $send = mail($email->to, str::utf8($email->subject), str::utf8($email->body), implode(PHP_EOL, $headers));
+
+  $send = mail(
+    $email->to, 
+    str::utf8($email->subject), 
+    str::utf8($email->body), 
+    $headers
+  );
+
   ini_restore('sendmail_from');
 
   if(!$send) {
@@ -174,13 +211,15 @@ email::$services['amazon'] = function($email) {
   if(empty($email->options['secret'])) throw new Error('Missing Amazon API secret');
 
   $setup = array(
-    'Action'                           => 'SendEmail',
-    'Destination.ToAddresses.member.1' => $email->to,
-    'ReplyToAddresses.member.1'        => $email->replyTo,
-    'ReturnPath'                       => $email->replyTo,
-    'Source'                           => $email->from,
-    'Message.Subject.Data'             => $email->subject,
-    'Message.Body.Text.Data'           => $email->body
+    'Action'                            => 'SendEmail',
+    'Destination.ToAddresses.member.1'  => $email->to,
+    'Destination.CcAddresses.member.1'  => $email->cc,
+    'Destination.BccAddresses.member.1' => $email->bcc,
+    'ReplyToAddresses.member.1'         => $email->replyTo,
+    'ReturnPath'                        => $email->replyTo,
+    'Source'                            => $email->from,
+    'Message.Subject.Data'              => $email->subject,
+    'Message.Body.Text.Data'            => $email->body
   );
 
   $params = array();
@@ -227,14 +266,16 @@ email::$services['mailgun'] = function($email) {
   $url  = 'https://api.mailgun.net/v2/' . $email->options['domain'] . '/messages';
   $auth = base64_encode('api:' . $email->options['key']);
 
-  $headers = array(
+  $headers = [
     'Accept: application/json',
     'Authorization: Basic ' . $auth
-  );
+  ];
 
   $data = array(
     'from'       => $email->from,
     'to'         => $email->to,
+    'cc'         => $email->cc,
+    'bcc'        => $email->bcc,
     'subject'    => $email->subject,
     'text'       => $email->body,
     'h:Reply-To' => $email->replyTo,
@@ -273,6 +314,8 @@ email::$services['postmark'] = function($email) {
   $data = array(
     'From'     => $email->from,
     'To'       => $email->to,
+    'Cc'       => $email->cc,
+    'Bcc'      => $email->bcc,
     'ReplyTo'  => $email->replyTo,
     'Subject'  => $email->subject,
     'TextBody' => $email->body

@@ -34,7 +34,7 @@ class Router {
 
   // The wildcard patterns supported by the router.
   protected $patterns = array(
-    '(:num)'     => '([0-9]+)',
+    '(:num)'     => '(-?[0-9]+)',
     '(:alpha)'   => '([a-zA-Z]+)',
     '(:any)'     => '([a-zA-Z0-9\.\-_%=]+)',
     '(:all)'     => '(.*)',

@@ -66,6 +66,27 @@ class Header {
     header($header);
   }
 
+
+  /**
+   * Creates headers by key and value
+   * 
+   * @param string|array $key
+   * @param string|null $value
+   * @return string
+   */
+  public static function create($key, $value = null) {
+
+    if(is_array($key)) {
+      $headers = [];
+      foreach($key as $k => $v) {
+        $headers[] = static::create($k, $v);
+      }
+      return implode("\r\n", $headers);
+    }
+
+    return $key . ': ' . $value;
+  }
+
   /**
    * Shortcut for static::contentType()
    * 

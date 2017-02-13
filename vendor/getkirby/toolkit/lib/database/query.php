@@ -832,6 +832,10 @@ class Query {
 
           $query = clone $this;
           call_user_func($args[0], $query);
+
+          // copy over the bindings from the nested query
+          $this->bindings = array_merge($this->bindings, $query->bindings);
+
           $result = '(' . $query->where . ')';
 
         }

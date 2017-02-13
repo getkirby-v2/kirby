@@ -781,7 +781,7 @@ class Str {
   public static function after($string, $char) {
     $pos = strpos($string, $char);
     if($pos !== false) {
-      return static::substr($string, $pos+1);      
+      return static::substr($string, $pos + str::length($char));      
     } else {
       return false;
     }
@@ -801,6 +801,18 @@ class Str {
     } else {
       return false;
     }
+  }
+
+  /**
+   * Returns everything between two strings from the first occurrence of a given string
+   * 
+   * @param string $string
+   * @param string $start
+   * @param string $end
+   * @return string
+   */
+  public static function between($string, $start, $end) {
+    return static::before(static::after($string, $start), $end);
   }
 
 

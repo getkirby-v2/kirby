@@ -35,4 +35,20 @@ class LTest extends PHPUnit_Framework_TestCase {
 
   }
 
+  public function testFormatter() {
+
+    l::set('message', '{number, number}');
+
+    // with default locale (en_US)
+    $this->assertEquals('1,000', l::get('message', ['number' => 1000]));
+
+    // with custom locale
+    $this->assertEquals('1.000', l::get('message', ['number' => 1000], 'de_DE'));
+
+    // with custom global locale
+    l::$locale = 'de_DE';
+    $this->assertEquals('1.000', l::get('message', ['number' => 1000]));
+
+  }
+
 }
