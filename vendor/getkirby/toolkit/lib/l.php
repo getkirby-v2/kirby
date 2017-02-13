@@ -27,12 +27,9 @@ class L extends Silo {
     } else if(!is_array($data)) {
       return parent::get($key, $data);
 
-    // MessageFormatter
-    } else if(class_exists('MessageFormatter')) {
-      if($locale === null) $locale = static::$locale;
-      return MessageFormatter::formatMessage($locale, parent::get($key), $data);
-    } else {
-      throw new Exception('The MessageFormatter extension is missing, which is required to use string replacements in l::get');
+    // string templates
+    } else if(is_array($data)) {
+      return str::template(parent::get($key), $data);
     }
 
   }
