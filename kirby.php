@@ -530,6 +530,16 @@ class Kirby {
     // load all options
     $this->configure();
 
+    // check for an existing site directory
+    if(!is_dir($this->roots()->site())) {
+      trigger_error('The site directory is missing', E_USER_ERROR);
+    }
+
+    // check for an existing content directory
+    if(!is_dir($this->roots()->content())) {
+      trigger_error('The content directory is missing', E_USER_ERROR);
+    }
+
     // setup the cache
     $this->cache();
 
