@@ -206,8 +206,8 @@ class Exif {
   public function toArray() {
 
     return array(
-      'camera'      => $this->camera()->toArray(),
-      'location'    => $this->location()->toArray(),
+      'camera'      => $this->camera() ? $this->camera()->toArray() : null,
+      'location'    => $this->location() ? $this->location()->toArray() : null,
       'timestamp'   => $this->timestamp(),
       'exposure'    => $this->exposure(),
       'aperture'    => $this->aperture(),
