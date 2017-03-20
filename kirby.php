@@ -172,7 +172,8 @@ class Kirby {
 
     // overwrite the autodetected url
     if($this->options['url']) {
-      $this->urls->index = $this->options['url'];
+      // remove trailing slash
+      $this->urls->index = rtrim($this->options['url'], '/');
     }
 
     // connect the url class with its handlers
