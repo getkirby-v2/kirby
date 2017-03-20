@@ -110,8 +110,8 @@ class Kirby {
     return $this->registry;
   }
 
-  public function url() {
-    return $this->urls->index();
+  public function url($url) {
+    return $this->urls->index($url);
   }
 
   public function options() {
@@ -171,9 +171,8 @@ class Kirby {
     $this->options = array_merge($this->options, c::$data);
 
     // overwrite the autodetected url
-    if($this->options['url']) {
-      // remove trailing slash
-      $this->urls->index = rtrim($this->options['url'], '/');
+    if($url = $this->options['url']) {
+      $this->url($url);
     }
 
     // connect the url class with its handlers
