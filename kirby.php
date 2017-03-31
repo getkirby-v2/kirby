@@ -110,7 +110,7 @@ class Kirby {
     return $this->registry;
   }
 
-  public function url($url) {
+  public function url($url = null) {
     return $this->urls->index($url);
   }
 
