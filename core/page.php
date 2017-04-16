@@ -185,7 +185,10 @@ abstract class PageAbstract {
    * @return string
    */
   public function contentUrl() {
-    return $this->kirby()->urls()->content() . '/' . $this->diruri();
+    if (!empty($this->diruri()))
+      return $this->kirby()->urls()->content() . '/' . $this->diruri();
+    else
+      return $this->kirby()->urls()->content();
   }
 
   /**
