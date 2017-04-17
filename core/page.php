@@ -298,6 +298,12 @@ abstract class PageAbstract {
     $ignore = array('.', '..', '.DS_Store', '.git', '.svn', 'Thumb.db');
     $items  = array_diff(scandir($this->root), array_merge($ignore, (array)$this->kirby->option('content.file.ignore')));
 
+    // remove all hidden dotfiles
+    $items = array_filter($items, function($file) {
+      return substr($file, 0, 1) !== '.';
+    });
+
+
     // create the inventory
     $this->cache['inventory'] = array(
       'children' => array(),
