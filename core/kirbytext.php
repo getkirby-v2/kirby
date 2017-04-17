@@ -46,7 +46,7 @@ abstract class KirbytextAbstract {
     }
 
     // tagsify
-    $text = preg_replace_callback('!(?=[^\]])\([a-z0-9_-]+:.*?\)!is', array($this, 'tag'), $text);
+    $text = preg_replace_callback('!(?=[^\]])\([\w-]+:.*?\)!isu', array($this, 'tag'), $text);
 
     // markdownify
     $text = kirby::instance()->component('markdown')->parse($text);
