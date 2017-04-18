@@ -18,7 +18,7 @@ abstract class UsersAbstract extends Collection {
     foreach(dir::read($root) as $file) {
 
       // skip invalid account files
-      if(f::extension($file) != 'php') continue;
+      if(!in_array(f::extension($file), array('yml', 'php', 'yaml'))) continue;
 
       $user = new User(f::name($file));
       $this->append($user->username(), $user);
