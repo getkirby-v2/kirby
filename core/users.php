@@ -11,7 +11,10 @@
  */
 abstract class UsersAbstract extends Collection {
 
-  public function __construct() {
+  public function __construct($data = array()) {
+
+    // if a specific set of users is passed, set them!
+    if($data) return parent::__construct($data);
 
     $root = kirby::instance()->roots()->accounts();
 
