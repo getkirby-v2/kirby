@@ -329,6 +329,21 @@ abstract class FileAbstract extends Media {
     return true;
 
   }
+  
+  /**
+   * Add thumb object with jQuery style.
+   * 
+   * @param array $params
+   * @return null|Thumb
+   */
+  public function thumb($params = [])
+  {
+    if ('image' === $this->type()) {
+      return new Thumb($this, $params);
+    } else {
+      return null;
+    }
+  }
 
   /**
    * Get formatted date fields
