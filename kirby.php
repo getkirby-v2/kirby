@@ -561,7 +561,7 @@ class Kirby {
     if(!is_null($this->cache)) return $this->cache;
 
     // cache setup
-    if($this->options['cache'] && in_array(r::method(), ['GET', 'HEAD'])) {
+    if($this->options['cache']) {
       if($this->options['cache.driver'] == 'file' and empty($this->options['cache.options'])) {
         $this->options['cache.options'] = array(
           'root' => $this->roots()->cache()
@@ -596,7 +596,7 @@ class Kirby {
     pagination::$defaults['url'] = $page->url() . r($params, '/') . $params;
 
     // cache the result if possible
-    if($this->options['cache'] and $page->isCachable()) {
+    if($this->options['cache'] && $page->isCachable() && in_array(r::method(), ['GET', 'HEAD'])) {
 
       // try to read the cache by cid (cache id)
       $cacheId = md5(url::current() . $page->representation());
