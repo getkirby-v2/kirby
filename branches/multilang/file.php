@@ -39,7 +39,7 @@ class File extends FileAbstract {
 
         // replace all missing fields with values from the default content
         foreach($defaultMeta->data as $key => $field) {      
-          if(empty($meta->data[$key]->value)) {
+          if(!isset($meta->data[$key]) || $meta->data[$key]->value == '') {
             $meta->data[$key] = $field;            
           }
         }
