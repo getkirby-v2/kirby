@@ -44,6 +44,7 @@ abstract class RolesAbstract extends Collection {
       $editor = new Role([
         'id'          => 'editor',
         'name'        => 'Editor',
+        'default'     => true,
         'permissions' => [
           '*'                 => true,
           'panel.site.update' => false,
