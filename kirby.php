@@ -561,7 +561,7 @@ class Kirby {
     if(!is_null($this->cache)) return $this->cache;
 
     // cache setup
-    if($this->options['cache']) {
+    if($this->options['cache'] && in_array(r::method(), ['GET', 'HEAD'])) {
       if($this->options['cache.driver'] == 'file' and empty($this->options['cache.options'])) {
         $this->options['cache.options'] = array(
           'root' => $this->roots()->cache()
