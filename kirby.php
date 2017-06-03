@@ -308,9 +308,10 @@ class Kirby {
       'action'  => function($extension = null) {
         // ignore invalid extensions
         if($extension === '.') $extension = '';
-        if($extension) $extension = '/' . $extension;
 
-        redirect::send(site()->homepage()->url() . $extension, 307);
+        redirect::send(url::build([
+          'fragments' => ($extension)? [$extension] : null
+        ]), 307);
       }
     );
 
