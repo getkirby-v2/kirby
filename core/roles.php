@@ -41,7 +41,7 @@ abstract class RolesAbstract extends Collection {
 
     // set the default set of roles if roles are not configured
     if(empty($this->data)) {
-      $editor = new Role([
+      $this->data['editor'] = new Role([
         'id'          => 'editor',
         'name'        => 'Editor',
         'default'     => true,
@@ -58,7 +58,6 @@ abstract class RolesAbstract extends Collection {
           }
         ]
       ]);
-      $this->data = ['editor' => $editor];
     }
 
     // check for a valid admin role and provide a default one otherwise
@@ -69,9 +68,15 @@ abstract class RolesAbstract extends Collection {
       ]);
     }
 
-    // check for a valid default role
+    // check for a valid default role to make sure one has been set
+    // and provide a fallback one with no permissions otherwise
     if(!$this->findDefault()) {
-      $this->data['admin']->default = true;
+      $this->data['nobody'] = new Role([
+        'id'          => 'nobody',
+        'name'        => 'Nobody',
+        'default'     => true,
+        'permissions' => false
+      ]);
     }
 
   }
