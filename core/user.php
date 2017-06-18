@@ -157,6 +157,7 @@ abstract class UserAbstract {
   }
 
   public function gravatar($size = 256) {
+    if(!$this->email()) return false;
     return gravatar($this->email(), $size);
   }
 
@@ -261,10 +262,6 @@ abstract class UserAbstract {
         throw new Exception('Invalid password');
       }
 
-    }
-
-    if(!empty($data['email']) and !v::email($data['email'])) {
-      throw new Exception('Invalid email');
     }
 
   }
