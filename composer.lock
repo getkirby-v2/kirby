@@ -160,12 +160,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby/toolkit.git",
-                "reference": "0ceeb44186ec0e34e45e283ddf0f99a00c192ba9"
+                "reference": "0189a5cd1b3b5c9c536cb3581f7e2bd85f1e9717"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/0ceeb44186ec0e34e45e283ddf0f99a00c192ba9",
-                "reference": "0ceeb44186ec0e34e45e283ddf0f99a00c192ba9",
+                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/0189a5cd1b3b5c9c536cb3581f7e2bd85f1e9717",
+                "reference": "0189a5cd1b3b5c9c536cb3581f7e2bd85f1e9717",
                 "shasum": ""
             },
             "require": {
