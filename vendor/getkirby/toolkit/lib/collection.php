@@ -544,7 +544,7 @@ class Collection extends I implements Countable {
     } else {
       $lowerkeys = array_change_key_case($this->data, CASE_LOWER);
       if(isset($lowerkeys[strtolower($key)])) {
-        return $lowerkeys[$key];
+        return $lowerkeys[strtolower($key)];
       } else {
         return $default;
       }

@@ -3,8 +3,11 @@
 require_once('lib/bootstrap.php');
 
 class FTest extends PHPUnit_Framework_TestCase {
+
+  protected $contentFile;
+  protected $tmpFile;
   
-  public function __construct() {
+  protected function setUp() {
     $this->contentFile = TEST_ROOT_ETC . DS . 'content.php';
     $this->tmpFile = TEST_ROOT_TMP . DS . 'testfile.txt';
   }

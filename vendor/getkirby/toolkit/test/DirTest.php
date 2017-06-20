@@ -3,8 +3,11 @@
 require_once('lib/bootstrap.php');
 
 class DirTest extends PHPUnit_Framework_TestCase {
+
+  protected $tmpDir;
+  protected $movedDir;
   
-  public function __construct() {
+  protected function setUp() {
     $this->tmpDir = TEST_ROOT_TMP . DS . 'test';
     $this->movedDir = TEST_ROOT_TMP . DS . 'moved';
   }

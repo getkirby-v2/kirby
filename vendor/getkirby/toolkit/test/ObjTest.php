@@ -2,8 +2,12 @@
 
 require_once('lib/bootstrap.php');
 
-class ObjectTest extends PHPUnit_Framework_TestCase {
-  public function __construct() {
+class ObjTest extends PHPUnit_Framework_TestCase {
+
+  protected $data;
+  protected $object;
+
+  protected function setUp() {
     $this->data = array(
       'username' => 'bastian',
       'email'    => 'bastian@getkirby.com',

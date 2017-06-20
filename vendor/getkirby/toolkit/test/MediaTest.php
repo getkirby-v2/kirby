@@ -4,7 +4,11 @@ require_once('lib/bootstrap.php');
 
 class MediaTest extends PHPUnit_Framework_TestCase {
 
-  public function __construct() {
+  protected $file;
+  protected $url;
+  protected $media;
+
+  protected function setUp() {
 
     $this->file  = TEST_ROOT_ETC . DS . 'images' . DS . 'favicon.png';
     $this->url   = 'http://superdomain.com/favicon.png';

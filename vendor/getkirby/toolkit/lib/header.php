@@ -84,7 +84,8 @@ class Header {
       return implode("\r\n", $headers);
     }
 
-    return $key . ': ' . $value;
+    // prevent header injection by stripping any newline characters from single headers
+    return str_replace(["\r", "\n"], '', $key . ': ' . $value);
   }
 
   /**

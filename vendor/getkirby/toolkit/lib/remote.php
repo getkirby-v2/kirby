@@ -264,6 +264,24 @@ class Remote {
   }
 
   /**
+   * Static method to send a PATCH request
+   *
+   * @param string $url
+   * @param array $params
+   * @return object Response
+   */
+  public static function patch($url, $params = array()) {
+
+    $defaults = array(
+      'method' => 'PATCH'
+    );
+
+    $request = new self($url, array_merge($defaults, $params));
+    return $request->response();
+
+  }
+
+  /**
    * Static method to send a DELETE request
    *
    * @param string $url

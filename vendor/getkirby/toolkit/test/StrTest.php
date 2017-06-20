@@ -269,9 +269,9 @@ class StrTest extends PHPUnit_Framework_TestCase {
   public function testBetween() {
 
     $this->assertEquals('trin', str::between('string', 's', 'g'), 'string between s and g should be trin');
+    $this->assertEquals(false, str::between('string', 's', '.'), 'function with non-existing character should return false');
+    $this->assertEquals(false, str::between('string', '.', 'g'), 'function with non-existing character should return false');
 
   }
 
 }
-
-?>

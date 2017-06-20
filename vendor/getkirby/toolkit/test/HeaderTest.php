@@ -8,7 +8,9 @@ require_once('lib/bootstrap.php');
  */
 class HeaderTest extends PHPUnit_Framework_TestCase {
 
-  public function __construct() {
+  protected $statusHeaders;
+
+  protected function setUp() {
     // incomplete list compared to header::$codes, mostly for
     // testing header::success and other named methods
     $this->statusHeaders = [
