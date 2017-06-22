@@ -298,8 +298,7 @@ class R {
    * @return boolean
    */
   public static function cli() {
-    $term = getenv('TERM');
-    return defined('STDIN') || (substr(PHP_SAPI, 0, 3) == 'cgi' && $term !== 'unknown');
+    return defined('STDIN') || (substr(PHP_SAPI, 0, 3) == 'cgi' && $term = getenv('TERM') && $term !== 'unknown');
   }
 
   /**
