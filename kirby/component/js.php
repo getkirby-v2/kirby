@@ -19,7 +19,7 @@ class JS extends \Kirby\Component {
    * Builds the html script tag for the given javascript file
    * 
    * @param string $src
-   * @param boolean async
+   * @param boolean|array $async Either true for the async attribute or an array of attributes
    * @return string
    */
   public function tag($src, $async = false) {
@@ -41,10 +41,15 @@ class JS extends \Kirby\Component {
 
     }
 
-    return html::tag('script', '', array(
-      'src'   => url($src),
-      'async' => $async
-    ));
+    // build the array of HTML attributes
+    $attr = array('src' => url($src));
+    if(is_array($async)) {
+      $attr = array_merge($attr, $async);
+    } else if($async === true) {
+      $attr['async'] = true;
+    }
+
+    return html::tag('script', '', $attr);
 
   }
 

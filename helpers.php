@@ -16,7 +16,7 @@ function snippet($file, $data = array(), $return = false) {
  * Builds a css link tag for relative or absolute urls
  *
  * @param string $url
- * @param string $media
+ * @param string|array $media Either a media string or an array of attributes
  * @return string
  */
 function css() {
@@ -27,10 +27,10 @@ function css() {
  * Builds a script tag for relative or absolute links
  *
  * @param string $src
- * @param boolean $async
+ * @param boolean|array $async Either true for the async attribute or an array of attributes
  * @return string
  */
-function js($src, $async = false) {
+function js() {
   return call([kirby::instance()->component('js'), 'tag'], func_get_args());
 }
 
