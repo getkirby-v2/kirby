@@ -64,7 +64,11 @@ class Model extends Entry {
       throw new Exception('The model class does not exist: ' . $classname);
     }
 
-    return $class::$models[$name] = $classname;
+    if(!isset($class::$models[$name])) {
+      return $class::$models[$name] = $classname;
+    } else {
+      return false;
+    }
 
   }
 
