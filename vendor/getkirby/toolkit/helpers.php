@@ -239,13 +239,23 @@ function csrf($check = null) {
   // make sure a session is started
   s::start();
 
-  if(is_null($check)) {
-    $token = str::random(64);
-    s::set('csrf', $token);
-    return $token;
-  }
+  // check explicitly if there have been no arguments at all
+  // checking for null introduces a security issue!
+  // see https://github.com/getkirby/getkirby.com/issues/340
+  if(func_num_args() === 0) {
+    // no arguments, generate/return a token
 
-  return ($check === s::get('csrf')) ? true : false;
+    $token = s::get('csrf');
+    if(!$token) {
+      $token = str::random(64);
+      s::set('csrf', $token);
+    }
+
+    return $token;
+  } else {
+    // argument has been passed, check the token
+    return $check === s::get('csrf');
+  }
 
 }
 
@@ -253,8 +263,8 @@ function csrf($check = null) {
  * Facepalm typo alias
  * @see csrf()
  */
-function csfr($check = null) {
-  return csrf($check);
+function csfr() {
+  return call('csrf', func_get_args());
 }
 
 /**

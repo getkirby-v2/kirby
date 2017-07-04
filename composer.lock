@@ -156,16 +156,16 @@
         },
         {
             "name": "getkirby/toolkit",
-            "version": "2.5.1",
+            "version": "2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby/toolkit.git",
-                "reference": "da3fac715a5eddf1087fd6868f94046dba34dc18"
+                "reference": "3a7679f85efe43dd71e78e2c08629ea6785db0ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/da3fac715a5eddf1087fd6868f94046dba34dc18",
-                "reference": "da3fac715a5eddf1087fd6868f94046dba34dc18",
+                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/3a7679f85efe43dd71e78e2c08629ea6785db0ab",
+                "reference": "3a7679f85efe43dd71e78e2c08629ea6785db0ab",
                 "shasum": ""
             },
             "require": {
@@ -193,7 +193,7 @@
             "keywords": [
                 "toolkit"
             ],
-            "time": "2017-06-22 07:58:19"
+            "time": "2017-07-04 13:00:56"
         },
         {
             "name": "michelf/php-smartypants",

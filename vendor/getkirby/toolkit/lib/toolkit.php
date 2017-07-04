@@ -11,7 +11,7 @@
  */
 class Toolkit {
 
-  public static $version = '2.5.1';
+  public static $version = '2.5.2';
 
   public static function version() {
     return static::$version;
