@@ -4,6 +4,7 @@ namespace Kirby\Component;
 
 use A;
 use Asset;
+use Error;
 use F;
 use File;
 use Media;
@@ -37,6 +38,7 @@ class Thumb extends Component {
     return [
       'thumbs.driver'      => 'gd',
       'thumbs.bin'         => 'convert',
+      'thumbs.presets'     => [],
       'thumbs.interlace'   => false,
       'thumbs.quality'     => 90,
       'thumbs.memory'      => '128M',
@@ -82,6 +84,23 @@ class Thumb extends Component {
       return $file;
     }
 
+    // load a thumb preset
+    $presets = $this->kirby->option('thumbs.presets');
+    if(is_string($params)) {
+      if(isset($presets[$params])) {
+        $params = $presets[$params];
+      } else {
+        throw new Error('Invalid thumb preset ' . $params);
+      }
+    } else if($params === []) {
+      // try to load the default preset
+      // otherwise use the thumb defaults from the Toolkit
+      if(isset($presets['default'])) {
+        $params = $presets['default'];
+      }
+    }
+
+    // generate the thumb
     $thumb = new Generator($file, $params);
     $asset = new Asset($thumb->result);
 
