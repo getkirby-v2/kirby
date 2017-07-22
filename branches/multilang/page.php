@@ -287,7 +287,19 @@ class Page extends PageAbstract {
    */
   public function intendedTemplate() {
     if(isset($this->cache['intendedTemplate'])) return $this->cache['intendedTemplate'];
-    return $this->cache['intendedTemplate'] = $this->content($this->site->defaultLanguage()->code())->exists() ? $this->content()->name() : 'default';
+
+    // check each language's content file
+    // prefer the default language's one (check that one first)
+    foreach($this->site->languages()->sortBy('isDefault', 'desc') as $lang) {
+      $content = $this->content($lang->code());
+
+      // the content file exists, use its file name
+      if($content->exists()) {
+        return $this->cache['intendedTemplate'] = $content->name();
+      }
+    }
+
+    return $this->cache['intendedTemplate'] = 'default';
   }
 
 }
