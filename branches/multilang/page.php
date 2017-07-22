@@ -261,7 +261,12 @@ class Page extends PageAbstract {
    */
   public function update($input = array(), $lang = null) {
 
-    $data = a::update($this->content($lang)->toArray(), $input);
+    // normalize keys to make sure that fields are updated correctly
+    $normalizer = data::$adapters['kd']['_normalizeKeys'];
+    $current    = $normalizer($this->content($lang)->toArray());
+    $input      = $normalizer($input);
+
+    $data = a::update($current, $input);
 
     if(!data::write($this->textfile(null, $lang), $data, 'kd')) {
       throw new Exception('The page could not be updated');
