@@ -91,10 +91,11 @@ data::$adapters['kd'] = array(
   'extension' => array('md', 'txt'),
   'encode' => function($data) {
 
+    // normalize keys
+    $data = data::$adapters['kd']['_normalizeKeys']($data);
+
     $result = array();
     foreach($data AS $key => $value) {
-      $key = str::ucfirst(str::slug($key));
-
       if(empty($key) || is_null($value)) continue;
 
       // avoid problems with arrays
@@ -139,6 +140,16 @@ data::$adapters['kd'] = array(
 
     return $data;
 
+  },
+  '_normalizeKeys' => function($data) {
+    $result = [];
+
+    // convert every key to its slug for encoding
+    foreach($data as $k => $v) {
+      $result[str::ucfirst(str::slug($k))] = $v;
+    }
+
+    return $result;
   }
 );
 

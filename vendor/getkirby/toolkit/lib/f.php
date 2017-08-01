@@ -89,6 +89,7 @@ class F {
     'text'  => 'text/plain',
     'log'   => array('text/plain', 'text/x-log'),
     'rtx'   => 'text/richtext',
+    'ics'   => 'text/calendar',
     'rtf'   => 'text/rtf',
     'xml'   => 'text/xml',
     'xsl'   => 'text/xml',

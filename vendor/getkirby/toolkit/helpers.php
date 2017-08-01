@@ -204,7 +204,7 @@ function memory() {
 }
 
 /**
- * Determines the size/length of numbers, strings, arrays and files
+ * Determines the size/length of numbers, strings, arrays and countable objects
  *
  * @param mixed $value
  * @return int
@@ -213,7 +213,9 @@ function size($value) {
   if(is_numeric($value)) return $value;
   if(is_string($value))  return str::length(trim($value));
   if(is_array($value))   return count($value);
-  if(f::exists($value))  return f::size($value) / 1024;
+  if(is_object($value)) {
+    if($value instanceof Countable) return count($value);
+  }
 }
 
 /**

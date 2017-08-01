@@ -32,9 +32,13 @@ class VTest extends PHPUnit_Framework_TestCase {
 
   public function testDate() {
 
-    $this->assertTrue(v::date('2012-12-12'));
-    $this->assertTrue(v::date('1970-01-01'));
-    $this->assertFalse(v::date('2013-13-13'));
+    $this->assertTrue(V::date('2017-12-24'));
+    $this->assertTrue(V::date('29.01.1989'));
+    $this->assertTrue(V::date('January 29, 1989'));
+
+    $this->assertFalse(V::date('äöüß'));
+    $this->assertFalse(V::date('2017-02-31'));
+    $this->assertFalse(V::date('January 32, 1989'));
 
   }
 

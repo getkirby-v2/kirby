@@ -359,8 +359,8 @@ class Url {
   }
 
   /**
-   * Tries to convert an internationalized domain name to
-   * the UTF8 representation
+   * Tries to convert a URL with an internationalized domain
+   * name to the human-readable UTF8 representation
    * Requires the intl PHP extension
    *
    * @param string $url
@@ -368,11 +368,32 @@ class Url {
    */
   public static function idn($url) {
 
-    if(static::isAbsolute($url)) $url = static::short($url);
-
     if(!function_exists('idn_to_utf8')) return $url;
-    return idn_to_utf8($url);
 
+    // disassemble the URL, convert the domain name and reassemble
+    $host = idn_to_utf8(static::host($url));
+    $url  = static::build(['host' => $host], $url);
+
+    return $url;
+
+  }
+
+  /**
+   * Tries to convert a URL with an internationalized domain
+   * name to the machine-readable Punycode representation
+   *
+   * @param string $url
+   * @return string
+   */
+  public static function unIdn($url) {
+
+    if(!function_exists('idn_to_ascii')) return $url;
+
+    // disassemble the URL, convert the domain name and reassemble
+    $host = idn_to_ascii(static::host($url));
+    $url  = static::build(['host' => $host], $url);
+
+    return $url;
   }
 
   /**
