@@ -26,15 +26,15 @@
     "ext-gd": "*",
     "erusev/parsedown-extra": "0.7.*",
     "michelf/php-smartypants": "1.8.*",
-    "getkirby/toolkit": "2.5.*",
-    "filp/whoops": "2.1.*"   
+    "getkirby/toolkit": "2.5.4",
+    "filp/whoops": "2.1.*"
   },
   "archive": {
     "exclude": [
-      "/.gitmodules", 
-      "/.gitignore", 
-      "/.travis.yml", 
-      "phpunit.xml", 
+      "/.gitmodules",
+      "/.gitignore",
+      "/.travis.yml",
+      "phpunit.xml",
       "/test",
       "/vendor"
     ]
