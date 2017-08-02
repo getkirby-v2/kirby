@@ -181,7 +181,7 @@ abstract class PageAbstract {
 
   /**
    * Returns the full URL for the content folder
-   * 
+   *
    * @return string
    */
   public function contentUrl() {
@@ -685,7 +685,7 @@ abstract class PageAbstract {
 
   /**
    * Returns a single image
-   * 
+   *
    * @return File
    */
   public function image($filename = null) {
@@ -695,7 +695,7 @@ abstract class PageAbstract {
 
   /**
    * Returns a single video
-   * 
+   *
    * @return File
    */
   public function video($filename = null) {
@@ -705,7 +705,7 @@ abstract class PageAbstract {
 
   /**
    * Returns a single document
-   * 
+   *
    * @return File
    */
   public function document($filename = null) {
@@ -736,7 +736,7 @@ abstract class PageAbstract {
    *
    * @return Field
    */
-  public function title() {    
+  public function title() {
     $title = $this->content()->get('title');
     if($title != '') {
       return $title;
@@ -1011,7 +1011,7 @@ abstract class PageAbstract {
     $templateName = $this->intendedTemplate();
 
     if($this->kirby->registry->get('template', $templateName)) {
-      return $this->cache['template'] = $templateName;  
+      return $this->cache['template'] = $templateName;
     } else {
       return $this->cache['template'] = 'default';
     }
@@ -1283,7 +1283,7 @@ abstract class PageAbstract {
 
   /**
    * Increment a field value by one or a given value
-   * 
+   *
    * @param string $field
    * @param int $by
    * @param int $max
@@ -1301,7 +1301,7 @@ abstract class PageAbstract {
 
   /**
    * Decrement a field value by one or a given value
-   * 
+   *
    * @param string $field
    * @param int $by
    * @param int $min
@@ -1361,7 +1361,7 @@ abstract class PageAbstract {
 
   /**
    * Return the prepended number for the page
-   * or changes it to the number passed as parameter 
+   * or changes it to the number passed as parameter
    */
   public function sort($num = null) {
 
@@ -1444,9 +1444,9 @@ abstract class PageAbstract {
   }
 
   /**
-   * Converts the entire page object into 
+   * Converts the entire page object into
    * a plain PHP array
-   * 
+   *
    * @param closure $callback Filter callback
    * @return array
    */
@@ -1521,9 +1521,9 @@ abstract class PageAbstract {
   }
 
   /**
-   * Converts the entire page array into 
+   * Converts the entire page array into
    * a json string
-   * 
+   *
    * @param closure $callback Filter callback
    * @return string
    */
@@ -1542,7 +1542,7 @@ abstract class PageAbstract {
 
   /**
    * Improved var_dump() output
-   * 
+   *
    * @return array
    */
   public function __debuginfo() {

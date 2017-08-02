@@ -91,17 +91,19 @@ data::$adapters['kd'] = array(
   'extension' => array('md', 'txt'),
   'encode' => function($data) {
 
-    // normalize keys
-    $data = data::$adapters['kd']['_normalizeKeys']($data);
-
     $result = array();
+
     foreach($data AS $key => $value) {
+
       if(empty($key) || is_null($value)) continue;
 
       // avoid problems with arrays
       if(is_array($value)) {
         $value = '';
       }
+
+      // normalize key
+      $key = str::ucfirst(str::slug($key));
 
       // escape accidental dividers within a field
       $value = preg_replace('!(\n|^)----(.*?\R*)!', "$1\\----$2", $value);
@@ -111,7 +113,7 @@ data::$adapters['kd'] = array(
         $result[$key] = $key . ": \n\n" . trim($value);
       // single-line content
       } else {
-        $result[$key] = $key . ': ' . trim($value);        
+        $result[$key] = $key . ': ' . trim($value);
       }
 
     }
