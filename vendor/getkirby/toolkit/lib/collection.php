@@ -597,9 +597,9 @@ collection::$filters['=='] = function($collection, $field, $value, $split = fals
 
     if($split) {
       $values = str::split((string)collection::extractValue($item, $field), $split);
-      if(!in_array($value, $values)) unset($collection->$key);
+      if(!in_array($value, $values)) unset($collection->data[$key]);
     } else if(collection::extractValue($item, $field) != $value) {
-      unset($collection->$key);
+      unset($collection->data[$key]);
     }
 
   }
@@ -621,9 +621,9 @@ collection::$filters['in'] = function($collection, $field, $value, $split = fals
       foreach($value as $v) {
         if(in_array($v, $values)) $match = true;
       }
-      if(!$match) unset($collection->$key);
+      if(!$match) unset($collection->data[$key]);
     } else if(!in_array(collection::extractValue($item, $field), $value)) {
-      unset($collection->$key);
+      unset($collection->data[$key]);
     }
 
   }
@@ -638,9 +638,9 @@ collection::$filters['!='] = function($collection, $field, $value, $split = fals
   foreach($collection->data as $key => $item) {
     if($split) {
       $values = str::split((string)collection::extractValue($item, $field), $split);
-      if(in_array($value, $values)) unset($collection->$key);
+      if(in_array($value, $values)) unset($collection->data[$key]);
     } else if(collection::extractValue($item, $field) == $value) {
-      unset($collection->$key);
+      unset($collection->data[$key]);
     }
   }
 
@@ -659,12 +659,12 @@ collection::$filters['not in'] = function($collection, $field, $value, $split = 
 
       foreach($value as $v) {
         if(in_array($v, $values)) {
-          unset($collection->$key);
+          unset($collection->data[$key]);
           break;
         }
       }
     } else if(in_array(collection::extractValue($item, $field), $value)) {
-      unset($collection->$key);
+      unset($collection->data[$key]);
     }
 
   }
@@ -681,12 +681,12 @@ collection::$filters['*='] = function($collection, $field, $value, $split = fals
       $values = str::split((string)collection::extractValue($item, $field), $split);
       foreach($values as $val) {
         if(strpos($val, $value) === false) {
-          unset($collection->$key);
+          unset($collection->data[$key]);
           break;
         }
       }
     } else if(strpos(collection::extractValue($item, $field), $value) === false) {
-      unset($collection->$key);
+      unset($collection->data[$key]);
     }
   }
 
@@ -699,7 +699,7 @@ collection::$filters['>'] = function($collection, $field, $value) {
 
   foreach($collection->data as $key => $item) {
     if(collection::extractValue($item, $field) > $value) continue;
-    unset($collection->$key);
+    unset($collection->data[$key]);
   }
 
   return $collection;
@@ -711,7 +711,7 @@ collection::$filters['>='] = function($collection, $field, $value) {
 
   foreach($collection->data as $key => $item) {
     if(collection::extractValue($item, $field) >= $value) continue;
-    unset($collection->$key);
+    unset($collection->data[$key]);
   }
 
   return $collection;
@@ -723,7 +723,7 @@ collection::$filters['<'] = function($collection, $field, $value) {
 
   foreach($collection->data as $key => $item) {
     if(collection::extractValue($item, $field) < $value) continue;
-    unset($collection->$key);
+    unset($collection->data[$key]);
   }
 
   return $collection;
@@ -735,7 +735,7 @@ collection::$filters['<='] = function($collection, $field, $value) {
 
   foreach($collection->data as $key => $item) {
     if(collection::extractValue($item, $field) <= $value) continue;
-    unset($collection->$key);
+    unset($collection->data[$key]);
   }
 
   return $collection;

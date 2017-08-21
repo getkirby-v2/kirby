@@ -147,69 +147,6 @@
         ]
     },
     {
-        "name": "filp/whoops",
-        "version": "2.1.9",
-        "version_normalized": "2.1.9.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/filp/whoops.git",
-            "reference": "b238974e1c7cc1859b0c16ddc1c02ecb70ecc07f"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/filp/whoops/zipball/b238974e1c7cc1859b0c16ddc1c02ecb70ecc07f",
-            "reference": "b238974e1c7cc1859b0c16ddc1c02ecb70ecc07f",
-            "shasum": ""
-        },
-        "require": {
-            "php": "^5.5.9 || ^7.0",
-            "psr/log": "^1.0.1"
-        },
-        "require-dev": {
-            "mockery/mockery": "0.9.*",
-            "phpunit/phpunit": "^4.8 || ^5.0",
-            "symfony/var-dumper": "^2.6 || ^3.0"
-        },
-        "suggest": {
-            "symfony/var-dumper": "Pretty print complex values better with var-dumper available",
-            "whoops/soap": "Formats errors as SOAP responses"
-        },
-        "time": "2017-06-03 18:33:07",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Whoops\\": "src/Whoops/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Filipe Dobreira",
-                "homepage": "https://github.com/filp",
-                "role": "Developer"
-            }
-        ],
-        "description": "php error handling for cool kids",
-        "homepage": "https://filp.github.io/whoops/",
-        "keywords": [
-            "error",
-            "exception",
-            "handling",
-            "library",
-            "whoops",
-            "zf2"
-        ]
-    },
-    {
         "name": "erusev/parsedown",
         "version": "1.6.3",
         "version_normalized": "1.6.3.0",
@@ -255,23 +192,23 @@
     },
     {
         "name": "getkirby/toolkit",
-        "version": "2.5.4",
-        "version_normalized": "2.5.4.0",
+        "version": "dev-develop",
+        "version_normalized": "dev-develop",
         "source": {
             "type": "git",
             "url": "https://github.com/getkirby/toolkit.git",
-            "reference": "df540a8db729ff8829a294df4cef5d8e0e9e8f2a"
+            "reference": "152378c8a73c37a9203856286f23d34f45edfeec"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/getkirby/toolkit/zipball/df540a8db729ff8829a294df4cef5d8e0e9e8f2a",
-            "reference": "df540a8db729ff8829a294df4cef5d8e0e9e8f2a",
+            "url": "https://api.github.com/repos/getkirby/toolkit/zipball/152378c8a73c37a9203856286f23d34f45edfeec",
+            "reference": "152378c8a73c37a9203856286f23d34f45edfeec",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2017-08-02 11:20:41",
+        "time": "2017-08-21 15:16:45",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -294,6 +231,69 @@
         "homepage": "http://toolkit.getkirby.com",
         "keywords": [
             "toolkit"
+        ]
+    },
+    {
+        "name": "filp/whoops",
+        "version": "2.1.10",
+        "version_normalized": "2.1.10.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/filp/whoops.git",
+            "reference": "ffbbd2c06c64b08fb47974eed5dbce4ca2bb0eec"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/filp/whoops/zipball/ffbbd2c06c64b08fb47974eed5dbce4ca2bb0eec",
+            "reference": "ffbbd2c06c64b08fb47974eed5dbce4ca2bb0eec",
+            "shasum": ""
+        },
+        "require": {
+            "php": "^5.5.9 || ^7.0",
+            "psr/log": "^1.0.1"
+        },
+        "require-dev": {
+            "mockery/mockery": "0.9.*",
+            "phpunit/phpunit": "^4.8 || ^5.0",
+            "symfony/var-dumper": "^2.6 || ^3.0"
+        },
+        "suggest": {
+            "symfony/var-dumper": "Pretty print complex values better with var-dumper available",
+            "whoops/soap": "Formats errors as SOAP responses"
+        },
+        "time": "2017-08-03 18:23:40",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Whoops\\": "src/Whoops/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Filipe Dobreira",
+                "homepage": "https://github.com/filp",
+                "role": "Developer"
+            }
+        ],
+        "description": "php error handling for cool kids",
+        "homepage": "https://filp.github.io/whoops/",
+        "keywords": [
+            "error",
+            "exception",
+            "handling",
+            "library",
+            "whoops",
+            "zf2"
         ]
     }
 ]

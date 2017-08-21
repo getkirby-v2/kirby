@@ -170,9 +170,18 @@ class Url {
 
     if(!empty($parts['fragments'])) $result[] = implode('/', $parts['fragments']);
     if(!empty($parts['params']))    $result[] = static::paramsToString($parts['params']);
-    if(!empty($parts['query']))     $result[] = '?' . static::queryToString($parts['query']);
 
-    return implode('/', $result) . (!empty($parts['hash']) ? '#' . $parts['hash'] : '');
+    // make sure that URLs without any URI end with a slash after the host
+    if(count($result) === 1) {
+      $result = $result[0] . '/';
+    } else {
+      $result = implode('/', $result);
+    }
+
+    if(!empty($parts['query'])) $result .= '?' . static::queryToString($parts['query']);
+    if(!empty($parts['hash']))  $result .= '#' . $parts['hash'];
+
+    return $result;
 
   }
 

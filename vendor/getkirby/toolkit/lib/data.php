@@ -91,6 +91,10 @@ data::$adapters['kd'] = array(
   'extension' => array('md', 'txt'),
   'encode' => function($data) {
 
+    // normalize keys
+    $normalizer = data::$adapters['kd']['_normalizeKeys'];
+    $data = $normalizer($data);
+
     $result = array();
 
     foreach($data AS $key => $value) {
@@ -101,9 +105,6 @@ data::$adapters['kd'] = array(
       if(is_array($value)) {
         $value = '';
       }
-
-      // normalize key
-      $key = str::ucfirst(str::slug($key));
 
       // escape accidental dividers within a field
       $value = preg_replace('!(\n|^)----(.*?\R*)!', "$1\\----$2", $value);
