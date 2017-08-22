@@ -29,6 +29,7 @@
     "getkirby/toolkit": "dev-develop",
     "filp/whoops": "2.1.*"
   },
+  "minimum-stability": "dev",
   "archive": {
     "exclude": [
       "/.gitmodules",
