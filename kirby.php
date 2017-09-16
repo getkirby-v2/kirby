@@ -31,6 +31,8 @@ class Kirby {
   public $components = [];
   public $registry;
 
+  protected $configuring = false;
+
   static public function instance($class = null) {
     if(!is_null(static::$instance)) return static::$instance;
     return static::$instance = $class ? new $class : new static;
@@ -149,6 +151,11 @@ class Kirby {
   }
 
   public function configure() {
+
+    // prevent loading configuration twice
+    // this prevents issues if config is loaded indirectly from the config
+    if($this->configuring) return;
+    $this->configuring = true;
 
     // load all available config files
     $root    = $this->roots()->config();
