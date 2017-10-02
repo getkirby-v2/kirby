@@ -363,7 +363,7 @@ class Kirby {
           $page = page($uri);
           if($page) return go($page);
 
-          // the URI is not a valid page, redirect to the default languages' homepage
+          // the URI is not a valid page, redirect to the homepage of the default language
           return go($site->defaultLanguage()->url());
         }
       );
