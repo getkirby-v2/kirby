@@ -358,7 +358,12 @@ class Kirby {
       $routes['others'] = array(
         'pattern' => '(.*)', // this can't be (:all) to avoid overriding the actual language route
         'method'  => 'ALL',
-        'action'  => function() use($site) {
+        'action'  => function($uri) use($site) {
+          // first try to find a page with the given URI
+          $page = page($uri);
+          if($page) return go($page);
+
+          // the URI is not a valid page, redirect to the default languages' homepage
           return go($site->defaultLanguage()->url());
         }
       );
