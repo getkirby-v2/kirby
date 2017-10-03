@@ -175,4 +175,10 @@ abstract class ContentAbstract {
     ];
   }
 
+  public function __clone() {
+    foreach($this->data as $key => $value) {
+      $this->data[$key] = clone $value;
+    }
+  }
+
 }

@@ -1557,4 +1557,8 @@ abstract class PageAbstract {
     ]);
   }
 
+  public function __clone() {
+    if(isset($this->cache['content'])) $this->cache['content'] = clone $this->cache['content'];
+  }
+
 }

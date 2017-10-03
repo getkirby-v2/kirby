@@ -462,4 +462,8 @@ abstract class UserAbstract {
     return $this->toArray();
   }
 
+  public function __clone() {
+    if(isset($this->cache['avatar'])) $this->cache['avatar'] = clone $this->cache['avatar'];
+  }
+
 }
