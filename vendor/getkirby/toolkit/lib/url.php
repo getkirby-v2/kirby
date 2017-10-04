@@ -381,6 +381,7 @@ class Url {
 
     // disassemble the URL, convert the domain name and reassemble
     $host = idn_to_utf8(static::host($url));
+    if($host === false) return $url;
     $url  = static::build(['host' => $host], $url);
 
     return $url;
@@ -400,6 +401,7 @@ class Url {
 
     // disassemble the URL, convert the domain name and reassemble
     $host = idn_to_ascii(static::host($url));
+    if($host === false) return $url;
     $url  = static::build(['host' => $host], $url);
 
     return $url;
