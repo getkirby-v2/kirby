@@ -205,52 +205,9 @@
         ]
     },
     {
-        "name": "getkirby/toolkit",
-        "version": "2.5.6-RC-1",
-        "version_normalized": "2.5.6.0-RC1",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/getkirby/toolkit.git",
-            "reference": "dc97aa0f809d8c7cacb9ec7df11ee947156875e0"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/getkirby/toolkit/zipball/dc97aa0f809d8c7cacb9ec7df11ee947156875e0",
-            "reference": "dc97aa0f809d8c7cacb9ec7df11ee947156875e0",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4.0"
-        },
-        "time": "2017-10-04 11:59:33",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "files": [
-                "bootstrap.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Bastian Allgeier",
-                "email": "bastian@getkirby.com",
-                "homepage": "http://bastianallgeier.com"
-            }
-        ],
-        "description": "The Kirby 2 toolkit is a set of handy classes and helpers which make your life with PHP easier.",
-        "homepage": "http://toolkit.getkirby.com",
-        "keywords": [
-            "toolkit"
-        ]
-    },
-    {
         "name": "psr/log",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
+        "version": "1.0.2",
+        "version_normalized": "1.0.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-fig/log.git",
@@ -294,6 +251,49 @@
             "log",
             "psr",
             "psr-3"
+        ]
+    },
+    {
+        "name": "getkirby/toolkit",
+        "version": "2.5.6",
+        "version_normalized": "2.5.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/getkirby/toolkit.git",
+            "reference": "abb0ca76dc02db60727c969914253fe8013dffde"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/getkirby/toolkit/zipball/abb0ca76dc02db60727c969914253fe8013dffde",
+            "reference": "abb0ca76dc02db60727c969914253fe8013dffde",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0"
+        },
+        "time": "2017-10-11 12:59:14",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "files": [
+                "bootstrap.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Bastian Allgeier",
+                "email": "bastian@getkirby.com",
+                "homepage": "http://bastianallgeier.com"
+            }
+        ],
+        "description": "The Kirby 2 toolkit is a set of handy classes and helpers which make your life with PHP easier.",
+        "homepage": "http://toolkit.getkirby.com",
+        "keywords": [
+            "toolkit"
         ]
     }
 ]
