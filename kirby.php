@@ -359,12 +359,17 @@ class Kirby {
         'pattern' => '(.*)', // this can't be (:all) to avoid overriding the actual language route
         'method'  => 'ALL',
         'action'  => function($uri) use($site) {
-          // first try to find a page with the given URI
-          $page = page($uri);
-          if($page) return go($page);
+          if($uri && $uri !== '/') {
+            // first try to find a page with the given URI
+            $page = page($uri);
+            if($page) return go($page);
 
-          // the URI is not a valid page, redirect to the homepage of the default language
-          return go($site->defaultLanguage()->url());
+            // the URI is not a valid page -> error page
+            return $site->errorPage();
+          } else {
+            // no URI is given, redirect to the homepage of the default language
+            return go($site->defaultLanguage()->url());
+          }
         }
       );
 
