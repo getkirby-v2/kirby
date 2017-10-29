@@ -15,7 +15,7 @@ class Language extends Obj {
     $this->locale     = $lang['locale'];
     $this->default    = (isset($lang['default']) and $lang['default']);
     $this->direction  = (isset($lang['direction']) and $lang['direction'] == 'rtl') ? 'rtl' : 'ltr';
-    $this->url        = isset($lang['url']) ? $lang['url'] : $lang['code'];
+    $this->url        = isset($lang['url']) ? rtrim($lang['url'], '/') : $lang['code'];
 
   }
 
