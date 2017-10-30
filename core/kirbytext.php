@@ -49,10 +49,10 @@ abstract class KirbytextAbstract {
     $text = preg_replace_callback('!(?=[^\]])\([a-z0-9_-]+:.*?\)!is', array($this, 'tag'), $text);
 
     // markdownify
-    $text = kirby::instance()->component('markdown')->parse($text);
+    $text = kirby::instance()->component('markdown')->parse($text, $this->field);
 
     // smartypantsify
-    $text = kirby::instance()->component('smartypants')->parse($text);
+    $text = kirby::instance()->component('smartypants')->parse($text, false, $this->field);
 
     // post filters
     foreach(static::$post as $filter) {
