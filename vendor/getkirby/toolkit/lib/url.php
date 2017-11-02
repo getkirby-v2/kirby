@@ -83,7 +83,7 @@ class Url {
     // to trick the url parser. It's a bit hacky but it works
     if(!static::isAbsolute($url)) $url = 'http://0.0.0.0/' . $url;
 
-    return trim(parse_url($url, PHP_URL_PATH), '/');
+    return ltrim(parse_url($url, PHP_URL_PATH), '/');
 
   }
 
@@ -380,7 +380,8 @@ class Url {
     if(!function_exists('idn_to_utf8')) return $url;
 
     // disassemble the URL, convert the domain name and reassemble
-    $host = idn_to_utf8(static::host($url));
+    $variant = defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : INTL_IDNA_VARIANT_2003;
+    $host = idn_to_utf8(static::host($url), 0, $variant);
     if($host === false) return $url;
     $url  = static::build(['host' => $host], $url);
 
@@ -400,7 +401,8 @@ class Url {
     if(!function_exists('idn_to_ascii')) return $url;
 
     // disassemble the URL, convert the domain name and reassemble
-    $host = idn_to_ascii(static::host($url));
+    $variant = defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : INTL_IDNA_VARIANT_2003;
+    $host = idn_to_ascii(static::host($url), 0, $variant);
     if($host === false) return $url;
     $url  = static::build(['host' => $host], $url);
 

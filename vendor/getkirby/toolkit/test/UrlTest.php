@@ -25,6 +25,9 @@ class UrlTest extends PHPUnit_Framework_TestCase {
       'host'   => 'twitter.com'
     ], 'http://getkirby.com'));
 
+    $this->assertEquals('https://getkirby.com/panel', url::build([], 'https://getkirby.com/panel'));
+    $this->assertEquals('https://getkirby.com/panel/', url::build([], 'https://getkirby.com/panel/'));
+
     $this->assertEquals('https://getkirby.com/some/url/with:params?and=query#hash', url::build([], 'https://getkirby.com/some/url/with:params?and=query#hash'));
     $this->assertEquals('https://getkirby.com/some/otherurl/with:otherparams/and:moreparams?anddifferent=query#differenthash', url::build([
       'fragments' => ['some', 'otherurl'],

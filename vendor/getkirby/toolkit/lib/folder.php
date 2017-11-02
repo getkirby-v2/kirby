@@ -258,12 +258,16 @@ class Folder {
    */
   public function copy($to) {
 
+    // Get content before destination directory is made
+    // (prevents endless recursion)
+    $content = $this->content();
+
     // Make destination directory
     $copy = new static($to);
     if(!$copy->make()) return false;
 
     // Loop through all subfiles and folders
-    foreach($this->content() as $item) {
+    foreach($content as $item) {
       if(is_a($item, 'Folder')) {
         $dest = $to . DS . $item->name();
       } else {

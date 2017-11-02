@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4e2c9be9995bdef0b39bb8ee98f588b1",
-    "content-hash": "bcdbb5422cef5574118f4a382c5b1114",
+    "hash": "6d1e3c006ebec0b0d248b7c5583101f0",
+    "content-hash": "e846f58c97ff405cc45326c986be0fe5",
     "packages": [
         {
             "name": "erusev/parsedown",
@@ -95,16 +95,16 @@
         },
         {
             "name": "filp/whoops",
-            "version": "2.1.10",
+            "version": "2.1.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filp/whoops.git",
-                "reference": "ffbbd2c06c64b08fb47974eed5dbce4ca2bb0eec"
+                "reference": "a99f0b151846021ba7a73b4e3cba3ebc9f14f03e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filp/whoops/zipball/ffbbd2c06c64b08fb47974eed5dbce4ca2bb0eec",
-                "reference": "ffbbd2c06c64b08fb47974eed5dbce4ca2bb0eec",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/a99f0b151846021ba7a73b4e3cba3ebc9f14f03e",
+                "reference": "a99f0b151846021ba7a73b4e3cba3ebc9f14f03e",
                 "shasum": ""
             },
             "require": {
@@ -149,23 +149,23 @@
                 "exception",
                 "handling",
                 "library",
-                "whoops",
-                "zf2"
+                "throwable",
+                "whoops"
             ],
-            "time": "2017-08-03 18:23:40"
+            "time": "2017-10-15 13:05:10"
         },
         {
             "name": "getkirby/toolkit",
-            "version": "2.5.6",
+            "version": "2.5.7-RC-1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby/toolkit.git",
-                "reference": "abb0ca76dc02db60727c969914253fe8013dffde"
+                "reference": "1ba2ae3bb9c39cad171d7d76f5a59e7a184a2c68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/abb0ca76dc02db60727c969914253fe8013dffde",
-                "reference": "abb0ca76dc02db60727c969914253fe8013dffde",
+                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/1ba2ae3bb9c39cad171d7d76f5a59e7a184a2c68",
+                "reference": "1ba2ae3bb9c39cad171d7d76f5a59e7a184a2c68",
                 "shasum": ""
             },
             "require": {
@@ -193,7 +193,7 @@
             "keywords": [
                 "toolkit"
             ],
-            "time": "2017-10-11 12:59:14"
+            "time": "2017-11-02 20:01:40"
         },
         {
             "name": "michelf/php-smartypants",
@@ -247,7 +247,7 @@
         },
         {
             "name": "psr/log",
-            "version": "1.0.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
@@ -295,7 +295,7 @@
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
