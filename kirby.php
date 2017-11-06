@@ -361,7 +361,8 @@ class Kirby {
         'action'  => function($uri) use($site) {
           // first try to find a page with the given URI
           $page = page($uri);
-          if($page) return go($page);
+          $lang = $site->detectedLanguage()->code();
+          if($page) return go($page->url($lang));
 
           // the URI is not a valid page, redirect to the homepage of the default language
           return go($site->defaultLanguage()->url());
