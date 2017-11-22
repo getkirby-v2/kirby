@@ -715,8 +715,21 @@ class Kirby {
     // load all plugins
     $this->plugins();
 
+    // get all registered routes
+    $routes = $this->routes();
+
+    // check for a valid request method
+    // GET and HEAD are mandatory methods and must never be disabled
+    $allowed = array_unique(array_merge(array('GET', 'HEAD'), a::extract($routes, 'method')));
+    if(($key = array_search('ALL', $allowed)) !== false) unset($allowed[$key]);
+    if(!in_array(r::method(), $allowed)) {
+      header::status(405);
+      header('Allow: ' . implode(', ', $allowed));
+      exit(0);
+    }
+
     // start the router
-    $this->router = new Router($this->routes());
+    $this->router = new Router($routes);
     $this->route  = $this->router->run($this->path());
 
     // check for a valid route
@@ -725,7 +738,7 @@ class Kirby {
       header::type('json');
       die(json_encode(array(
         'status'  => 'error',
-        'message' => 'Invalid route or request method'
+        'message' => 'Invalid route'
       )));
     }
 
