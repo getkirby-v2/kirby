@@ -272,10 +272,13 @@ class Html {
 
   /**
    * Generates a HTML5 shiv script tag with additional comments for older IEs
+   * @deprecated
    *
    * @return string the generated html
    */
   public static function shiv() {
+    trigger_error('The html::shiv() method is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    
     return '<!--[if lt IE 9]>' . PHP_EOL .
            '<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>' . PHP_EOL .
            '<![endif]-->' . PHP_EOL;

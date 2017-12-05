@@ -168,8 +168,18 @@ class Url {
     $parts  = array_merge($defaults, $parts);
     $result = array(r(!empty($parts['scheme']), $parts['scheme'] . '://') . $parts['host'] . r(!empty($parts['port']), ':' . $parts['port']));
 
-    if(!empty($parts['fragments'])) $result[] = implode('/', $parts['fragments']);
-    if(!empty($parts['params']))    $result[] = static::paramsToString($parts['params']);
+    if(!empty($parts['fragments'])) {
+      $fragments = implode('/', $parts['fragments']);
+      
+      // prevent double slashes if params follow after the fragments
+      if(!empty($parts['params'])) $fragments = rtrim($fragments, '/');
+      
+      $result[] = $fragments;
+    }
+    
+    if(!empty($parts['params'])) {
+      $result[] = static::paramsToString($parts['params']);
+    }
 
     // make sure that URLs without any URI end with a slash after the host
     if(count($result) === 1) {

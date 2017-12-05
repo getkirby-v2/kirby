@@ -28,6 +28,25 @@ class UrlTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('https://getkirby.com/panel', url::build([], 'https://getkirby.com/panel'));
     $this->assertEquals('https://getkirby.com/panel/', url::build([], 'https://getkirby.com/panel/'));
 
+    $this->assertEquals('https://getkirby.com/search/page:2?q=something', url::build([
+      'params' => ['page' => 2]
+    ], 'https://getkirby.com/search?q=something'));
+    $this->assertEquals('https://getkirby.com/search/page:2?q=something', url::build([
+      'params' => ['page' => 2]
+    ], 'https://getkirby.com/search/?q=something'));
+    $this->assertEquals('https://getkirby.com/search/page:3?q=something', url::build([
+      'params' => ['page' => 3]
+    ], 'https://getkirby.com/search/page:2?q=something'));
+    $this->assertEquals('https://getkirby.com/search/?q=something', url::build([
+      'params' => []
+    ], 'https://getkirby.com/search/?q=something'));
+    $this->assertEquals('https://getkirby.com/search?q=something', url::build([
+      'params' => []
+    ], 'https://getkirby.com/search?q=something'));
+    $this->assertEquals('https://getkirby.com/search?q=something', url::build([
+      'params' => []
+    ], 'https://getkirby.com/search/page:2?q=something'));
+
     $this->assertEquals('https://getkirby.com/some/url/with:params?and=query#hash', url::build([], 'https://getkirby.com/some/url/with:params?and=query#hash'));
     $this->assertEquals('https://getkirby.com/some/otherurl/with:otherparams/and:moreparams?anddifferent=query#differenthash', url::build([
       'fragments' => ['some', 'otherurl'],

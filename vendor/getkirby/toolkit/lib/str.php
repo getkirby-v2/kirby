@@ -590,7 +590,7 @@ class Str {
   public static function encoding($string) {
 
     if(MB) {
-      return mb_detect_encoding($string, 'UTF-8, ISO-8859-1, windows-1251');
+      return mb_detect_encoding($string, 'UTF-8, ISO-8859-1, windows-1251', true);
     } else {
       foreach(array('utf-8', 'iso-8859-1', 'windows-1251') as $item) {
         if(md5(iconv($item, $item, $string)) == md5($string)) return $item;
@@ -611,6 +611,10 @@ class Str {
   public static function convert($string, $targetEncoding, $sourceEncoding = null) {
     // detect the source encoding if not passed as third argument
     if(is_null($sourceEncoding)) $sourceEncoding = static::encoding($string);
+
+    // no need to convert if the target encoding is the same
+    if(strtolower($sourceEncoding) === strtolower($targetEncoding)) return $string;
+
     return iconv($sourceEncoding, $targetEncoding, $string);
   }
 

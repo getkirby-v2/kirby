@@ -35,14 +35,4 @@ class HTMLTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($expected, html::img('myimage.jpg', array('width' => 100, 'height' => 200)));
   }
 
-  public function testShiv() {
-
-    $expected  = '<!--[if lt IE 9]>' . PHP_EOL;
-    $expected .= '<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>' . PHP_EOL;
-    $expected .= '<![endif]-->' . PHP_EOL;
-    
-    $this->assertEquals($expected, html::shiv());
-
-  }
-
 }
