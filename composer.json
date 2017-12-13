@@ -26,10 +26,9 @@
     "ext-gd": "*",
     "erusev/parsedown-extra": "0.7.*",
     "michelf/php-smartypants": "1.8.*",
-    "getkirby/toolkit": "2.5.8-RC-1",
+    "getkirby/toolkit": "2.5.8",
     "filp/whoops": "2.1.*"
   },
-  "minimum-stability": "dev",
   "archive": {
     "exclude": [
       "/.gitmodules",
