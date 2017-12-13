@@ -717,7 +717,7 @@ class Kirby {
 
     // start the router
     $this->router = new Router($this->routes());
-    $this->route  = $this->router->run($this->path());
+    $this->route  = $this->router->run(trim($this->path(), '/'));
 
     // check for a valid route
     if(is_null($this->route)) {
