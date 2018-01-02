@@ -240,38 +240,41 @@ class Kirby {
     $kirby  = $this;
     $site   = $this->site();
 
+    // language detection function
+    $langDetect = function() use($site, $kirby) {
+      if(get('language') === 'switch') {
+        // user comes from a different domain and wants to switch languages
+        $language = $kirby->route->lang;
+        s::set('kirby_language', $language->code());
+      } else if(s::get('kirby_language') and $language = $site->sessionLanguage()) {
+        // $language is already set but the user wants to
+        // select another language
+        $referer = r::referer();
+        if(!empty($referer) && str::startsWith($referer, $this->urls()->index())) {
+          $language = $kirby->route->lang;
+        }
+      } else {
+        // detect the user language
+        $language = $site->detectedLanguage();
+      }
+
+      // build language homepage URL including params and/or query
+      $url = $language->url();
+      if($params = url::params()) $url .= '/' . url::paramsToString($params);
+      if($query  = url::query())  $url .= '/?' . url::queryToString($query);
+
+      // redirect to the language homepage
+      if($language && rtrim(url::current(), '/') !== rtrim($url, '/')) {
+        go($url);
+      }
+    };
+
     // fallback route for both single and multilang branches
-    $otherRoute = function($path = null) use($site, $kirby) {
+    $otherRoute = function($path = null) use($site, $kirby, $langDetect) {
 
       // handle language homepages if the language detector is activated
-      if($kirby->option('language.detect') && $kirby->route->lang && (!$path || $path === '/')) {
-
-        if(get('language') === 'switch') {
-          // user comes from a different domain and wants to switch languages
-          $language = $kirby->route->lang;
-          s::set('kirby_language', $language->code());
-        } else if(s::get('kirby_language') and $language = $site->sessionLanguage()) {
-          // $language is already set but the user wants to
-          // select another language
-          $referer = r::referer();
-          if(!empty($referer) && str::startsWith($referer, $this->urls()->index())) {
-            $language = $kirby->route->lang;
-          }
-        } else {
-          // detect the user language
-          $language = $site->detectedLanguage();
-        }
-
-        // build language homepage URL including params and/or query
-        $url = $language->url();
-        if($params = url::params()) $url .= '/' . url::paramsToString($params);
-        if($query  = url::query())  $url .= '/?' . url::queryToString($query);
-
-        // redirect to the language homepage
-        if($language && rtrim(url::current(), '/') !== rtrim($url, '/')) {
-          return go($url);
-        }
-
+      if($kirby->option('language.detect') && $kirby->route->lang && (!$path || $path === '/') && $kirby->route->lang->isRoot()) {
+        call($langDetect);
       }
 
       // get the language code from the route
@@ -366,7 +369,7 @@ class Kirby {
       $routes['others'] = array(
         'pattern' => '(.*)', // this can't be (:all) to avoid overriding the actual language route
         'method'  => 'ALL',
-        'action'  => function($uri) use($site) {
+        'action'  => function($uri) use($site, $kirby, $langDetect) {
           if($uri && $uri !== '/') {
             // first try to find a page with the given URI
             $page = page($uri);
@@ -375,7 +378,14 @@ class Kirby {
             // the URI is not a valid page -> error page
             return $site->errorPage();
           } else {
-            // no URI is given, redirect to the homepage of the default language
+            // no URI is given
+            
+            // handle language homepages if the language detector is activated
+            if($kirby->option('language.detect')) {
+              call($langDetect);
+            }
+            
+            // otherwise redirect to the homepage of the default language
             return go($site->defaultLanguage()->url());
           }
         }
