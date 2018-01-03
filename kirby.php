@@ -710,7 +710,7 @@ class Kirby {
     // force secure connections if enabled
     if($this->option('ssl') and !r::secure()) {
       // rebuild the current url with https
-      go(url::build(array('scheme' => 'https')));
+      go(url::build(['scheme' => 'https']), 301);
     }
 
     // set the timezone for all date functions
