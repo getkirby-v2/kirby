@@ -8,10 +8,6 @@ class RTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(is_array(r::data()));    
   }  
 
-  public function testSanitize() {
-    // no test yet
-  }
-
   public function testSet() {
 
     r::set('testvar', 'testvalue');

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4f108477bca6709e13ae26312f219e7c",
-    "content-hash": "efb85656fb5bff399c2c400a52c3fcef",
+    "hash": "05e1ad1e04efd77814886c60cbd0a7ef",
+    "content-hash": "15f9d9cde635265dbeaf592d1bc1b526",
     "packages": [
         {
             "name": "erusev/parsedown",
@@ -159,16 +159,16 @@
         },
         {
             "name": "getkirby/toolkit",
-            "version": "2.5.8",
+            "version": "2.5.9-RC-1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby/toolkit.git",
-                "reference": "d492775a8bcc0c2770f60b4df7bb4ee0abdb41a8"
+                "reference": "7c6fbf204e18b8dd7f39efb24e84a8c09291b157"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/d492775a8bcc0c2770f60b4df7bb4ee0abdb41a8",
-                "reference": "d492775a8bcc0c2770f60b4df7bb4ee0abdb41a8",
+                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/7c6fbf204e18b8dd7f39efb24e84a8c09291b157",
+                "reference": "7c6fbf204e18b8dd7f39efb24e84a8c09291b157",
                 "shasum": ""
             },
             "require": {
@@ -196,7 +196,7 @@
             "keywords": [
                 "toolkit"
             ],
-            "time": "2017-12-13 10:08:31"
+            "time": "2018-01-30 12:48:23"
         },
         {
             "name": "michelf/php-smartypants",
@@ -250,7 +250,7 @@
         },
         {
             "name": "psr/log",
-            "version": "1.0.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
@@ -298,7 +298,7 @@
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,

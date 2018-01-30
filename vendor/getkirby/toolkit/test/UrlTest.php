@@ -11,6 +11,22 @@ class UrlTest extends PHPUnit_Framework_TestCase {
 
   }
 
+  public function testIsAbsolute() {
+
+    $this->assertTrue(url::isAbsolute('http://example.com/some-uri'));
+    $this->assertTrue(url::isAbsolute('https://example.com/some-uri'));
+    $this->assertTrue(url::isAbsolute('ftp://example.com/some-uri'));
+    $this->assertTrue(url::isAbsolute('some-other+123-proto.col://example.com/some-uri'));
+    $this->assertTrue(url::isAbsolute('//example.com/some-uri'));
+    $this->assertTrue(url::isAbsolute('mailto:example@example.com'));
+
+    $this->assertFalse(url::isAbsolute(''));
+    $this->assertFalse(url::isAbsolute('some-uri'));
+    $this->assertFalse(url::isAbsolute('/some-uri'));
+    $this->assertFalse(url::isAbsolute('/some-uri/?url=https://example.com'));
+
+  }
+
   public function testBuild() {
 
     $this->assertEquals('http://getkirby.com/', url::build([], 'http://getkirby.com'));

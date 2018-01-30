@@ -21,7 +21,7 @@ class Redirect {
    * @param   boolean   $code The HTTP status code, which should be sent (301, 302 or 303)
    * @param   boolean   $send If true, headers will be sent and redirection will take effect
    */
-  public static function send($url = false, $code = false, $send = true) {
+  public static function send($url = false, $code = 302, $send = true) {
     return header::redirect($url, $code, $send);
   }
 
@@ -34,7 +34,7 @@ class Redirect {
     $args = func_get_args();
 
     // if the last element is a number, use it as HTTP status code
-    $code = false;
+    $code = 302;
     if(is_int(end($args))) {
       $code = array_pop($args);
     }

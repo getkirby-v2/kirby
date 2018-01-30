@@ -17,12 +17,6 @@ class XmlTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($expected, xml::encode($this->string));
     $this->assertEquals($this->string, xml::decode($expected));
 
-  }  
-
-  public function testParse() {
-
-    // no test yet
-
   }
 
 }

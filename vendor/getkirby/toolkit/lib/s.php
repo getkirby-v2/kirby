@@ -50,24 +50,21 @@ class S {
     // make sure to use cookies only
     ini_set('session.use_cookies', 1);
     ini_set('session.use_only_cookies', 1);
+    
+    // set additional cookie options
+    session_set_cookie_params(
+      cookie::lifetime(static::$cookie['lifetime']),
+      static::$cookie['path'],
+      static::$cookie['domain'],
+      static::$cookie['secure'],
+      static::$cookie['httponly']
+    );
 
     // try to start the session
     if(!session_start()) return false;
 
-    if(!setcookie(
-      static::$name, 
-      session_id(), 
-      cookie::lifetime(static::$cookie['lifetime']), 
-      static::$cookie['path'], 
-      static::$cookie['domain'], 
-      static::$cookie['secure'], 
-      static::$cookie['httponly']
-    )) {
-      return false;
-    }
-
     // mark it as started
-    static::$started = true;      
+    static::$started = true;
 
     // check if the session is still valid
     if(!static::check()) {

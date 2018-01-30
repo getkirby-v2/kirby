@@ -209,23 +209,23 @@
     },
     {
         "name": "getkirby/toolkit",
-        "version": "2.5.8",
-        "version_normalized": "2.5.8.0",
+        "version": "2.5.9-RC-1",
+        "version_normalized": "2.5.9.0-RC1",
         "source": {
             "type": "git",
             "url": "https://github.com/getkirby/toolkit.git",
-            "reference": "d492775a8bcc0c2770f60b4df7bb4ee0abdb41a8"
+            "reference": "7c6fbf204e18b8dd7f39efb24e84a8c09291b157"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/getkirby/toolkit/zipball/d492775a8bcc0c2770f60b4df7bb4ee0abdb41a8",
-            "reference": "d492775a8bcc0c2770f60b4df7bb4ee0abdb41a8",
+            "url": "https://api.github.com/repos/getkirby/toolkit/zipball/7c6fbf204e18b8dd7f39efb24e84a8c09291b157",
+            "reference": "7c6fbf204e18b8dd7f39efb24e84a8c09291b157",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2017-12-13 10:08:31",
+        "time": "2018-01-30 12:48:23",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -252,8 +252,8 @@
     },
     {
         "name": "psr/log",
-        "version": "1.0.2",
-        "version_normalized": "1.0.2.0",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
             "url": "https://github.com/php-fig/log.git",
