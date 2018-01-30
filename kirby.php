@@ -10,7 +10,7 @@ use Kirby\Urls;
 
 class Kirby {
 
-  static public $version = '2.5.8';
+  static public $version = '2.5.9 RC-1';
   static public $instance;
   static public $hooks = array();
   static public $triggered = array();
@@ -379,12 +379,12 @@ class Kirby {
             return $site->errorPage();
           } else {
             // no URI is given
-            
+
             // handle language homepages if the language detector is activated
             if($kirby->option('language.detect')) {
               call($langDetect);
             }
-            
+
             // otherwise redirect to the homepage of the default language
             return go($site->defaultLanguage()->url());
           }
