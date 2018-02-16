@@ -2,6 +2,7 @@
 
 namespace Kirby;
 
+use C;
 use Kirby;
 use R;
 use Response;
@@ -102,7 +103,7 @@ class ErrorHandling {
     } else {
 
       $handler = new CallbackHandler(function($exception, $inspector, $run) {
-        $html = tpl::load(dirname(__DIR__) . DS . 'views' . DS . 'fatal.php');
+        $html = tpl::load(c::get('fatal', dirname(__DIR__) . DS . 'views' . DS . 'fatal.php'));
         echo new Response($html, 'html', 500);
         return Handler::QUIT;
       });
