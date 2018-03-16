@@ -92,8 +92,8 @@ class Collection extends I implements Countable {
   }
 
   /**
-   * Checks if an element is in the collection by key. 
-   * 
+   * Checks if an element is in the collection by key.
+   *
    * @param string $key
    * @return boolean
    */
@@ -196,13 +196,13 @@ class Collection extends I implements Countable {
   public function shuffle() {
     $keys = array_keys($this->data);
     shuffle($keys);
-    
+
     $collection = clone $this;
     $collection->data = array();
     foreach($keys as $key) {
       $collection->data[$key] = $this->data[$key];
     }
-    
+
     return $collection;
   }
 
@@ -327,49 +327,34 @@ class Collection extends I implements Countable {
     $args       = func_get_args();
     $collection = clone $this;
     $array      = $collection->data;
+    $params     = array();
 
-    // there is no need to sort empty collections
     if(empty($array)) return $collection;
 
-    // loop through all method arguments and find sets of fields to sort by
-    $fields = [];
-    foreach($args as $i => $arg) {
-      // get the index of the latest field array inside the $fields array
-      $currentField = ($fields)? count($fields) - 1 : 0;
-
-      // detect the type of argument
-      // sorting direction
-      $argLower = str::lower($arg);
-      if($arg === SORT_ASC || $argLower === 'asc') {
-        $fields[$currentField]['direction'] = SORT_ASC;
-      } else if($arg === SORT_DESC || $argLower === 'desc') {
-        $fields[$currentField]['direction'] = SORT_DESC;
-      
-      // other string: The field name
-      } else if(is_string($arg)) {
-        $values = $collection->pluck($arg);
-        $fields[] = ['field' => $arg, 'values' => $values];
-      
-      // flags
+    foreach($args as $i => $param) {
+      if(is_string($param)) {
+        if(strtolower($param) === 'desc') {
+          ${"param_$i"} = SORT_DESC;
+        } else if(strtolower($param) === 'asc') {
+          ${"param_$i"} = SORT_ASC;
+        } else {
+          ${"param_$i"} = array();
+          foreach($array as $index => $row) {
+            ${"param_$i"}[$index] = is_array($row) ? str::lower($row[$param]) : str::lower($row->$param());
+          }
+        }
       } else {
-        $fields[$currentField]['flags'] = $arg;
+        ${"param_$i"} = $args[$i];
       }
+      $params[] = &${"param_$i"};
     }
 
-    // build the multisort params
-    $params = [];
-    foreach($fields as $field) {
-      $params[] = a::get($field, 'values',    []);
-      $params[] = a::get($field, 'direction', SORT_ASC);
-      $params[] = a::get($field, 'flags',     SORT_REGULAR);
-    }
     $params[] = &$array;
 
-    // array_multisort receives $params as separate params
-    call('array_multisort', $params);
+    call_user_func_array('array_multisort', $params);
 
-    // $array has been overwritten by array_multisort
     $collection->data = $array;
+
     return $collection;
 
   }
@@ -587,7 +572,7 @@ class Collection extends I implements Countable {
 
   /**
    * Improved var_dump() output
-   * 
+   *
    * @return array
    */
   public function __debuginfo() {
