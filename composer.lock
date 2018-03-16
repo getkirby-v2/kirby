@@ -4,24 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2742e023800cb1b92d48d1b5e855a814",
-    "content-hash": "159071ae949fe038e4eac86a075de557",
+    "hash": "67ae981ed68498455eab3b1d4ccaf140",
+    "content-hash": "b4a16f422b9421854cd34b0b397456a9",
     "packages": [
         {
             "name": "erusev/parsedown",
-            "version": "1.6.4",
+            "version": "1.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "fbe3fe878f4fe69048bb8a52783a09802004f548"
+                "reference": "92e9c27ba0e74b8b028b111d1b6f956a15c01fc1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/fbe3fe878f4fe69048bb8a52783a09802004f548",
-                "reference": "fbe3fe878f4fe69048bb8a52783a09802004f548",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/92e9c27ba0e74b8b028b111d1b6f956a15c01fc1",
+                "reference": "92e9c27ba0e74b8b028b111d1b6f956a15c01fc1",
                 "shasum": ""
             },
             "require": {
+                "ext-mbstring": "*",
                 "php": ">=5.3.0"
             },
             "require-dev": {
@@ -50,7 +51,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2017-11-14 20:44:03"
+            "time": "2018-03-08 01:11:30"
         },
         {
             "name": "erusev/parsedown-extra",
@@ -159,16 +160,16 @@
         },
         {
             "name": "getkirby/toolkit",
-            "version": "2.5.9",
+            "version": "2.5.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby/toolkit.git",
-                "reference": "1a4250022185788fe1181ffac670f1a65c54f92b"
+                "reference": "e605772090ff6be9f3f59b62c027eb8529b49a46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/1a4250022185788fe1181ffac670f1a65c54f92b",
-                "reference": "1a4250022185788fe1181ffac670f1a65c54f92b",
+                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/e605772090ff6be9f3f59b62c027eb8529b49a46",
+                "reference": "e605772090ff6be9f3f59b62c027eb8529b49a46",
                 "shasum": ""
             },
             "require": {
@@ -196,7 +197,7 @@
             "keywords": [
                 "toolkit"
             ],
-            "time": "2018-02-27 15:38:10"
+            "time": "2018-03-16 08:50:46"
         },
         {
             "name": "michelf/php-smartypants",

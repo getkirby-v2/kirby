@@ -10,7 +10,7 @@ use Kirby\Urls;
 
 class Kirby {
 
-  static public $version = '2.5.9';
+  static public $version = '2.5.10';
   static public $instance;
   static public $hooks = array();
   static public $triggered = array();

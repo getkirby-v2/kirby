@@ -361,7 +361,7 @@ class Collection extends I implements Countable {
     foreach($fields as $field) {
       $params[] = a::get($field, 'values',    []);
       $params[] = a::get($field, 'direction', SORT_ASC);
-      $params[] = a::get($field, 'flags',     SORT_LOCALE_STRING);
+      $params[] = a::get($field, 'flags',     SORT_REGULAR);
     }
     $params[] = &$array;
 
