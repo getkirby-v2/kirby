@@ -137,7 +137,8 @@ class F {
       'psd',
       'ai',
       'eps',
-      'ps'
+      'ps',
+      'webp',
     ),
 
     'document' => array(
