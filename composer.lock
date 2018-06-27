@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "67ae981ed68498455eab3b1d4ccaf140",
-    "content-hash": "b4a16f422b9421854cd34b0b397456a9",
+    "hash": "394bb160558de3c49535607428e74dc3",
+    "content-hash": "2019a659d827e9f432746413ffd211b6",
     "packages": [
         {
             "name": "erusev/parsedown",
@@ -160,20 +160,20 @@
         },
         {
             "name": "getkirby/toolkit",
-            "version": "2.5.10",
+            "version": "2.5.11-RC-1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby/toolkit.git",
-                "reference": "c9323735246028b22e945f2641e733dc0d774d1a"
+                "reference": "0b596a9e20bdfb36720bccc5ffcd6f5f03b8283c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/c9323735246028b22e945f2641e733dc0d774d1a",
-                "reference": "c9323735246028b22e945f2641e733dc0d774d1a",
+                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/0b596a9e20bdfb36720bccc5ffcd6f5f03b8283c",
+                "reference": "0b596a9e20bdfb36720bccc5ffcd6f5f03b8283c",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0"
+                "php": ">=5.6.0"
             },
             "type": "library",
             "autoload": {
@@ -197,7 +197,7 @@
             "keywords": [
                 "toolkit"
             ],
-            "time": "2018-03-16 08:50:46"
+            "time": "2018-06-27 08:49:19"
         },
         {
             "name": "michelf/php-smartypants",
@@ -251,16 +251,16 @@
         },
         {
             "name": "psr/log",
-            "version": "1.0.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+                "reference": "3490ba5925e6dcbe6de950c5c6b8dce9f6e96eda"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/3490ba5925e6dcbe6de950c5c6b8dce9f6e96eda",
+                "reference": "3490ba5925e6dcbe6de950c5c6b8dce9f6e96eda",
                 "shasum": ""
             },
             "require": {
@@ -294,17 +294,17 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10 12:19:37"
+            "time": "2018-04-03 15:59:15"
         }
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.4.0",
+        "php": ">=5.6.0",
         "ext-mbstring": "*",
         "ext-gd": "*"
     },

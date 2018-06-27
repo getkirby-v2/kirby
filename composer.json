@@ -21,14 +21,16 @@
     "files": ["composer.php"]
   },
   "require": {
-    "php": ">=5.4.0",
+    "php": ">=5.6.0",
     "ext-mbstring": "*",
     "ext-gd": "*",
-    "erusev/parsedown-extra": "0.7.*",
-    "michelf/php-smartypants": "1.8.*",
-    "getkirby/toolkit": "2.5.10",
-    "filp/whoops": "2.1.*"
+    "erusev/parsedown": "1.7.1",
+    "erusev/parsedown-extra": "0.7.1",
+    "michelf/php-smartypants": "1.8.1",
+    "getkirby/toolkit": "2.5.11-RC-1",
+    "filp/whoops": "2.1.14"
   },
+  "minimum-stability": "dev",
   "archive": {
     "exclude": [
       "/.gitmodules",
