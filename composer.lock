@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "94a561ec769d6b11923db85ea6dacd19",
-    "content-hash": "ca6b8d48a449d7e3e38469787af28d5a",
+    "hash": "ff70fb29cde927560984014404777607",
+    "content-hash": "a1b33a31d8f6cba4c481150eadbd3e2d",
     "packages": [
         {
             "name": "erusev/parsedown",
@@ -160,16 +160,16 @@
         },
         {
             "name": "getkirby/toolkit",
-            "version": "2.5.11",
+            "version": "2.5.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby/toolkit.git",
-                "reference": "e8068633422da93b47c404b92241b15d42fc0e3f"
+                "reference": "b6457bab41d347d5ae4ed6b92244935e6dfed919"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/e8068633422da93b47c404b92241b15d42fc0e3f",
-                "reference": "e8068633422da93b47c404b92241b15d42fc0e3f",
+                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/b6457bab41d347d5ae4ed6b92244935e6dfed919",
+                "reference": "b6457bab41d347d5ae4ed6b92244935e6dfed919",
                 "shasum": ""
             },
             "require": {
@@ -197,7 +197,7 @@
             "keywords": [
                 "toolkit"
             ],
-            "time": "2018-07-03 09:33:34"
+            "time": "2018-07-17 08:25:11"
         },
         {
             "name": "michelf/php-smartypants",

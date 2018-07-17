@@ -27,7 +27,7 @@
     "erusev/parsedown": "1.7.1",
     "erusev/parsedown-extra": "0.7.1",
     "michelf/php-smartypants": "1.8.1",
-    "getkirby/toolkit": "2.5.11",
+    "getkirby/toolkit": "2.5.12",
     "filp/whoops": "2.1.14"
   },
   "archive": {
