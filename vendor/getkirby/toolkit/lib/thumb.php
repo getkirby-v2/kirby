@@ -81,9 +81,15 @@ class Thumb extends Obj {
 
     }
 
-    // create the result object
-    $this->result = new Media($this->destination->root, $this->destination->url);
+    // create the result object for thumb
+    $new_thumb = new Media($this->destination->root, $this->destination->url);
 
+    // check if thumb is larger than original file before returning media object
+    if($this->isLarger($new_thumb)) {
+      $this->result = $this->source;
+    } else {
+      $this->result = $new_thumb;
+    }
   }
 
   /**
@@ -190,6 +196,24 @@ class Thumb extends Obj {
     // if the thumb already exists and the source hasn't been updated
     // we don't need to generate a new thumbnail
     if(file_exists($this->destination->root) && f::modified($this->destination->root) >= $this->source->modified()) return true;
+
+    return false;
+
+  }
+
+  /**
+   * Checks if the thumbnail is larger than the original file
+   *
+   * @return boolean
+   */
+  public function isLarger($new_thumb) {
+
+    // if the thumb is not visually different to its source
+    // but is larger, better use the original image
+    if($new_thumb->size() >= $this->source->size()    &&
+      $this->options['blur']    == false              &&
+      $this->options['grayscale']    == false         &&
+      $this->options['crop'] == false) return true;
 
     return false;
 
