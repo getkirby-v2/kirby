@@ -44,6 +44,9 @@ class Server {
     switch($key) {
       case 'SERVER_ADDR':
       case 'SERVER_NAME':
+        $value = trim($value);
+        $multi_name = explode(' ', $value);
+        $value = count($multi_name) > 1 ? $multi_name[0] : $value;
       case 'HTTP_HOST':
         $value = strip_tags($value);
         $value = preg_replace('![^\w.:-]+!iu', '', $value);
