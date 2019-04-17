@@ -72,35 +72,31 @@ class RoleTest extends KirbyTestCase {
     $this->assertEquals('This user should fail.', $result->message());
   }
 
-  /**
-   * @expectedException        Error
-   * @expectedExceptionMessage Invalid event.
-   */
   public function testPermissionInvalidEvent() {
+    $this->expectException('Error');
+    $this->expectExceptionMessage('Invalid event');
+
     $this->role->permission(new Obj());
   }
 
-  /**
-   * @expectedException        Error
-   * @expectedExceptionMessage Permission panel.user.error of role testrole is invalid.
-   */
   public function testPermissionValueError() {
+    $this->expectException('Error');
+    $this->expectExceptionMessage('Permission panel.user.error of role testrole is invalid.');
+
     $this->role->permission('panel.user.error');
   }
 
-  /**
-   * @expectedException        Error
-   * @expectedExceptionMessage Invalid user.
-   */
   public function testPermissionCallbackError() {
+    $this->expectException('Error');
+    $this->expectExceptionMessage('Invalid user.');
+
     $this->role->permission('panel.user.update', 'someotheruser');
   }
 
-  /**
-   * @expectedException        Error
-   * @expectedExceptionMessage Permission panel.user.update of role testrole must return a boolean or error string.
-   */
   public function testPermissionCallbackReturnError() {
+    $this->expectException('Error');
+    $this->expectExceptionMessage('Permission panel.user.update of role testrole must return a boolean or error string.');
+
     $this->role->permission('panel.user.update', 'returnerror');
   }
 
