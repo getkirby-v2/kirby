@@ -6,7 +6,7 @@ class RoleTest extends KirbyTestCase {
 
   protected $role;
 
-  public function setUp() {
+  public function setUp(): void {
     $this->role = new Role(array(
       'id'          => 'testrole',
       'name'        => 'Test role',
