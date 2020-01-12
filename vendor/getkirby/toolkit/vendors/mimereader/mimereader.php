@@ -537,7 +537,7 @@
 			if ( !empty( $ignore ) ) {
 				for ( $s = 0; $s < $seq_len; ) {
 					// This letter should not be ignored.
-					if ( strpos( $ignore, $sequence{$s} ) === false ) {
+					if ( strpos( $ignore, $sequence[$s] ) === false ) {
 						break;
 					}
 
@@ -547,9 +547,9 @@
 
 			// Now we will compare. If it doesn't match the mask, we return false.
 			for ( $i = 0; $i < $pattern_len; ) {
-				$masked_data	= @$sequence{$s} & @$mask{$i};
+				$masked_data	= @$sequence[$s] & @$mask[$i];
 
-				if ( $masked_data !== $pattern{$i} ) {
+				if ( $masked_data !== $pattern[$i] ) {
 					return false;
 				}
 
@@ -579,7 +579,7 @@
 			if ( !empty( $ignore ) ) {
 				for (; $s < $seq_len; ) {
 					// This letter should not be ignored.
-					if ( strpos( $ignore, $sequence{$s} ) === false ) {
+					if ( strpos( $ignore, $sequence[$s] ) === false ) {
 						break;
 					}
 
@@ -589,9 +589,9 @@
 
 			// Now we will compare. If it doesn't match the mask, we return false.
 			for (; $i < $pattern_len; ) {
-				$masked_data	= $sequence{$s} & $mask{$i};
+				$masked_data	= $sequence[$s] & $mask[$i];
 
-				if ( $masked_data !== $pattern{$i} ) {
+				if ( $masked_data !== $pattern[$i] ) {
 					return false;
 				}
 
@@ -599,7 +599,7 @@
 			}
 
 			// Mask matched. This pattern matches if the last character is tag-terminating.
-			return strpos( self::$tag_terminating_character, $sequence{$s} );
+			return strpos( self::$tag_terminating_character, $sequence[$s] );
 		}
 
 		protected function detect_type() {

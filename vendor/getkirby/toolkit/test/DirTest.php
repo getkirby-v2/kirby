@@ -6,20 +6,20 @@ class DirTest extends PHPUnit_Framework_TestCase {
 
   protected $tmpDir;
   protected $movedDir;
-  
-  protected function setUp() {
+
+  public function setUp(): void {
     $this->tmpDir = TEST_ROOT_TMP . DS . 'test';
     $this->movedDir = TEST_ROOT_TMP . DS . 'moved';
   }
 
   public function testMake() {
     $this->assertTrue(dir::make($this->tmpDir));
-  }  
+  }
 
   public function testRead() {
     $files = dir::read(TEST_ROOT_ETC);
     $this->assertEquals(4, count($files));
-  } 
+  }
 
   public function testMove() {
     $this->assertTrue(dir::move($this->tmpDir, $this->movedDir));
@@ -46,7 +46,7 @@ class DirTest extends PHPUnit_Framework_TestCase {
   public function testSize() {
 
     dir::make($this->tmpDir);
-    
+
     f::write($this->tmpDir . DS . 'testfile-1.txt', str::random(5));
     f::write($this->tmpDir . DS . 'testfile-2.txt', str::random(5));
     f::write($this->tmpDir . DS . 'testfile-3.txt', str::random(5));
@@ -67,7 +67,7 @@ class DirTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testReadable() {
-    $this->assertEquals(is_readable(TEST_ROOT), dir::readable(TEST_ROOT));    
+    $this->assertEquals(is_readable(TEST_ROOT), dir::readable(TEST_ROOT));
   }
 
 }

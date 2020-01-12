@@ -6,8 +6,8 @@ class FTest extends PHPUnit_Framework_TestCase {
 
   protected $contentFile;
   protected $tmpFile;
-  
-  protected function setUp() {
+
+  public function setUp(): void {
     $this->contentFile = TEST_ROOT_ETC . DS . 'content.php';
     $this->tmpFile = TEST_ROOT_TMP . DS . 'testfile.txt';
   }
@@ -17,15 +17,15 @@ class FTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testWrite() {
-    $this->assertTrue(f::write($this->tmpFile, 'my content'));    
+    $this->assertTrue(f::write($this->tmpFile, 'my content'));
   }
 
   public function testAppend() {
-    $this->assertTrue(f::append($this->tmpFile, ' is awesome'));        
+    $this->assertTrue(f::append($this->tmpFile, ' is awesome'));
   }
 
   public function testRead() {
-    $this->assertEquals('my content is awesome', f::read($this->tmpFile));    
+    $this->assertEquals('my content is awesome', f::read($this->tmpFile));
   }
 
   public function testURI() {
@@ -111,7 +111,7 @@ class FTest extends PHPUnit_Framework_TestCase {
     $expected = 'sueper-involid_filessname-@2x.jpg';
 
     $this->assertEquals($expected, f::safeName($name));
-  } 
+  }
 
   public function testWritable() {
     $this->assertEquals(is_writable($this->contentFile), f::isWritable($this->contentFile));

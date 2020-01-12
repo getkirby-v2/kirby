@@ -6,8 +6,8 @@ class ATest extends PHPUnit_Framework_TestCase {
 
   protected $user;
   protected $users;
-  
-  protected function setUp() {
+
+  public function setUp(): void {
 
     $this->user = array(
       'username' => 'testuser',
@@ -48,14 +48,14 @@ class ATest extends PHPUnit_Framework_TestCase {
   public function testExtract() {
 
     $users = $this->users;
-    
+
     $usernames = a::extract($users, 'username');
     $this->assertEquals(array('peter', 'paul', 'mary'), $usernames);
 
   }
 
   public function testShuffle() {
-    
+
     $users = $this->users;
     $users = a::shuffle($users);
 

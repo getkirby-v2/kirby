@@ -8,7 +8,7 @@ class MediaTest extends PHPUnit_Framework_TestCase {
   protected $url;
   protected $media;
 
-  protected function setUp() {
+  public function setUp(): void {
 
     $this->file  = TEST_ROOT_ETC . DS . 'images' . DS . 'favicon.png';
     $this->url   = 'http://superdomain.com/favicon.png';
@@ -22,87 +22,87 @@ class MediaTest extends PHPUnit_Framework_TestCase {
   public function testRoot() {
     $this->assertEquals($this->file, $this->media->root());
   }
- 
+
   public function testFilename() {
-    $this->assertEquals('favicon.png', $this->media->filename());    
+    $this->assertEquals('favicon.png', $this->media->filename());
   }
 
   public function testDir() {
-    $this->assertEquals(dirname($this->file), $this->media->dir());    
+    $this->assertEquals(dirname($this->file), $this->media->dir());
   }
 
   public function testName() {
-    $this->assertEquals('favicon', $this->media->name());    
+    $this->assertEquals('favicon', $this->media->name());
   }
 
   public function testExtension() {
-    $this->assertEquals('png', $this->media->extension());    
+    $this->assertEquals('png', $this->media->extension());
   }
 
   public function testType() {
-    $this->assertEquals('image', $this->media->type());    
+    $this->assertEquals('image', $this->media->type());
   }
 
   public function testIs() {
-    $this->assertTrue($this->media->is('png'));    
-    $this->assertTrue($this->media->is('image/png'));    
-    $this->assertFalse($this->media->is('jpg'));    
+    $this->assertTrue($this->media->is('png'));
+    $this->assertTrue($this->media->is('image/png'));
+    $this->assertFalse($this->media->is('jpg'));
   }
 
   public function testModified() {
-    $this->assertEquals(filemtime($this->file), $this->media->modified());        
+    $this->assertEquals(filemtime($this->file), $this->media->modified());
   }
 
   public function testExists() {
-    $this->assertTrue($this->media->exists());        
+    $this->assertTrue($this->media->exists());
   }
 
   public function testIsReadable() {
-    $this->assertEquals(is_readable($this->file), $this->media->isReadable());        
+    $this->assertEquals(is_readable($this->file), $this->media->isReadable());
   }
 
   public function testIsWritable() {
-    $this->assertEquals(is_writable($this->file), $this->media->isWritable());        
+    $this->assertEquals(is_writable($this->file), $this->media->isWritable());
   }
 
   public function testSize() {
-    $this->assertEquals(428, $this->media->size());        
+    $this->assertEquals(428, $this->media->size());
   }
 
   public function testNiceSize() {
-    $this->assertEquals('428 B', $this->media->niceSize());        
+    $this->assertEquals('428 B', $this->media->niceSize());
   }
 
   public function testMime() {
-    $this->assertEquals('image/png', $this->media->mime());        
+    $this->assertEquals('image/png', $this->media->mime());
   }
 
   public function testExif() {
-    $this->assertInstanceOf('Exif', $this->media->exif());        
+    $this->assertInstanceOf('Exif', $this->media->exif());
   }
 
   public function testImagesize() {
-    $this->assertEquals(getimagesize($this->file), $this->media->imagesize());        
+    $this->assertEquals(getimagesize($this->file), $this->media->imagesize());
   }
 
   public function testDimensions() {
-    $this->assertInstanceOf('Dimensions', $this->media->dimensions());        
+    $this->assertInstanceOf('Dimensions', $this->media->dimensions());
   }
 
   public function testWidth() {
-    $this->assertEquals(32, $this->media->width());        
+    $this->assertEquals(32, $this->media->width());
   }
 
   public function testHeight() {
-    $this->assertEquals(32, $this->media->height());        
+    $this->assertEquals(32, $this->media->height());
   }
 
   public function testRatio() {
-    $this->assertEquals(1, $this->media->ratio());        
+    $this->assertEquals(1, $this->media->ratio());
   }
 
   public function testHeader() {
-    $this->assertEquals('Content-type: image/png', $this->media->header($send = false));        
+    $this->assertEquals('Content-type: image/png', $this->media->header($send = false));
   }
 
   public function testToString() {

@@ -21,7 +21,7 @@
     "files": ["composer.php"]
   },
   "require": {
-    "php": ">=5.6.0",
+    "php": ">=7.2.0",
     "ext-mbstring": "*",
     "ext-gd": "*",
     "erusev/parsedown": "1.7.1",

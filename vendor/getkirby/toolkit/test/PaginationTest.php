@@ -9,18 +9,18 @@ class PaginationTest extends PHPUnit_Framework_TestCase {
   protected $pages;
   protected $pagination;
 
-  protected function setUp() {
-    
-    $this->data = new Collection(); 
+  public function setUp(): void {
+
+    $this->data = new Collection();
 
     foreach(range(0,99) as $key => $item) $this->data->set($key, str::random());
-    
+
     $this->url        = 'http://getkirby.com/';
     $this->pages      = $this->data->paginate(10, array('url' => $this->url));
     $this->pagination = $this->pages->pagination();
 
   }
-  
+
   public function testMethods() {
 
     $this->assertInstanceOf('Pagination', $this->pagination);
@@ -50,10 +50,10 @@ class PaginationTest extends PHPUnit_Framework_TestCase {
 
     $pagination = new Pagination($this->data, 20, array(
       'url'      => $this->url,
-      'variable' => 'seite', 
-      'method'   => 'query'  
+      'variable' => 'seite',
+      'method'   => 'query'
     ));
-    
+
     $this->assertEquals($this->url . '?seite=3', $pagination->pageURL(3));
     $this->assertEquals($this->url . '?seite=5', $pagination->pageURL(5));
     $this->assertEquals($this->url, $pagination->firstPageURL());

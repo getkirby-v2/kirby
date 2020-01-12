@@ -18,6 +18,8 @@ class RTest extends PHPUnit_Framework_TestCase {
 
   public function testGet() {
 
+    r::set('testvar', 'testvalue');
+
     $this->assertEquals('testvalue', r::get('testvar'));
     $this->assertEquals('defaultvalue', r::get('nonexistent', 'defaultvalue'));
 

@@ -636,7 +636,9 @@ class Str {
    */
   public static function stripslashes($string) {
     if(is_array($string)) return $string;
-    return get_magic_quotes_gpc() ? stripslashes($string) : $string;
+    // this was "get_magic_quotes_gpc() ? stripslashes($string) : $string",
+    // but as magic quotes are not supported since PHP 5.4.0, this method does nothing
+    return $string;
   }
 
   /**
