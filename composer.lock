@@ -1,11 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "hash": "ff70fb29cde927560984014404777607",
-    "content-hash": "a1b33a31d8f6cba4c481150eadbd3e2d",
+    "content-hash": "1498a59aca1cf213ed1ac0039f3e349f",
     "packages": [
         {
             "name": "erusev/parsedown",
@@ -51,7 +50,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2018-03-08 01:11:30"
+            "time": "2018-03-08T01:11:30+00:00"
         },
         {
             "name": "erusev/parsedown-extra",
@@ -95,7 +94,7 @@
                 "parsedown",
                 "parser"
             ],
-            "time": "2015-11-01 10:19:22"
+            "time": "2015-11-01T10:19:22+00:00"
         },
         {
             "name": "filp/whoops",
@@ -156,24 +155,24 @@
                 "throwable",
                 "whoops"
             ],
-            "time": "2017-11-23 18:22:44"
+            "time": "2017-11-23T18:22:44+00:00"
         },
         {
             "name": "getkirby/toolkit",
-            "version": "2.5.12",
+            "version": "2.5.13",
             "source": {
                 "type": "git",
-                "url": "https://github.com/getkirby/toolkit.git",
-                "reference": "b6457bab41d347d5ae4ed6b92244935e6dfed919"
+                "url": "https://github.com/getkirby-v2/toolkit.git",
+                "reference": "c6e066d3865c1e6551458c4f2f225ab28a8dd5d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby/toolkit/zipball/b6457bab41d347d5ae4ed6b92244935e6dfed919",
-                "reference": "b6457bab41d347d5ae4ed6b92244935e6dfed919",
+                "url": "https://api.github.com/repos/getkirby-v2/toolkit/zipball/c6e066d3865c1e6551458c4f2f225ab28a8dd5d1",
+                "reference": "c6e066d3865c1e6551458c4f2f225ab28a8dd5d1",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6.0"
+                "php": ">=7.2.0"
             },
             "type": "library",
             "autoload": {
@@ -197,7 +196,7 @@
             "keywords": [
                 "toolkit"
             ],
-            "time": "2018-07-17 08:25:11"
+            "time": "2020-01-12T15:24:03+00:00"
         },
         {
             "name": "michelf/php-smartypants",
@@ -247,20 +246,20 @@
                 "typographer",
                 "typography"
             ],
-            "time": "2016-12-13 01:01:17"
+            "time": "2016-12-13T01:01:17+00:00"
         },
         {
             "name": "psr/log",
-            "version": "1.0.2",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
-                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/446d54b4cb6bf489fc9d75f55843658e6f25d801",
+                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801",
                 "shasum": ""
             },
             "require": {
@@ -269,7 +268,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "1.1.x-dev"
                 }
             },
             "autoload": {
@@ -294,7 +293,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10 12:19:37"
+            "time": "2019-11-01T11:05:21+00:00"
         }
     ],
     "packages-dev": [],
@@ -304,7 +303,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.6.0",
+        "php": ">=7.2.0",
         "ext-mbstring": "*",
         "ext-gd": "*"
     },
