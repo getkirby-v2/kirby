@@ -1,11 +1,13 @@
-# Kirby Core
+# Kirby v2 Core
 
-This is the Kirby Core submodule.
+Please refer to the [Kirby Starterkit](http://github.com/getkirby-v2/starterkit)
+for a complete installation of Kirby 2.
 
-Please refer to the [Kirby Starterkit](http://github.com/getkirby/starterkit)
-for a complete installation of Kirby
+## Kirby 2 - EOL
 
-![Build Status](https://travis-ci.org/getkirby/kirby.svg?branch=master)
+Kirby 2 is an old version of Kirby CMS. We are supporting it with security updates until December 31st, 2020. 
+
+For the latest version of Kirby, check out https://getkirby.com
 
 ## Author
 Bastian Allgeier
