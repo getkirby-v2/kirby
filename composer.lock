@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1498a59aca1cf213ed1ac0039f3e349f",
+    "content-hash": "795028a2ea9620699916ef693d7f08ce",
     "packages": [
         {
             "name": "erusev/parsedown",
@@ -50,6 +50,10 @@
                 "markdown",
                 "parser"
             ],
+            "support": {
+                "issues": "https://github.com/erusev/parsedown/issues",
+                "source": "https://github.com/erusev/parsedown/tree/master"
+            },
             "time": "2018-03-08T01:11:30+00:00"
         },
         {
@@ -94,6 +98,10 @@
                 "parsedown",
                 "parser"
             ],
+            "support": {
+                "issues": "https://github.com/erusev/parsedown-extra/issues",
+                "source": "https://github.com/erusev/parsedown-extra/tree/master"
+            },
             "time": "2015-11-01T10:19:22+00:00"
         },
         {
@@ -155,20 +163,24 @@
                 "throwable",
                 "whoops"
             ],
+            "support": {
+                "issues": "https://github.com/filp/whoops/issues",
+                "source": "https://github.com/filp/whoops/tree/2.1.14"
+            },
             "time": "2017-11-23T18:22:44+00:00"
         },
         {
             "name": "getkirby/toolkit",
-            "version": "2.5.13",
+            "version": "2.5.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getkirby-v2/toolkit.git",
-                "reference": "c6e066d3865c1e6551458c4f2f225ab28a8dd5d1"
+                "reference": "cf2720b737b6ae5bcdbd1c84e820c3e86001b3a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getkirby-v2/toolkit/zipball/c6e066d3865c1e6551458c4f2f225ab28a8dd5d1",
-                "reference": "c6e066d3865c1e6551458c4f2f225ab28a8dd5d1",
+                "url": "https://api.github.com/repos/getkirby-v2/toolkit/zipball/cf2720b737b6ae5bcdbd1c84e820c3e86001b3a3",
+                "reference": "cf2720b737b6ae5bcdbd1c84e820c3e86001b3a3",
                 "shasum": ""
             },
             "require": {
@@ -196,7 +208,13 @@
             "keywords": [
                 "toolkit"
             ],
-            "time": "2020-01-12T15:24:03+00:00"
+            "support": {
+                "email": "support@getkirby.com",
+                "forum": "https://forum.getkirby.com",
+                "issues": "https://github.com/getkirby/toolkit/issues",
+                "source": "https://github.com/getkirby/toolkit"
+            },
+            "time": "2020-12-01T10:29:30+00:00"
         },
         {
             "name": "michelf/php-smartypants",
@@ -246,20 +264,24 @@
                 "typographer",
                 "typography"
             ],
+            "support": {
+                "issues": "https://github.com/michelf/php-smartypants/issues",
+                "source": "https://github.com/michelf/php-smartypants/tree/1.8.1"
+            },
             "time": "2016-12-13T01:01:17+00:00"
         },
         {
             "name": "psr/log",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801"
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/446d54b4cb6bf489fc9d75f55843658e6f25d801",
-                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/0f73288fd15629204f9d42b7055f72dacbe811fc",
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc",
                 "shasum": ""
             },
             "require": {
@@ -293,7 +315,10 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2019-11-01T11:05:21+00:00"
+            "support": {
+                "source": "https://github.com/php-fig/log/tree/1.1.3"
+            },
+            "time": "2020-03-23T09:12:05+00:00"
         }
     ],
     "packages-dev": [],
@@ -307,5 +332,6 @@
         "ext-mbstring": "*",
         "ext-gd": "*"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
 }

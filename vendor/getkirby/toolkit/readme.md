@@ -1,24 +1,12 @@
-# Kirby Toolkit
+# Kirby v2 Toolkit
 
 The Kirby 2 toolkit is a set of handy classes and helpers which make your life with PHP easier.
 
-[![Build Status](https://travis-ci.org/getkirby/toolkit.svg?branch=master)](https://travis-ci.org/getkirby/toolkit)
+## Kirby 2 - EOL
 
-## Installation
+Kirby 2 is an old version of Kirby CMS. We are supporting it with security updates until December 31st, 2020. 
 
-````
-git pull https://github.com/getkirby/toolkit.git
-````
-
-Adding the toolkit to your app…
-
-```php
-<?php require('toolkit/bootstrap.php') ?>
-```
-
-## Requirements
-
-PHP 5.4+
+For the latest version of Kirby, check out https://getkirby.com
 
 ## License 
 
