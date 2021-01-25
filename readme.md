@@ -5,16 +5,12 @@ for a complete installation of Kirby 2.
 
 ## Kirby 2 - EOL
 
-Kirby 2 is an old version of Kirby CMS. We are supporting it with security updates until December 31st, 2020. 
+Kirby 2 is an old version of Kirby CMS and has reached its end of life. We are no longer supporting it. 
 
 For the latest version of Kirby, check out https://getkirby.com
-
-## Author
-Bastian Allgeier
-<bastian@getkirby.com>
 
 ## Website
 <http://getkirby.com>
 
 ## License
-<http://getkirby.com>
+<http://getkirby.com/license>
